@@ -1,0 +1,18 @@
+<h1>URJCheckIn</h1 id="maintitle">
+<h3>Bienvenido a la p&aacutegina</h3>
+
+{% if request.user.is_authenticated %}
+	<h2>Sesion iniciada:</h2>
+	Registrado como {{request.user.username}}. 
+	<a href="/logout?next={{request.path}}">Logout</a>.
+{% else %}
+	<h2>Inicia Sesi&oacuten:</h2>
+	<form name="login" action="/login?next={{request.path}}" method="POST">
+	{% csrf_token %}
+	Usuario:<br/>
+	<input id="id_username" type="text" name="username" maxlength="30" size="15px"/><br/>
+	Contrase&ntildea:</br>
+	<input type="password" name="password" id="id_password" size="15px"/>
+	<input type="submit" value="Enviar">
+	</form>
+{% endif %}
