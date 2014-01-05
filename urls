@@ -1,0 +1,32 @@
+# -> el nombre cambia
+---------
+
+GETs
+----
+/login	->muestra el formulario para iniciar sesion
+/home	->muestra la pagina de inicio con el menu y el calendario
+/profile	->muestra le perfil del usuario loggeado
+/subjects	->muestra las asignaturas en las que está matriculado y los seminarios a los que se ha apuntado
+/next_seminars	->muestra los seminarios que se van a realizar en X tiempo y permite apuntarse a ellos
+/class/#id	->muestra la información sobre la clase, con diferentes opciones según el usuario sea profesor o alumno
+/checkin	->página para hacer checkin de una clase o seminario
+/help	->página de ayuda de la aplicación
+/forum	->muestra el foro (se pueden poner etiquetas para buscar con más facilidad categorías, grados, objetos perdidos, apuntes, quejas...)
+/img/#id	->muestra una imagen de la página
+/profile/img/#user	->muestra la imagen de perfil del usuario #user (alojada en la BD)
+/css/#id	->solicita el css #id
+/jscript/#id	->solicita el fichero javascript #id
+
+
+POSTs
+-----
+/login	->para iniciar sesion (formulario)
+/logout	->para cerrar sesion
+/profile	->modificar propiedades de perfil del usuario (formulario)
+/next_seminars/#id/check	->apuntarse a un seminario
+/next_seminars/#id/uncheck	->desapuntarse de un seminario
+/class/#id	->alumnos: comentar y/o puntuar si ya ha sido la clase (formulario)
+			->profesores: comentar, poner un aviso, modificar hora o aula si aun no ha sido (formulario)
+/checkin	->para hacer checkin de una clase o seminario (formulario)
+/forum	->para comentar en el foro (formulario)
+
