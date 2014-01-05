@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     url(r'^$', 'app.views.home'),
 	url(r'^img/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/images'}),
+	url(r'^css/(?P<path>.*)$', 'django.views.static.serve',
+						{'document_root': 'static/css'}),
     # url(r'^URJCheckIn/', include('URJCheckIn.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
