@@ -11,3 +11,7 @@ def notFound(request):
 def home(request):
 	return render_to_response('main.html', {'htmlname': 'home.html'},
 		context_instance=RequestContext(request))
+
+def checkin(request):
+	return render_to_response('main.html', {'htmlname': 'checkin.html'},
+		context_instance=RequestContext(request))

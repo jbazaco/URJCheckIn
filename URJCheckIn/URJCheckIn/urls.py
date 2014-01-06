@@ -7,10 +7,13 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'app.views.home'),
+	 url(r'^checkin$', 'app.views.checkin'),
 	url(r'^img/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/images'}),
 	url(r'^css/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/css'}),
+	url(r'^jscript/(?P<path>.*)$', 'django.views.static.serve',
+						{'document_root': 'static/javascript'}),
     # url(r'^URJCheckIn/', include('URJCheckIn.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
