@@ -7,9 +7,15 @@ function checkIn() {
 }
 
 function sendLocation(position) {//TODO
-	alert("posicion: " + position.coords.latitude + ", " + 
-			position.coords.longitude + " precision: " + 
-			position.coords.accuracy);
+	var codeword = $('#codeword');
+	if (codeword && codeword.val()) {
+		alert("posicion: " + position.coords.latitude + ", " + 
+			position.coords.longitude + "\nprecision: " + 
+			position.coords.accuracy + "\n" + codeword.val());
+		codeword.val("");
+	} else {
+		alert ("Debes insertar el código");
+	}
 }
 
 function geolocationError(error) {

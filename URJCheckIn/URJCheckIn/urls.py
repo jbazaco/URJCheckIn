@@ -14,6 +14,8 @@ urlpatterns = patterns('',
 						{'document_root': 'static/css'}),
 	url(r'^jscript/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/javascript'}),
+	url(r'^lib/(?P<path>.*)$', 'django.views.static.serve',
+						{'document_root': 'lib'}),
     # url(r'^URJCheckIn/', include('URJCheckIn.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
