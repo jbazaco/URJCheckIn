@@ -2,9 +2,10 @@
 <h3 id= "subtitle">Realiza el Check In de la clase/seminario {info clase}</h3>
 
 <div id="checkinbox" >
-		{% csrf_token %}
-		C&oacutedigo: 
-		<input id="codeword" type="text" name="codeword" maxlength="20" size="15px"/>
-		<button onclick="checkIn()">Check In</button>
+	{% csrf_token %}
+	<script src="/jscript/csrf_token.js"></script>
+	C&oacutedigo: 
+	<input id="codeword" type="text" name="codeword" maxlength="20" size="15px"/>
+	<button onclick="checkIn()">Check In</button>
 	<script src="/jscript/location.js"></script>
 </div>

@@ -9,9 +9,11 @@ function checkIn() {
 function sendLocation(position) {//TODO
 	var codeword = $('#codeword');
 	if (codeword && codeword.val()) {
-		alert("posicion: " + position.coords.latitude + ", " + 
-			position.coords.longitude + "\nprecision: " + 
-			position.coords.accuracy + "\n" + codeword.val());
+		var info = "latitude=" + position.coords.latitude + "&" +
+					"longitude=" + position.coords.longitude + "&"
+					"accuracy=" + position.coords.accuracy + "&"
+					"codeword=" + codeword.val();
+		$.post("http://" + document.location.host + "/checkin", info);
 		codeword.val("");
 	} else {
 		alert ("Debes insertar el código");
@@ -21,3 +23,4 @@ function sendLocation(position) {//TODO
 function geolocationError(error) {
 	alert("Error #" + error.code + " " + error.message);
 }
+
