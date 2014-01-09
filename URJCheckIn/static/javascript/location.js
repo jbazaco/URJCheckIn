@@ -10,8 +10,8 @@ function sendLocation(position) {
 	var codeword = $('#codeword');
 	if (codeword && codeword.val()) {
 		var info = "latitude=" + position.coords.latitude + "&" +
-					"longitude=" + position.coords.longitude + "&"
-					"accuracy=" + position.coords.accuracy + "&"
+					"longitude=" + position.coords.longitude + "&" +
+					"accuracy=" + position.coords.accuracy + "&" +
 					"codeword=" + codeword.val();
 		$.post("http://" + document.location.host + "/checkin", info, 
 				function() { codeword.val("CheckIn realizado"); }) //TODO cambiar, poner en otro sitio el mensaje
