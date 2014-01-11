@@ -16,7 +16,7 @@ def not_found(request):
 
 #Devuelve la pagina de inicio
 def home(request):
-	if request.methos != "GET":
+	if request.method != "GET":
 		return method_not_allowed(request)
 	
 	return render_to_response('main.html', {'htmlname': 'home.html'},
