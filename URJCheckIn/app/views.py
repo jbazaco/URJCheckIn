@@ -4,6 +4,8 @@ from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 
+#TODO comprobar que el usuario esta registrado antes de enviar una pagina
+# y actuar en consecuencia
 
 #Devuelve una pagina que indica que la pagina solicitada no existe
 def not_found(request):
@@ -15,9 +17,7 @@ def not_found(request):
 #Devuelve la pagina de inicio
 def home(request):
 	if request.methos != "GET":
-		return render_to_response('main.html', {'htmlname': 'error.html', 
-						'message': "M&eacutetodo no soportado"},
-						context_instance=RequestContext(request))
+		return method_not_allowed(request)
 	
 	return render_to_response('main.html', {'htmlname': 'home.html'},
 		context_instance=RequestContext(request))
@@ -38,11 +38,17 @@ def checkin(request):
 			return HttpResponseBadRequest()
 
 	elif request.method != "GET":
-		return render_to_response('main.html', {'htmlname': 'error.html', 
-						'message': "M&eacutetodo no soportado"},
-						context_instance=RequestContext(request))
-		#405 Method Not Allowed return HttpResponseNotAllowed(['GET', 'POST']);
+		return method_not_allowed(request)
 	
 	return render_to_response('main.html', {'htmlname': 'checkin.html'},
 			context_instance=RequestContext(request))
+
+
+#Devuelve una pagina indicando que el metodo no esta permitido
+def method_not_allowed(request):
+	return render_to_response('main.html', {'htmlname': 'error.html', 
+						'message': "M&eacutetodo " + request.method + 
+						" no soportado en " + request.path},
+						context_instance=RequestContext(request))
+	#405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);
 
