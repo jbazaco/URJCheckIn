@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'app.views.home'),
 	url(r'^checkin$', 'app.views.checkin'),
-	url(r'^profile$', 'app.views.profile'),
+	url(r'^profile/view/(\w+)$', 'app.views.profile'),
 	url(r'^img/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/images'}),
 	url(r'^css/(?P<path>.*)$', 'django.views.static.serve',

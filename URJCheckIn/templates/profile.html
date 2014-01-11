@@ -1,0 +1,20 @@
+<!foto perfil>
+<div id="profile">
+	Nombre: {firstname} {surname1} {surname2}
+	Edad: {age}
+	{if profesor}
+		info exclusiva profesor
+	{elif alumno}
+		info exclusiva alumno
+	{end if}
+</div>
+
+{if estoy_mirando_mi_perfil}
+	<div id="extra_classes">
+		{if profesor
+			clases extra con la opcion de quitarlas
+		{elif alumno}
+			seminarios apuntados con la opcion de desapuntarse
+		{end if}
+	</div>
+{end if}

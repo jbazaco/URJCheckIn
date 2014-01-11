@@ -7,14 +7,14 @@ from django.utils.datastructures import MultiValueDictKeyError
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
 
-#Devuelve una pagina que indica que la pagina solicitada no existe
+"""Devuelve una pagina que indica que la pagina solicitada no existe"""
 def not_found(request):
 	return render_to_response('main.html', {'htmlname': '404.html'},#mostrar en el html las paginas mas "frecuentes"
 																	#checkin, inicio, perfil...
 		context_instance=RequestContext(request))
 
 
-#Devuelve la pagina de inicio
+"""Devuelve la pagina de inicio"""
 def home(request):
 	if request.method != "GET":
 		return method_not_allowed(request)
@@ -23,7 +23,7 @@ def home(request):
 		context_instance=RequestContext(request))
 
 
-#Devuelve la pagina para hacer check in (GET) o procesa un check in (POST)
+"""Devuelve la pagina para hacer check in (GET) o procesa un check in (POST)"""
 def checkin(request):
 	if request.method == "POST":
 		#TODO guardar la informacion en la BD y procesarla si es necesario
@@ -43,8 +43,18 @@ def checkin(request):
 	return render_to_response('main.html', {'htmlname': 'checkin.html'},
 			context_instance=RequestContext(request))
 
+"""Devuelve la pagina de perfil del usuario loggeado"""
+#TODO
+def profile(request, user):
+	if request.method != "GET":
+		return method_not_allowed(request)
+	#if existe el usuario
+	return render_to_response('main.html', {'htmlname': 'profile.html'},#pasar user info
+			context_instance=RequestContext(request))
+	#else 
+	#return not_found(request)
 
-#Devuelve una pagina indicando que el metodo no esta permitido
+"""Devuelve una pagina indicando que el metodo no esta permitido"""
 def method_not_allowed(request):
 	return render_to_response('main.html', {'htmlname': 'error.html', 
 						'message': "M&eacutetodo " + request.method + 
