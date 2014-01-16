@@ -1,5 +1,13 @@
 {% extends "main.html" %}
 
+{% block headscripts %}
+	<script src='/lib/jquery-2.0.3.js' type='text/javascript'></script>
+	<script src='/lib/jquery.cookie.js' type='text/javascript'></script>
+	<script src="/jscript/csrf_token.js"></script>
+	<script src="/jscript/location.js"></script>
+{% endblock %}
+
+
 {% block mainbody %}
 
 <h1 id="maintitle">URJCheckIn</h1>
@@ -7,11 +15,9 @@
 
 <div id="checkinbox" >
 	{% csrf_token %}
-	<script src="/jscript/csrf_token.js"></script>
 	C&oacute;digo: 
 	<input id="codeword" type="text" name="codeword" maxlength="20" size="15px"/>
 	<button onclick="checkIn()">Check In</button>
-	<script src="/jscript/location.js"></script>
 </div>
 
 {% endblock %}
