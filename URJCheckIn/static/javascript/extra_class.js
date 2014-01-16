@@ -5,7 +5,6 @@ function deleteClass(id) {
 }
 
 function uncheckClass(id) {
-	removeFromDOM("#xc_" + id);
 	$.post("http://" + document.location.host + "/class/" + id, "action=uncheck", //TODO mirar si es esa URL
 				function() { removeFromDOM("#xc_" + id); })
 				.fail(function() { alert( "Error al desapuntarse del seminario" ); });
