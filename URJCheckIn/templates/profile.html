@@ -1,7 +1,7 @@
 <div id="profile">
 	<!Cambiar lo de iduser>
 	<img src="/profile/img/iduser" alt="foto de perfil" height="60" width="60">
-	<strong>Nombre: </strong>{firstname} {surname1} {surname2}
+	<strong>Nombre: </strong>{{user.name}} {surname1} {surname2}
 	<br/>
 	<strong>Edad: </strong>{age}
 	{if profesor}
@@ -17,19 +17,23 @@
 	<div id="extra_classes">
 		<script src="/jscript/csrf_token.js"></script>
 		<script src="/jscript/extra_class.js"></script>
-		{if profesor}
-			<br/>
-			<div id="xc_dummyid1"> 
-				clases extra con la opcion de quitarlas
-				<button onclick="deleteClass('dummyid1')" name="cancelar">cancelar</button> 
-				<!hacerlo con javascript para que no se recargue la pagina>
-			</div>
-		{elif alumno}
-			<br/>
-			<div id="xc_dummyid2">
-				seminarios apuntados con la opcion de desapuntarse</span>
-				<button onclick="uncheckClass('dummyid2')" name="desapuntarse">desapuntarse</button> 
-			</div>
-		{end if}
+		{% if user.student %}
+			{% for class in classes %}
+				<br/>
+				<div id={{"xc_"|add:class.id}}>
+					{{class.name}}
+					<button onclick={{"uncheckClass('"|add:class.id|add:"')"}} name="desapuntarse">desapuntarse</button> 
+				</div>
+			{% endfor %}
+		{% else %}
+			{% for class in classes %}
+				<br/>
+				<div id={{"xc_"|add:class.id}}> 
+					{{class.name}}
+					<button onclick={{"deleteClass('"|add:class.id|add:"')"}} name="cancelar">cancelar</button> 
+					<!hacerlo con javascript para que no se recargue la pagina>
+				</div>
+			{% endfor %}
+		{% endif %}
 	</div>
 {end if}

@@ -50,7 +50,9 @@ def profile(request, user):
 	if request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
-	return render_to_response('main.html', {'htmlname': 'profile.html'},#pasar user info
+	return render_to_response('main.html', {'htmlname': 'profile.html', 'user': {'name':user, 'student': True}, 
+					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}]
+					},#pasar user info
 			context_instance=RequestContext(request))
 	#else 
 	#return not_found(request)
@@ -71,8 +73,15 @@ def delete_class(request, idclass):
 	return render_to_response('main.html', {'htmlname': '404.html'},
 		context_instance=RequestContext(request))
 
+#TODO
+def uncheck_class(request, idclass):
+	"""El usuario que lo solicita deja de estar suscrito a esa clase(solo para seminarios)"""
+	print "uncheck!"
+	return render_to_response('main.html', {'htmlname': '404.html'},
+		context_instance=RequestContext(request))
+
 action_class = {'delete': delete_class,
-				#'uncheck': uncheck_class,
+				'uncheck': uncheck_class,
 				#'check': check_class,
 }
 
