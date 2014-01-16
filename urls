@@ -24,10 +24,11 @@ POSTs
 /login	->para iniciar sesion (formulario)
 /logout	->para cerrar sesion
 /profile/edit	->modificar propiedades de perfil del usuario (formulario)
-/next_seminars/#id/check	->apuntarse a un seminario
-/next_seminars/#id/uncheck	->desapuntarse de un seminario
-/class/#id	->alumnos: comentar y/o puntuar si ya ha sido la clase (formulario)
-			->profesores: comentar, poner un aviso, modificar hora o aula si aun no ha sido (formulario)
+/class/#id	->action=check apuntarse a un seminario
+/class/#id	->action=uncheck desapuntarse de un seminario
+/class/#id	->action=delete eliminar una clase (si eres el creador de la clase)
+/class/#id	->action=whatever alumnos: comentar y/o puntuar si ya ha sido la clase (formulario)
+			->action=whatever profesores: comentar, poner un aviso, modificar hora o aula si aun no ha sido (formulario)
 /checkin	->para hacer checkin de una clase o seminario (formulario)
 /forum	->para comentar en el foro (formulario)
 

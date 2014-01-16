@@ -7,15 +7,16 @@ from django.utils.datastructures import MultiValueDictKeyError
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
 
-"""Devuelve una pagina que indica que la pagina solicitada no existe"""
+
 def not_found(request):
+	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
 	return render_to_response('main.html', {'htmlname': '404.html'},#mostrar en el html las paginas mas "frecuentes"
 																	#checkin, inicio, perfil...
 		context_instance=RequestContext(request))
 
 
-"""Devuelve la pagina de inicio"""
 def home(request):
+	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
 	
@@ -23,8 +24,8 @@ def home(request):
 		context_instance=RequestContext(request))
 
 
-"""Devuelve la pagina para hacer check in (GET) o procesa un check in (POST)"""
 def checkin(request):
+	"""Devuelve la pagina para hacer check in (GET) o procesa un check in (POST)"""
 	if request.method == "POST":
 		#TODO guardar la informacion en la BD y procesarla si es necesario
 		#de momento hago prints
@@ -43,9 +44,9 @@ def checkin(request):
 	return render_to_response('main.html', {'htmlname': 'checkin.html'},
 			context_instance=RequestContext(request))
 
-"""Devuelve la pagina de perfil del usuario loggeado"""
 #TODO
 def profile(request, user):
+	"""Devuelve la pagina de perfil del usuario loggeado"""
 	if request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
@@ -54,8 +55,45 @@ def profile(request, user):
 	#else 
 	#return not_found(request)
 
-"""Devuelve una pagina indicando que el metodo no esta permitido"""
+
+#TODO
+def profile_img(request, user):
+	"""Devuelve la foto de perfil del usuario user"""
+	return render_to_response('main.html', {'htmlname': '404.html'},
+		context_instance=RequestContext(request))
+
+
+#TODO
+def delete_class(request, idclass):
+	"""Elimina una clase si lo solicita el usuario que la creo"""
+	#Comprobar que esta la clase y que se puede borrar, si no informar del error
+	print "delete!"
+	return render_to_response('main.html', {'htmlname': '404.html'},
+		context_instance=RequestContext(request))
+
+action_class = {'delete': delete_class,
+				#'uncheck': uncheck_class,
+				#'check': check_class,
+}
+
+
+def process_class(request, idclass):
+	"""Procesa las peticiones sobre una clase o seminario"""
+	if request.method == "POST":
+		qd = request.POST
+		try:
+			action = qd.__getitem__("action")
+			if action in action_class:
+				return action_class[action](request, idclass)
+		except MultiValueDictKeyError:
+			pass
+		return HttpResponseBadRequest()
+
+	return render_to_response('main.html', {'htmlname': '404.html'},
+		context_instance=RequestContext(request))
+
 def method_not_allowed(request):
+	"""Devuelve una pagina indicando que el metodo no esta permitido"""
 	return render_to_response('main.html', {'htmlname': 'error.html', 
 						'message': "M&eacutetodo " + request.method + 
 						" no soportado en " + request.path},
