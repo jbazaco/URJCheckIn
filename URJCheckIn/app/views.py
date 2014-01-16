@@ -10,7 +10,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
-	return render_to_response('main.html', {'htmlname': '404.html'},#mostrar en el html las paginas mas "frecuentes"
+	return render_to_response('404.html', {},	#mostrar en el html las paginas mas "frecuentes"
 																	#checkin, inicio, perfil...
 		context_instance=RequestContext(request))
 
@@ -20,7 +20,7 @@ def home(request):
 	if request.method != "GET":
 		return method_not_allowed(request)
 	
-	return render_to_response('main.html', {'htmlname': 'home.html'},
+	return render_to_response('home.html', {},
 		context_instance=RequestContext(request))
 
 
@@ -41,7 +41,7 @@ def checkin(request):
 	elif request.method != "GET":
 		return method_not_allowed(request)
 	
-	return render_to_response('main.html', {'htmlname': 'checkin.html'},
+	return render_to_response('checkin.html', {},
 			context_instance=RequestContext(request))
 
 #TODO
@@ -50,7 +50,7 @@ def profile(request, user):
 	if request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
-	return render_to_response('main.html', {'htmlname': 'profile.html', 'user': {'name':user, 'student': True}, 
+	return render_to_response('profile.html', {'user': {'name':user, 'student': True}, 
 					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}]
 					},#pasar user info
 			context_instance=RequestContext(request))
@@ -61,7 +61,7 @@ def profile(request, user):
 #TODO
 def profile_img(request, user):
 	"""Devuelve la foto de perfil del usuario user"""
-	return render_to_response('main.html', {'htmlname': '404.html'},
+	return render_to_response('404.html', {},
 		context_instance=RequestContext(request))
 
 
@@ -70,14 +70,14 @@ def delete_class(request, idclass):
 	"""Elimina una clase si lo solicita el usuario que la creo"""
 	#Comprobar que esta la clase y que se puede borrar, si no informar del error
 	print "delete!"
-	return render_to_response('main.html', {'htmlname': '404.html'},
+	return render_to_response('404.html', {},
 		context_instance=RequestContext(request))
 
 #TODO
 def uncheck_class(request, idclass):
 	"""El usuario que lo solicita deja de estar suscrito a esa clase(solo para seminarios)"""
 	print "uncheck!"
-	return render_to_response('main.html', {'htmlname': '404.html'},
+	return render_to_response('404.html', {},
 		context_instance=RequestContext(request))
 
 action_class = {'delete': delete_class,
@@ -98,13 +98,12 @@ def process_class(request, idclass):
 			pass
 		return HttpResponseBadRequest()
 
-	return render_to_response('main.html', {'htmlname': '404.html'},
+	return render_to_response('404.html', {},
 		context_instance=RequestContext(request))
 
 def method_not_allowed(request):
 	"""Devuelve una pagina indicando que el metodo no esta permitido"""
-	return render_to_response('main.html', {'htmlname': 'error.html', 
-						'message': "M&eacutetodo " + request.method + 
+	return render_to_response('error.html', {'message': "M&eacutetodo " + request.method + 
 						" no soportado en " + request.path},
 						context_instance=RequestContext(request))
 	#405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);

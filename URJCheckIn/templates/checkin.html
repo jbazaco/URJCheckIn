@@ -1,3 +1,7 @@
+{% extends "main.html" %}
+
+{% block mainbody %}
+
 <h1 id="maintitle">URJCheckIn</h1>
 <h3 id= "subtitle">Realiza el Check In de la clase/seminario {info clase}</h3>
 
@@ -9,3 +13,6 @@
 	<button onclick="checkIn()">Check In</button>
 	<script src="/jscript/location.js"></script>
 </div>
+
+{% endblock %}
+
