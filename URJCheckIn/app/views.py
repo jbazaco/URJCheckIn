@@ -45,12 +45,20 @@ def checkin(request):
 			context_instance=RequestContext(request))
 
 #TODO
-def profile(request, user):
+def profile(request, iduser):
 	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
+	if request.method == "POST":
+		#comprobar user = usuarioregistrado
+		qd = request.POST
+		try:
+			print qd.__getitem__("age")
+		except MultiValueDictKeyError:
+			return HttpResponseBadRequest()
+
 	if request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
-	return render_to_response('profile.html', {'user': {'name':user, 'student': False, 'id':user}, 
+	return render_to_response('profile.html', {'user': {'name':iduser, 'student': False, 'id':iduser}, 
 					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}]
 					},#pasar user info
 			context_instance=RequestContext(request))
