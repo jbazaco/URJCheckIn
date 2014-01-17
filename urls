@@ -6,7 +6,6 @@ GETs
 /login	->muestra el formulario para iniciar sesion
 /home	->muestra la pagina de inicio con el menu y el calendario
 /profile/view/#user	->muestra el perfil del usuario user
-/profile/edit	->muestra un formulario para editar las preferencias y el perfil del usuario
 /subjects	->muestra las asignaturas en las que está matriculado y los seminarios a los que se ha apuntado
 /next_seminars	->muestra los seminarios que se van a realizar en X tiempo y permite apuntarse a ellos
 /class/#id	->muestra la información sobre la clase, con diferentes opciones según el usuario sea profesor o alumno
@@ -23,7 +22,7 @@ POSTs
 -----
 /login	->para iniciar sesion (formulario)
 /logout	->para cerrar sesion
-/profile/edit	->modificar propiedades de perfil del usuario (formulario)
+/profile/view/#user	->modificar propiedades de perfil del usuario (formulario)
 /class/#id	->action=check apuntarse a un seminario
 /class/#id	->action=uncheck desapuntarse de un seminario
 /class/#id	->action=delete eliminar una clase (si eres el creador de la clase)

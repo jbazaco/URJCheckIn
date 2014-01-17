@@ -46,11 +46,11 @@ def checkin(request):
 
 #TODO
 def profile(request, user):
-	"""Devuelve la pagina de perfil del usuario loggeado"""
+	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
 	if request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
-	return render_to_response('profile.html', {'user': {'name':user, 'student': True}, 
+	return render_to_response('profile.html', {'user': {'name':user, 'student': False, 'id':user}, 
 					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}]
 					},#pasar user info
 			context_instance=RequestContext(request))
