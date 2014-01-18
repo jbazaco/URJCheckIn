@@ -13,12 +13,12 @@
 <h1 id="maintitle">URJCheckIn</h1>
 <h3 id= "subtitle">Realiza el Check In de la clase/seminario {info clase}</h3>
 
-<div id="checkinbox" >
+<form name="checkin" id="checkinbox" onsubmit="checkIn(); return false;">
 	{% csrf_token %}
 	C&oacute;digo: 
-	<input id="codeword" type="text" name="codeword" maxlength="20" size="15px"/>
-	<button onclick="checkIn()">Check In</button>
-</div>
+	<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required/>
+	<button type="submit" name="checkin_submit" >Check In</button>
+</form>
 
 {% endblock %}
 
