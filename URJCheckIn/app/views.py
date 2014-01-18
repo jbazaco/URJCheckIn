@@ -51,11 +51,16 @@ def profile(request, iduser):
 		#comprobar user = usuarioregistrado
 		qd = request.POST
 		try:
-			print qd.__getitem__("age")
+			#TODO con el resto de campos
+			try:
+				age = int(qd.__getitem__("age"))
+			except ValueError:
+				return HttpResponseBadRequest()
+			print age
 		except MultiValueDictKeyError:
 			return HttpResponseBadRequest()
 
-	if request.method != "GET":
+	elif request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
 	return render_to_response('profile.html', {'user': {'name':iduser, 'student': False, 'id':iduser}, 

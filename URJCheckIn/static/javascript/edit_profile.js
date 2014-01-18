@@ -36,12 +36,12 @@ function restartButtons(id) {
 						.html('Editar perfil')
 						.attr('onclick', "showEditProfile('"+id+"')");
 	$('#cancel_edit_profile').remove();
-	enableButtons(['#change_profile']);
+	enableButtons(['button']);
 }
 
 /* Cuando se recibe una confirmacion de los cambios realizados*/
-function infoSaved() {//TODO hace otra cosa!!!
-	restartButtons('ads'/*id*/);//TODO necesito la id!!
+function infoSaved(data, textStatus, jqXHR ) {//TODO hace otra cosa!!!
+	restartButtons(this.url.split("/").pop());//TODO necesito la id!!
 	hideElements(['#saving_profile']);
 	unsetForm();
 }
@@ -50,13 +50,13 @@ function infoSaved() {//TODO hace otra cosa!!!
 function errorSaving() {
 	hideElements(['#saving_profile']);
 	alert("Error al cambiar el perfil. Vuelva a intentarlo.");
-	enableButtons(['#change_profile', '#cancel_edit_profile']);
+	enableButtons(['button']);
 }
 
 /* Envia un POST al servidor para que actualice el perfil del usuario con la 
 	informacion del formulario */
 function sendChanges(id) {
-		disableButtons(['#change_profile', '#cancel_edit_profile']);
+		disableButtons(['button']);
 		$('#saving_profile').css('display','inline');
 		var qstring = "age=" + $('#age_profile').parent().val(); // +& otras propiedades
 		$.post("http://" + document.location.host + "/profile/view/" + id, qstring, infoSaved)
