@@ -58,9 +58,9 @@ function errorSaving() {
 function sendChanges(id) {
 		disableButtons(['button']);
 		$('#saving_profile').css('display','inline');
-		var qstring = "age=" + $('#age_profile').parent().val(); // +& otras propiedades
-		$.post("http://" + document.location.host + "/profile/view/" + id, qstring, infoSaved)
-						.fail(errorSaving);
+		$.post("http://" + document.location.host + "/profile/view/" + id, 
+								$('#profile_form').serialize(), infoSaved)
+				.fail(errorSaving);
 }
 
 /* Quita el formulario y vuelve a mostrar el perfil */
