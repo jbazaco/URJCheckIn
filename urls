@@ -8,6 +8,7 @@ GETs
 /profile/view/#user	->muestra el perfil del usuario user
 /subjects	->muestra las asignaturas en las que está matriculado y los seminarios a los que se ha apuntado
 /subjects/#subject -> muestra las clases de una asignatura en las que has hecho checkin y las proximas
+				//Podria ponerlo como un desplegable (se baja todo hacia abajo y aparece la informacion de la clase)
 /next_seminars	->muestra los seminarios que se van a realizar en X tiempo y permite apuntarse a ellos
 /class/#id	->muestra la información sobre la clase, con diferentes opciones según el usuario sea profesor o alumno
 			///Podria ser bueno cambiarlo por /subjects/#subject/#class

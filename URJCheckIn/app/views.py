@@ -147,6 +147,10 @@ def forum(request):
 
 def subjects(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
-	return render_to_response('subjects.html', {'subjects':[{'name':'subject1', 'id':'id1'}, 
-					{'name':'subject2', 'id':'id2'}]}, context_instance=RequestContext(request))
+	return render_to_response('subjects.html', {'subjects':[{'name':'subject1', 'id':'111'}, 
+					{'name':'subject2', 'id':'222'}]}, context_instance=RequestContext(request))
 
+def subject(request, idsubj):
+	"""Devuelve la pagina con las clases de una asignatura"""
+	return render_to_response('subject.html', {'idsubj':idsubj, 'classes':[{'name':'class1', 'id':'111'}, 
+					{'name':'class2', 'id':'222'}]}, context_instance=RequestContext(request))

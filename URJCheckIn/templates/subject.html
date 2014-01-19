@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+
+
+{% block mainbody %}
+
+<h1 id="maintitle">Pr&oacute;ximas clases</h1>
+
+{% for class in classes %}
+	<ul id="subjects_list">
+		<li><a href={{'"/subjects/'|add:idsubj|add:'/'|add:class.id|add:'"'|safe}}>{{class.name}}</a></li>
+	</ul>
+{% endfor %}
+<!boton para cargar mas>
+<br/>
+<h1 id="maintitle">&Uacuteltimas clases</h1>
+
+{% for class in classes %}
+	<ul id="subjects_list">
+		<li><a href={{'"/subjects/'|add:idsubj|add:'/'|add:class.id|add:'"'|safe}}>
+			{{class.name}} QUE PONGA SI HAY CHECKIN
+		</a></li>
+	</ul>
+{% endfor %}
+<!boton para cargar mas>
+
+{% endblock %}
+
