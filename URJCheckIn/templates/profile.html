@@ -24,10 +24,15 @@
 </div>
 
 {if estoy_mirando_mi_perfil}
+	<form  name="profile_form" id="profile_form" onsubmit={{"\"sendChanges('"|add:user.id|add:"'); return false;\""|safe}}>
+		<!input type="file" accept="image/*"/>
+	</form>
+	<!TODO cambiar los elementos y ponerlos dentro del formulario con el js. el boton de abajo
+	va a ser para enseñarlo y cancelarlo. el que añada va a ser el de submit>
+
 	<script src='/jscript/edit_profile.js' type='text/javascript'></script>
 	<br/>
-	<!input type="file" accept="image/*"/>
-	<button onclick={{"\"showEditProfile('"|add:user.id|add:"')\""|safe}} id="change_profile">Editar perfil</button>
+	<button name="show_form" onclick={{"\"showEditProfile('"|add:user.id|add:"')\""|safe}} id="show_form">Editar perfil</button>
 	<img src="/img/loading.gif" id="saving_profile" alt="cargando" height="16" width="16" style="display:none">
 
 	<div id="extra_classes">

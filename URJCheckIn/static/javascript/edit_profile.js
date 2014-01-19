@@ -2,21 +2,21 @@
 /* Genera un formulario para editar el perfil */
 function showEditProfile(id) {
 	setForm();
-	$('#change_profile')
-						.html('Guardar cambios')
-						.attr('onclick', "sendChanges('"+id+"')")
-						.before("<button onclick=\"cancelEditProfile('" + id +
-								"')\" id=\"cancel_edit_profile\">Cancelar</button>");
+	$('#show_form')
+					.html('Cancelar')
+					.attr('onclick', "cancelEditProfile('"+id+"')")
+					.after('<button type="submit" name="checkin_submit" id="save_changes" form="profile_form"' + 
+								'>Guardar Cambios</button>');
 }
 
 /* Genera las cajas para el formulario inicializando su valor con la informacion del perfil */
 function setForm() {
 	var name = $('#name_profile');
 	name.wrap('<input disabled="disabled" class="name" value="' + name.html() + 
-				'" type="text" name="name" maxlength="30" size="25px"> <input>');
+				'" type="text" name="name" maxlength="30" size="25px" form="profile_form"> </input>');
 	var age = $('#age_profile');
-	age.wrap('<input class="name" value="' + "18" + //age.html() + //TODO
-				'" type="number" name="age" min="18" max="100" step="1"> <input>'); //FIREFOX NO LO MUESTRA COMO NUMBER
+	age.wrap('<input class="name" required value="' + "18" + //age.html() + //TODO
+				'" type="number" name="age" min="17" max="100" step="1" form="profile_form"/> </input>'); //FIREFOX NO LO MUESTRA COMO NUMBER
 	//TODO para el resto de campos
 }
 
@@ -32,10 +32,10 @@ function unsetForm() {//TODO que coja los datos de la respuesta mejor
 
 /* Elimina el boton de cancelar y cambia el texto del otro boton a 'Editar perfil' y lo habilita */
 function restartButtons(id) {
-	$('#change_profile')
+	$('#show_form')
 						.html('Editar perfil')
 						.attr('onclick', "showEditProfile('"+id+"')");
-	$('#cancel_edit_profile').remove();
+	$('#save_changes').remove();
 	enableButtons(['button']);
 }
 
