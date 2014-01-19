@@ -138,10 +138,10 @@ def forum(request):
 		return method_not_allowed(request)
 
 	return render_to_response('forum.html', 
-							{'comments':[
-								{'user':{'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
-								{'user':{'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
-							]
-											},
-						context_instance=RequestContext(request))
+				{'comments':[
+					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
+					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
+				]
+				},
+				context_instance=RequestContext(request))
 
