@@ -114,10 +114,25 @@ def process_class(request, idclass):
 	return render_to_response('404.html', {},
 		context_instance=RequestContext(request))
 
+
 def method_not_allowed(request):
 	"""Devuelve una pagina indicando que el metodo no esta permitido"""
 	return render_to_response('error.html', {'message': "M&eacutetodo " + request.method + 
 						" no soportado en " + request.path},
 						context_instance=RequestContext(request))
 	#405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);
+
+
+def forum(request):
+	"""Devuelve la pagina del foro y almacena comentarios nuevos"""
+	if request.method != "GET":
+		return method_not_allowed(request)
+
+	return render_to_response('forum.html', 
+							{'comments':[
+								{'user':{'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
+								{'user':{'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
+							]
+											},
+						context_instance=RequestContext(request))
 

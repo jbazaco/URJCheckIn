@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+
+{% block mainbody %}
+
+<h1 id="maintitle">Foro de URJCheckIn</h1>
+
+<dl id="comments">
+	{% for comment in comments %}
+		<div class="comment">
+			<dt class="nick_comment">
+				{{comment.user.name}} {{comment.user.surname1}} {{comment.user.surname2}}
+			</dt>
+			<dd class="content_comment">{{comment.content}}</dd>
+		</div>
+	{% endfor %}
+</dl>
+
+{% endblock %}

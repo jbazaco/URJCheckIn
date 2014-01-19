@@ -32,6 +32,10 @@
 	float:left;
 }
 
+#comments {/*que no se centre el texto, solo el bloque*/
+	text-align:center;
+}
+
 #profile {
 
 }
