@@ -1,0 +1,23 @@
+{% extends "main.html" %}
+
+
+{% block mainbody %}
+
+<h1 id="maintitle">Mis asignaturas</h1>
+
+{% for subject in subjects %}
+	<ul id="subjects_list">
+		<li><a href={{'"/subjects/'|add:subject.id|add:'"'|safe}}>{{subject.name}}</a></li>
+	</ul>
+{% endfor %}
+<br/>
+<h1 id="maintitle">Mis seminarios</h1>
+
+{% for subject in subjects %}
+	<ul id="subjects_list">
+		<li><a href={{'"/subjects/'|add:subject.id|add:'"'|safe}}>{{subject.name}}</a></li>
+	</ul>
+{% endfor %}
+
+{% endblock %}
+
