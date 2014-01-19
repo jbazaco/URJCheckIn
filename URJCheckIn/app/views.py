@@ -125,7 +125,16 @@ def method_not_allowed(request):
 
 def forum(request):
 	"""Devuelve la pagina del foro y almacena comentarios nuevos"""
-	if request.method != "GET":
+	if request.method == "POST":
+		qd = request.POST
+		try:
+			comment = qd.__getitem__("comment")
+		except MultiValueDictKeyError:
+			return HttpResponseBadRequest()
+		comment = comment[:150] #si el comentario tiene mas de 150 caracteres se corta
+		print comment
+	
+	elif request.method != "GET":
 		return method_not_allowed(request)
 
 	return render_to_response('forum.html', 
