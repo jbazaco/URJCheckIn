@@ -7,8 +7,11 @@ GETs
 /home	->muestra la pagina de inicio con el menu y el calendario
 /profile/view/#user	->muestra el perfil del usuario user
 /subjects	->muestra las asignaturas en las que está matriculado y los seminarios a los que se ha apuntado
+/subjects/#subject -> muestra las clases de una asignatura en las que has hecho checkin y las proximas
 /next_seminars	->muestra los seminarios que se van a realizar en X tiempo y permite apuntarse a ellos
 /class/#id	->muestra la información sobre la clase, con diferentes opciones según el usuario sea profesor o alumno
+			///Podria ser bueno cambiarlo por /subjects/#subject/#class
+			//El #subject de los seminarios seria el mismo para todos
 /checkin	->página para hacer checkin de una clase o seminario
 /help	->página de ayuda de la aplicación
 /forum	->muestra el foro (se pueden poner etiquetas para buscar con más facilidad categorías, grados, objetos perdidos, apuntes, quejas...)
@@ -23,6 +26,7 @@ POSTs
 /login	->para iniciar sesion (formulario)
 /logout	->para cerrar sesion
 /profile/view/#user	->modificar propiedades de perfil del usuario (formulario)
+			//VER nota de arriba sobre cambiarlo
 /class/#id	->action=check apuntarse a un seminario
 /class/#id	->action=uncheck desapuntarse de un seminario
 /class/#id	->action=delete eliminar una clase (si eres el creador de la clase)
