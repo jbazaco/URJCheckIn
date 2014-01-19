@@ -111,7 +111,7 @@ def process_class(request, idclass):
 			pass
 		return HttpResponseBadRequest()
 
-	return render_to_response('404.html', {},
+	return render_to_response('class.html', {},
 		context_instance=RequestContext(request))
 
 
@@ -152,5 +152,5 @@ def subjects(request):
 
 def subject(request, idsubj):
 	"""Devuelve la pagina con las clases de una asignatura"""
-	return render_to_response('subject.html', {'idsubj':idsubj, 'classes':[{'name':'class1', 'id':'111'}, 
+	return render_to_response('subject.html', {'classes':[{'name':'class1', 'id':'111'}, 
 					{'name':'class2', 'id':'222'}]}, context_instance=RequestContext(request))

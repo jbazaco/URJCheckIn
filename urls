@@ -11,8 +11,7 @@ GETs
 				//Podria ponerlo como un desplegable (se baja todo hacia abajo y aparece la informacion de la clase)
 /next_seminars	->muestra los seminarios que se van a realizar en X tiempo y permite apuntarse a ellos
 /class/#id	->muestra la información sobre la clase, con diferentes opciones según el usuario sea profesor o alumno
-			///Podria ser bueno cambiarlo por /subjects/#subject/#class
-			//El #subject de los seminarios seria el mismo para todos
+			//Podria cambiarlo por /subjects/#subject/#class
 /checkin	->página para hacer checkin de una clase o seminario
 /help	->página de ayuda de la aplicación
 /forum	->muestra el foro (se pueden poner etiquetas para buscar con más facilidad categorías, grados, objetos perdidos, apuntes, quejas...)
