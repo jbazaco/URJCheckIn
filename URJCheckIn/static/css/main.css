@@ -20,6 +20,10 @@
 	width: 600px;
 }
 
+#menu_bar {
+	text-align: center;
+}
+
 #checkinbox {
 	text-align:center;
 }
