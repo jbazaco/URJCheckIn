@@ -1,7 +1,66 @@
+<!Este fichero tiene muchos elementos con los atributos justos para empezar a ver como queda, hay que poner mas atributos a muchos elementos>
+
 {% extends "main.html" %}
 
 {% block mainbody %}
 
-<h1 id="maintitle">Pr&oacute;ximas clases</h1>
+<h1 id="maintitle">Clase de {class.subject}</h1>
 
+<div id="class_info"> 
+	<strong>Estado: </strong> {sin asistir | asistida | sin realizar} </br><!se saca de la fecha>
+	<strong>Fecha: </strong> {class.date} <br/>
+	<strong>Profesor: </strong> {class.teacher}	<br/>
+	<strong>More: </strong> {more} <br/>
+</div>
+
+<div id="class_coments">
+	<h3>Comentarios del profesor</h3> <!no se todavia si solo comenta el profesor o todos>
+	<ul>
+	{for comment in comments}
+		<li>comentario con info de fecha</li> <!no se todavia si solo comenta el profesor o todos>
+	{endfor}
+	</ul>
+	{if profesor}<!no se todavia si solo comenta el profesor o todos>
+		<button type="button"> Editar comentarios </button> <!codigo javascript que pone botones para eliminar comentarios>
+		<br/>
+		<form id="comment_class_form"> 
+			<input type="text" maxlength="150">
+			<button type="submit">Enviar comentario</button>
+		</form>
+	{endif}
+</div>
+
+{if alumno}
+	{if fecha menor que actual}
+		{if checkin and no valorada}
+			<form id="review_form">
+				<fieldset>
+					<legend> Valoraci&oacute;n de la clase</legend>
+					<strong>Puntuaci&oacute;n: </strong> <input type="number" min="1" max="5" value="3" required><!1..5 o en blanco si no se ha votado>
+					<br/>
+					<strong>Comentario: </strong> <input type="text" maxlength="150"><!comentario o en blanco>
+					<br/>
+					<button type="submit">Enviar valoraci&oacute;n</button>
+				</fieldset>
+			</form>
+		{elif checkin and valorada}
+			<div id="class_review">
+				<strong>Puntuaci&oacute;n: </strong> 1..5
+				<br/>
+				<strong>Comentario: </strong> comentario o en blanco
+			</div>
+		{endif}		
+	{endif}
+{else}
+	{if fecha menor que actual}
+		<form id="change_date">
+			Cambiar fecha <input type="datetime-local" required> <!no sale en firefox!!!!>
+			<button type="button">Ver aulas</button><!javascript pregunta aulas libres>
+			<br/>
+			Aula <input type="number" required>
+			<br/>
+			<button type="submit">Cambiar fecha</button>
+		</form>
+	{endif}	
+{endif}
 {% endblock %}
