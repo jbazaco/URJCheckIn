@@ -56,10 +56,12 @@
 {else}
 	{if fecha menor que actual}
 		<form id="change_date">
-			Cambiar fecha <input type="datetime-local" required> <!no sale en firefox!!!!>
+			<label for="id_date">Cambiar fecha </label>
+			<input id="id_date" type="datetime-local" required> <!no sale en firefox!!!!>
 			<button type="button">Ver aulas</button><!javascript pregunta aulas libres>
 			<br/>
-			Aula <input type="number" required>
+			<label for="id_room">Aula </label>
+			<input id="id_room" type="number" required>
 			<br/>
 			<button type="submit">Cambiar fecha</button>
 		</form>
