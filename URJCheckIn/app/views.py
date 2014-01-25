@@ -4,6 +4,8 @@ from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 
+from forms import ReviewClassForm
+
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
 
@@ -111,7 +113,7 @@ def process_class(request, idclass):
 			pass
 		return HttpResponseBadRequest()
 
-	return render_to_response('class.html', {},
+	return render_to_response('class.html', {'form': ReviewClassForm()},
 		context_instance=RequestContext(request))
 
 

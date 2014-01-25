@@ -36,9 +36,11 @@
 			<form id="review_form">
 				<fieldset>
 					<legend> Valoraci&oacute;n de la clase</legend>
-					<strong>Puntuaci&oacute;n: </strong> <input type="number" min="1" max="5" value="3" required><!1..5 o en blanco si no se ha votado>
+					<label for="id_mark">Puntuaci&oacute;n:</label>
+					{{form.mark}}
 					<br/>
-					<strong>Comentario: </strong> <input type="text" maxlength="150"><!comentario o en blanco>
+					<label for="id_comment">Comentario:</label>
+					{{form.comment}}
 					<br/>
 					<button type="submit">Enviar valoraci&oacute;n</button>
 				</fieldset>
