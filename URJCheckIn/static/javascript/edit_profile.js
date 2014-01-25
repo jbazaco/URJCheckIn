@@ -9,25 +9,22 @@ function showEditProfile(id) {
 								'>Guardar Cambios</button>');
 }
 
-/* Genera las cajas para el formulario inicializando su valor con la informacion del perfil */
+/* Muestra el formulario inicializando su valor con la informacion del perfil y oculta el perfil*/
 function setForm() {
-	var name = $('#name_profile');
-	name.wrap('<input disabled="disabled" class="name" value="' + name.html() + 
-				'" type="text" name="name" maxlength="30" size="25px" form="profile_form"> </input>');
-	var age = $('#age_profile');
-	age.wrap('<input class="name" required value="' + "18" + //age.html() + //TODO
-				'" type="number" name="age" min="17" max="100" step="1" form="profile_form"/> </input>'); //FIREFOX NO LO MUESTRA COMO NUMBER
+	$('#id_name').attr('value', $('#name_profile').html());
+	$('#id_age').attr('value', $('#age_profile').html()); //FIREFOX NO LO MUESTRA COMO NUMBER
 	//TODO para el resto de campos
+	hideElements(['#profile .fields']);
+	$('#profile_form').css('display','inherit');
 }
 
-/* Realiza un unwrap de cada campo del perfil del usuario y modifica su valor
-	por el que se relleno en el formulario */
+/* Oculta el formulario y muestra y modifica el perfil con los datos del formulario */
 function unsetForm() {//TODO que coja los datos de la respuesta mejor
-	$('#name_profile').unwrap();
-	var age = $('#age_profile');
-	if (age.parent().val()) age.html(age.parent().val());
-	age.unwrap();
+	$('#name_profile').html($('#id_name').val());
+	$('#age_profile').html($('#id_age').val());
 	//TODO hacerlo con el resto de propiedades
+	hideElements(['#profile_form']);
+	$('#profile .fields').css('display','inherit');
 }
 
 /* Elimina el boton de cancelar y cambia el texto del otro boton a 'Editar perfil' y lo habilita */
@@ -65,8 +62,8 @@ function sendChanges(id) {
 
 /* Quita el formulario y vuelve a mostrar el perfil */
 function cancelEditProfile(id) {
-	$('#name_profile').unwrap();
-	$('#age_profile').unwrap();
+	hideElements(['#profile_form']);
+	$('#profile .fields').css('display','inherit');
 	restartButtons(id);
 }
 
