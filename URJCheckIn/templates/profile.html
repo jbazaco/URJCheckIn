@@ -28,9 +28,13 @@
 {if estoy_mirando_mi_perfil}
 	<form  name="profile_form" id="profile_form" style="display:none"
 			onsubmit={{"\"sendChanges('"|add:user.id|add:"'); return false;\""|safe}}>
-		<!input type="file" accept="image/*"/>
-		<input disabled="disabled" id="id_name" class="name" type="text" name="name" maxlength="30" size="25px" form="profile_form">
-		<input class="name" id="id_age" required type="number" name="age" min="17" max="100" step="1" form="profile_form"/>
+	<!input type="file" accept="image/*"/>
+	<label for="id_name">Nombre:</label>
+	{{form.name}}
+	<br/>
+	<label for="id_age">Edad:</label>
+	{{form.age}}
+	<br/>
 	</form>
 
 	<script src='/jscript/basic.js' type='text/javascript'></script>

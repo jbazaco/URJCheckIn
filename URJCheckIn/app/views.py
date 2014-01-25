@@ -4,7 +4,7 @@ from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 
-from forms import ReviewClassForm
+from forms import ReviewClassForm, ProfileEditionForm
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -65,8 +65,10 @@ def profile(request, iduser):
 	elif request.method != "GET":
 		return method_not_allowed(request)
 	#if existe el usuario
+	
 	return render_to_response('profile.html', {'user': {'name':iduser, 'student': False, 'id':iduser}, 
-					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}]
+					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
+					'form': ProfileEditionForm()
 					},#pasar user info
 			context_instance=RequestContext(request))
 	#else 
