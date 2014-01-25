@@ -11,3 +11,20 @@ class ProfileEditionForm(forms.Form):
 	age = forms.IntegerField(min_value=17, max_value=80, widget=forms.TextInput(attrs={
 			'required':'required','type':'number', 'min':17, 'max':'80', 'step':'1'}))
 	#TODO poner el resto de campos
+
+
+#Formulario poner clase la asignatura seleccionable pasando un array de las asignaturas disponibles
+#si se elige desde la pagina de una asignatura se pone el campo fijo (o no?)
+class AddClassForm(forms.Form):
+	reason =  forms.CharField(max_length=200)
+	#subject = selecionable
+	#date =
+	#mas campos
+	
+#Formulario para crear un seminario
+class CreateSeminarForm(forms.Form):
+	name = forms.CharField(max_length=30)
+	#degree = seleccionable (posibilidad de poner varios)
+	#mas campos
+	
+
