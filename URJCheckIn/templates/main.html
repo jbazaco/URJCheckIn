@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 
+{% load dajaxice_templatetags %}
+
 <html lang="es">
 
 	<head>
 		<title>URJChekIn</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link href="/css/main.css" rel="stylesheet" type="text/css"/>
+		{% dajaxice_js_import %}
 		{% block headscripts %}{% endblock %}
 	</head>
 

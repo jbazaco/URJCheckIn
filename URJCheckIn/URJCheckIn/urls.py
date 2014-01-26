@@ -4,6 +4,11 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
+#For dajaxice
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from dajaxice.core import dajaxice_autodiscover, dajaxice_config
+dajaxice_autodiscover()
+
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'app.views.home'),
@@ -29,5 +34,9 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+	url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 	url(r'^.*$', 'app.views.not_found'),
 )
+
+#For dajaxice
+urlpatterns += staticfiles_urlpatterns()
