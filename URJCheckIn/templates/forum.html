@@ -16,7 +16,7 @@
 		<div class="comment">
 			<dt class="nick_comment">
 				<!add foto de perfil>
-				<a href={{'"/profile/view/'|add:comment.user.id|add:'"'|safe}}>
+				<a href="/profile/view/{{comment.user.id}}">
 					{{comment.user.name}} {{comment.user.surname1}} {{comment.user.surname2}}
 				</a>
 			</dt>
