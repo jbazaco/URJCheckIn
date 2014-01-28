@@ -26,6 +26,15 @@
 			<a href="/subjects">| Asignaturas </a>
 		</div>
 
+		<div id=prueba>
+			<script>
+				function my_js_callback(data){
+    				alert(data.message);
+				}
+			</script>
+			<button onclick="Dajaxice.app.sayhello(my_js_callback);">Boton!</button>
+		</div>
+
 		<div id="mainbody">
 			{% block mainbody %}{% endblock %}
 		</div>
