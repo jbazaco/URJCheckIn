@@ -5,24 +5,24 @@ from forms import ReviewClassForm, ProfileEditionForm
 
 from django.utils.datastructures import MultiValueDictKeyError
 
-@dajaxice_register
-def sayhello(request):
-	return simplejson.dumps({'message':'Hello World'})
 
 @dajaxice_register(method='GET')
 def profile(request, iduser):
-	templ = loader.get_template('profile.html')
-	cont = Context({'user': {'name':iduser, 'student': False, 'id':iduser}, 
-					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
-					'form': ProfileEditionForm()})
-	html = templ.render(cont)
-	return simplejson.dumps({'#mainbody':html, 'url': '/profile/view/'+iduser})
+	if request.method == "GET":
+		templ = loader.get_template('profile.html')
+		cont = Context({'user': {'name':iduser, 'student': False, 'id':iduser}, 
+						'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
+						'form': ProfileEditionForm()})
+		html = templ.render(cont)
+		return simplejson.dumps({'#mainbody':html, 'url': '/profile/view/'+iduser})
+	else:
+		return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
 
-
-@dajaxice_register(method='POST')
-def process_class(request, idclass):
+@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+def process_class(request,form):#TODO mirar el campo class del form
 	if request.method == "POST":
-		print "bbb:" + idclass
-		qd= request.POST
-		print qd
-	return simplejson.dumps(['#xc_'+idclass])
+		return simplejson.dumps({'deleteFromDOM':['#xc_'+form['idclass']]})
+	else:
+		return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
+
+

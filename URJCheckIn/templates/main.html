@@ -36,6 +36,7 @@
 			<a href="/subjects">| Asignaturas </a>
 		</div>
 
+		<!pasar el id prueba a un script>
 		<div id=prueba>
 			<script>
 				function insertHtml(data) {
@@ -46,11 +47,7 @@
 						if (id) $(id).html(data[id]);
 					}			
 				}
-				function my_js_callback(data){
-    				alert(data.message);
-				}
 			</script>
-			<button onclick="Dajaxice.app.sayhello(my_js_callback);">Boton!</button>
 		</div>
 
 		<div id="mainbody">
