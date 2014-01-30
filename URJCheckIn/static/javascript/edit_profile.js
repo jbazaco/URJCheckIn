@@ -18,10 +18,10 @@ function setForm() {
 	$('#profile_form').css('display','inherit');
 }
 
-/* Oculta el formulario y muestra y modifica el perfil con los datos del formulario */
-function unsetForm() {//TODO que coja los datos de la respuesta mejor
+/* Oculta el formulario y muestra y modifica el perfil con los nuevos datos del usuario */
+function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 	$('#name_profile').html($('#id_name').val());
-	$('#age_profile').html($('#id_age').val());
+	$('#age_profile').html(user.age);
 	//TODO hacerlo con el resto de propiedades
 	hideElements(['#profile_form']);
 	$('#profile .fields').css('display','inherit');
@@ -37,16 +37,20 @@ function restartButtons(id) {
 }
 
 /* Cuando se recibe una confirmacion de los cambios realizados*/
-function infoSaved(data, textStatus, jqXHR ) {//TODO hace otra cosa!!!
-	restartButtons(this.url.split("/").pop());//TODO necesito la id!!
-	hideElements(['#saving_profile']);
-	unsetForm();
+function infoSaved(data) {//TODO hace otra cosa!!!
+	if(data.error) {
+		errorSaving(data.error);
+	} else {
+		restartButtons(data.user.id);//TODO necesito la id!!
+		hideElements(['#saving_profile']);
+		unsetForm(data.user);
+	}
 }
 
 /* Avisa de que se ha producido un error y revierte los cambios */
-function errorSaving() {
+function errorSaving(error) {
 	hideElements(['#saving_profile']);
-	alert("Error al cambiar el perfil. Vuelva a intentarlo.");
+	alert(error);
 	enableButtons(['button']);
 }
 
@@ -55,9 +59,11 @@ function errorSaving() {
 function sendChanges(id) {
 		disableButtons(['button']);
 		$('#saving_profile').css('display','inline');
-		$.post("http://" + document.location.host + "/profile/view/" + id, 
+		/*$.post("http://" + document.location.host + "/profile/view/" + id, 
 								$('#profile_form').serialize(), infoSaved)
-				.fail(errorSaving);
+				.fail(errorSaving);*/
+		console.log($('#profile_form').serializeObject());
+		Dajaxice.app.update_profile(infoSaved, {'iduser': id, 'form':$('#profile_form').serializeObject()});
 }
 
 /* Quita el formulario y vuelve a mostrar el perfil */

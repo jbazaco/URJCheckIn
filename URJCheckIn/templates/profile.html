@@ -17,15 +17,15 @@
 </div>
 
 {if estoy_mirando_mi_perfil}
-	<form  name="profile_form" id="profile_form" style="display:none"
+	<form name="profile_form" id="profile_form" style="display:none"
 			onsubmit="sendChanges('{{user.id}}'); return false;">
-	<!input type="file" accept="image/*"/>
-	<label for="id_name">Nombre:</label>
-	{{form.name}}
-	<br/>
-	<label for="id_age">Edad:</label>
-	{{form.age}}
-	<br/>
+		<!input type="file" accept="image/*"/>
+		<label for="id_name">Nombre:</label>
+		<input id="id_name" type="text" name="name" maxlength="30" disabled="disabled">
+		<br/>
+		<label for="id_age">Edad:</label>
+		{{form.age}}
+		<br/>
 	</form>
 
 	<!script src='/jscript/basic.js' type='text/javascript'script>
