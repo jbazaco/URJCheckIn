@@ -5,6 +5,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 
 from django.utils.datastructures import MultiValueDictKeyError
 
+#Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
 
 @dajaxice_register(method='GET')
 def profile(request, iduser):
@@ -66,4 +67,13 @@ def process_checkin(request, form):
 def wrongMethodJson(request):
 	return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
 
-
+@dajaxice_register(method='GET')
+def subjects(request):
+	"""Devuelve el contenido de la pagina de las asignaturas"""
+	if request.method == "GET":
+		templ = loader.get_template('subjects.html')
+		cont = Context({'subjects':[{'name':'subject1', 'id':'111'}, {'name':'subject2', 'id':'222'}]})
+		html = templ.render(cont)
+		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
+	else:
+		return wrongMethodJson(request)
