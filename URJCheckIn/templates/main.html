@@ -37,20 +37,6 @@
 			<a href="/subjects">| Asignaturas </a>
 		</div>
 
-		<!pasar el id prueba a un script>
-		<div id=prueba>
-			<script>
-				function insertHtml(data) {
-					/*echarle un ojo a lo de onpopstate*/
-					window.history.pushState({/*datos para window.onpopstate*/}, "URJCheckin", data.url);
-					delete data.url;
-					for (var id in data) {
-						if (id) $(id).html(data[id]);
-					}			
-				}
-			</script>
-		</div>
-
 		<div id="mainbody">
 			{% include htmlname %}
 		</div>

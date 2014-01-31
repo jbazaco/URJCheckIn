@@ -18,3 +18,14 @@ function hideElements(elems){
 		$(elem).css('display', 'none'); 
 	});
 }
+
+/*Inserta el html en data segun la id y cambia la url por la que haya en data.url
+	Callback para funciones de dajaxice*/
+function insertHtml(data) {
+	/*echarle un ojo a lo de onpopstate*/
+	window.history.pushState({/*datos para window.onpopstate*/}, "URJCheckin", data.url);
+	delete data.url;
+	for (var id in data) {
+		if (id) $(id).html(data[id]);
+	}			
+}
