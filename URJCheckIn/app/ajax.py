@@ -47,7 +47,6 @@ def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
 		html = loader.get_template('checkin.html').render(Context({}))
-		print html
 		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
 	else:
 		return wrongMethodJson(request)
@@ -131,7 +130,6 @@ def home(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
 		html = loader.get_template('home.html').render(Context({}))
-		print html
 		return simplejson.dumps({'#mainbody':html, 'url': '/'})
 	else:
 		return wrongMethodJson(request)

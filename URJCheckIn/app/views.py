@@ -17,7 +17,7 @@ def not_found(request):
 		context_instance=RequestContext(request))
 
 
-def home(request):
+def home(request):#TODO la pagina home.html realmente es la de login, la home real tengo que hacerla
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
