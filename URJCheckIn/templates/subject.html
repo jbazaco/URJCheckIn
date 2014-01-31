@@ -5,7 +5,9 @@
 
 {% for class in classes %}
 	<ul id="subjects_list">
-		<li><a href="/class/{{class.id}}">{{class.name}}</a></li>
+		<li><a onClick="Dajaxice.app.class_info(insertHtml, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
+			{{class.name}}
+		</a></li>
 	</ul>
 {% endfor %}
 <!boton para cargar mas>
@@ -14,7 +16,7 @@
 
 {% for class in classes %}
 	<ul id="subjects_list">
-		<li><a href="/class/{{class.id}}">
+		<li><a onClick="Dajaxice.app.class_info(insertHtml, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
 			{{class.name}} QUE PONGA SI HAY CHECKIN
 		</a></li>
 	</ul>

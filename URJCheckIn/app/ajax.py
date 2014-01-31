@@ -88,3 +88,14 @@ def subject(request, idsubj):
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects/'+str(idsubj)})
 	else:
 		return wrongMethodJson(request)
+
+@dajaxice_register(method='GET')
+def class_info(request, idclass):
+	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
+	if request.method == "GET":
+		templ = loader.get_template('class.html')
+		cont = Context({'form': ReviewClassForm()})
+		html = templ.render(cont)
+		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
+	else:
+		return wrongMethodJson(request)
