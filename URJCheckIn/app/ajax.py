@@ -99,3 +99,27 @@ def class_info(request, idclass):
 		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
 	else:
 		return wrongMethodJson(request)
+
+@dajaxice_register(method='GET')
+def forum(request):
+	"""Devuelve el contenido de la pagina del foro"""
+	if request.method == "GET":
+		templ = loader.get_template('forum.html')
+		cont = Context({'comments':[
+					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
+					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
+				]
+				})
+		html = templ.render(cont)
+		return simplejson.dumps({'#mainbody':html, 'url': '/forum'})
+	else:
+		return wrongMethodJson(request)
+
+@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+def publish_forum(request, comment):
+	""" procesa un check in"""
+	if request.method == "POST":
+		print comment
+		return simplejson.dumps({'ok': True})
+	else:
+		return wrongMethodJson(request)

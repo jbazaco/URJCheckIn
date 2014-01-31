@@ -18,6 +18,7 @@
 		<script src='/jscript/edit_profile.js' type='text/javascript'></script>
 		<script src="/jscript/extra_class.js" type="text/javascript"></script>
 		<script src="/jscript/location.js"></script>
+		<script src="/jscript/forum.js" type="text/javascript"></script>
 	</head>
 
 
@@ -34,7 +35,7 @@
 				| Profile 
 			</a>
 			<a onClick="Dajaxice.app.checkin(insertHtml); return false;" href="/checkin">| Checkin </a>
-			<a href="/forum">| Foro </a>
+			<a onClick="Dajaxice.app.forum(insertHtml); return false;" href="/forum">| Foro </a>
 			<a onClick="Dajaxice.app.subjects(insertHtml); return false;" href="/subjects">| Asignaturas </a>
 		</div>
 
