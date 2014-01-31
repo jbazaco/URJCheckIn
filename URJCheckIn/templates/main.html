@@ -17,6 +17,7 @@
 		<script src='/jscript/basic.js' type='text/javascript'></script>
 		<script src='/jscript/edit_profile.js' type='text/javascript'></script>
 		<script src="/jscript/extra_class.js" type="text/javascript"></script>
+		<script src="/jscript/location.js"></script>
 	</head>
 
 
@@ -32,7 +33,7 @@
 			<a onClick="Dajaxice.app.profile(insertHtml, {'iduser': 'blabla'}); return false;" href="/profile/view/blabla">
 				| Profile 
 			</a>
-			<a href="/checkin">| Checkin </a>
+			<a onClick="Dajaxice.app.checkin(insertHtml); return false;" href="/checkin">| Checkin </a>
 			<a href="/forum">| Foro </a>
 			<a href="/subjects">| Asignaturas </a>
 		</div>

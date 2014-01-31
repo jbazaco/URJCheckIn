@@ -17,7 +17,7 @@ def profile(request, iduser):
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/profile/view/'+iduser})
 	else:
-		return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
+		return wrongMethodJson(request)
 
 
 @dajaxice_register(method='POST')
@@ -31,7 +31,7 @@ def update_profile(request, iduser, form):
 		data = pform.cleaned_data
 		return simplejson.dumps({'user':{'id': iduser, 'age':data['age']}})#coger datos del usuario tras guardar
 	else:
-		return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
+		return wrongMethodJson(request)
 
 
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
@@ -39,5 +39,31 @@ def process_class(request,form):#TODO mirar el campo class del form
 	if request.method == "POST":
 		return simplejson.dumps({'deleteFromDOM':['#xc_'+form['idclass']]})
 	else:
-		return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
+		return wrongMethodJson(request)
+
+@dajaxice_register(method='GET')
+def checkin(request):
+	"""Devuelve la pagina para hacer check in"""
+	if request.method == "GET":
+		html = loader.get_template('checkin.html').render(Context({}))
+		print html
+		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
+	else:
+		return wrongMethodJson(request)
+
+@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+def process_checkin(request, form):
+	""" procesa un check in"""
+	if request.method == "POST":
+		print form["longitude"]
+		print form["latitude"]
+		print form["accuracy"]
+		print form["codeword"]
+		return simplejson.dumps({'ok': True})
+	else:
+		return wrongMethodJson(request)
+
+def wrongMethodJson(request):
+	return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
+
 
