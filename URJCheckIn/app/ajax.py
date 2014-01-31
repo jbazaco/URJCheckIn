@@ -115,11 +115,23 @@ def forum(request):
 	else:
 		return wrongMethodJson(request)
 
+
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
 def publish_forum(request, comment):
 	""" procesa un check in"""
 	if request.method == "POST":
 		print comment
 		return simplejson.dumps({'ok': True})
+	else:
+		return wrongMethodJson(request)
+
+
+@dajaxice_register(method='GET')
+def home(request):
+	"""Devuelve la pagina para hacer check in"""
+	if request.method == "GET":
+		html = loader.get_template('home.html').render(Context({}))
+		print html
+		return simplejson.dumps({'#mainbody':html, 'url': '/'})
 	else:
 		return wrongMethodJson(request)
