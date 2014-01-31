@@ -29,7 +29,7 @@ def update_profile(request, iduser, form):
 		if not pform.is_valid():
 			return simplejson.dumps({'error': form.errors});
 		data = pform.cleaned_data
-		return simplejson.dumps({'user':{'id': iduser, 'age':data['age']}})
+		return simplejson.dumps({'user':{'id': iduser, 'age':data['age']}})#coger datos del usuario tras guardar
 	else:
 		return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
 
