@@ -40,7 +40,7 @@
 		<!script src="/jscript/extra_class.js" type="text/javascript"script>
 		{% if user.student %}
 			{% for class in classes %}
-				<br/>
+				<br/><!TODO que se pueda realizar sin javascript>
 				<div id={{'"xc_'|add:class.id|add:'"'|safe}}>
 					{{class.name}}
 					<button onclick="uncheckClass('{{class.id}}')" name="desapuntarse">desapuntarse</button> 
@@ -48,7 +48,7 @@
 			{% endfor %}
 		{% else %}
 			{% for class in classes %}
-				<br/>
+				<br/><!TODO que se pueda realizar sin javascript>
 				<div id={{'"xc_'|add:class.id|add:'"'|safe}}> 
 					{{class.name}}
 					<button onclick="deleteClass('{{class.id}}')" name="cancelar">cancelar</button> 
