@@ -28,7 +28,7 @@ def update_profile(request, iduser, form):
 		#comprobar user = usuarioregistrado
 		pform = ProfileEditionForm(form)
 		if not pform.is_valid():
-			return simplejson.dumps({'error': form.errors});
+			return simplejson.dumps({'errors': pform.errors});
 		data = pform.cleaned_data
 		return simplejson.dumps({'user':{'id': iduser, 'age':data['age']}})#coger datos del usuario tras guardar
 	else:

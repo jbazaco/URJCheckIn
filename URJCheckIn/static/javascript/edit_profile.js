@@ -38,8 +38,8 @@ function restartButtons(id) {
 
 /* Cuando se recibe una confirmacion de los cambios realizados*/
 function infoSaved(data) {//TODO hace otra cosa!!!
-	if(data.error) {
-		errorSaving(data.error);
+	if(data.errors) {
+		errorSaving(data.errors);
 	} else {
 		restartButtons(data.user.id);//TODO necesito la id!!
 		hideElements(['#saving_profile']);
@@ -48,9 +48,12 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 }
 
 /* Avisa de que se ha producido un error y revierte los cambios */
-function errorSaving(error) {
+function errorSaving(errors) {
 	hideElements(['#saving_profile']);
-	alert(error);
+	var errorstr = "";
+	for (error in errors)
+		errorstr = error + ": " + errors[error] + "\n";
+	alert(errorstr);
 	enableButtons(['button']);
 }
 
