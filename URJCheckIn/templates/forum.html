@@ -6,7 +6,8 @@
 
 <h1 id="maintitle">Foro de URJCheckIn</h1>
 
-<form name="comment_form" id="comment_form" onsubmit="sendComment(); return false;">
+<form name="comment_form" id="comment_form" onsubmit="sendComment(); return false;" action="" method="POST">
+	{% csrf_token %}
 	<textarea rows="3" cols="50" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment">
 	</textarea>
 	<button type="submit" name="comment_submit" id="comment_button">Comentar</button> 
