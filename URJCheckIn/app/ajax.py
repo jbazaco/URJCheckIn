@@ -133,3 +133,10 @@ def home(request):
 		return simplejson.dumps({'#mainbody':html, 'url': '/'})
 	else:
 		return wrongMethodJson(request)
+
+@dajaxice_register(method='GET')
+def not_found(request, path):
+	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
+	html = loader.get_template('404.html').render(Context({}))
+	return simplejson.dumps({'#mainbody':html, 'url': path})
+

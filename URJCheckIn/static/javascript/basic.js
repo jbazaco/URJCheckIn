@@ -39,37 +39,44 @@ function insertHtml(data) {
 window.onpopstate = function() {
 	var path = window.location.pathname;
 	var pathsplit = path.split('/');
-	console.log(pathsplit[1]);
 	switch(pathsplit[1]){
 	case "checkin": //Fastidia el history
-		Dajaxice.app.checkin(insertHtml);
+		if (pathsplit.length === 2)
+			Dajaxice.app.checkin(insertHtml);
+		else
+			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "":
 		Dajaxice.app.home(insertHtml);
 		break;
 	case "forum":
-		Dajaxice.app.forum(insertHtml);
+		if (pathsplit.length === 2)
+			Dajaxice.app.forum(insertHtml);
+		else
+			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "subjects":
-		if (!pathsplit[2])
+		if (pathsplit.length === 2)
 			Dajaxice.app.subjects(insertHtml);
-		else
+		else if (pathsplit.length === 3)
 			Dajaxice.app.subject(insertHtml, {'idsubj': pathsplit[2]});
+		else
+			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "class":
-		if(pathsplit[2])
+		if (pathsplit.length === 3)
 			Dajaxice.app.class_info(insertHtml, {'idclass': pathsplit[2]})
 		else
-			console.log("TODO error basic.js");
+			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "profile":
-		if(pathsplit[2] === "view" && pathsplit[3])
+		if(pathsplit.length === 4 && pathsplit[2] === "view")
 			Dajaxice.app.profile(insertHtml, {'iduser': pathsplit[3]})
 		else
-			console.log("TODO error basic.js");
+			Dajaxice.app.not_found(insertHtml, {'path': path});
 		break;
 	default:
-		console.log("TODO not found basic.js");
+		Dajaxice.app.not_found(insertHtml, {'path': path});
 		break;
 	}
 };
