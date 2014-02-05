@@ -58,19 +58,19 @@ window.onpopstate = function() {
 	case "subjects":
 		if (pathsplit.length === 2)
 			Dajaxice.app.subjects(insertHtml);
-		else if (pathsplit.length === 3)
+		else if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
 			Dajaxice.app.subject(insertHtml, {'idsubj': pathsplit[2]});
 		else
 			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "class":
-		if (pathsplit.length === 3)
+		if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
 			Dajaxice.app.class_info(insertHtml, {'idclass': pathsplit[2]})
 		else
 			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "profile":
-		if(pathsplit.length === 4 && pathsplit[2] === "view")
+		if(pathsplit.length === 4 && pathsplit[2] === "view" /*TODO && pathsplit[3] es un numero*/)
 			Dajaxice.app.profile(insertHtml, {'iduser': pathsplit[3]})
 		else
 			Dajaxice.app.not_found(insertHtml, {'path': path});
