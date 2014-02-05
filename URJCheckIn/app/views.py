@@ -27,20 +27,9 @@ def home(request):#TODO la pagina home.html realmente es la de login, la home re
 
 
 def checkin(request):
-	"""Devuelve la pagina para hacer check in (GET) o procesa un check in (POST)"""
-	if request.method == "POST":
-		#TODO guardar la informacion en la BD y procesarla si es necesario
-		#de momento hago prints
-		qd = request.POST
-		try:
-			print qd.__getitem__("longitude")
-			print qd.__getitem__("latitude")
-			print qd.__getitem__("accuracy")
-			print qd.__getitem__("codeword")
-		except MultiValueDictKeyError:
-			return HttpResponseBadRequest()
-
-	elif request.method != "GET":
+	"""Devuelve la pagina para hacer check in, no procesa un checkin ya que la informacion enviada
+		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
+	if request.method != "GET":
 		return method_not_allowed(request)
 	
 	return render_to_response('main.html', {'htmlname': 'checkin.html'},
