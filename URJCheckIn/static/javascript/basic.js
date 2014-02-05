@@ -40,7 +40,7 @@ window.onpopstate = function() {
 	var path = window.location.pathname;
 	var pathsplit = path.split('/');
 	console.log(pathsplit[1]);
-	/*switch(pathsplit[1]){
+	switch(pathsplit[1]){
 	case "checkin": //Fastidia el history
 		Dajaxice.app.checkin(insertHtml);
 		break;
@@ -51,18 +51,25 @@ window.onpopstate = function() {
 		Dajaxice.app.forum(insertHtml);
 		break;
 	case "subjects":
-		//if pathsplit[2]
-		Dajaxice.app.subjects(insertHtml);
-		break;
-	case "subject":
+		if (!pathsplit[2])
+			Dajaxice.app.subjects(insertHtml);
+		else
+			Dajaxice.app.subject(insertHtml, {'idsubj': pathsplit[2]});
 		break;
 	case "class":
+		if(pathsplit[2])
+			Dajaxice.app.class_info(insertHtml, {'idclass': pathsplit[2]})
+		else
+			console.log("TODO error basic.js");
 		break;
 	case "profile":
+		if(pathsplit[2] === "view" && pathsplit[3])
+			Dajaxice.app.profile(insertHtml, {'iduser': pathsplit[3]})
+		else
+			console.log("TODO error basic.js");
 		break;
 	default:
-		//TODO las que varian
-		alert(window.location.pathname);
+		console.log("TODO not found basic.js");
 		break;
-	}*/
+	}
 };

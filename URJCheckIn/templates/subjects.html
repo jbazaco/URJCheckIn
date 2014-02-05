@@ -3,7 +3,7 @@
 
 {% for subject in subjects %}
 	<ul class="subjects_list">
-		<li><a onClick="Dajaxice.app.subject(insertHtml, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
+		<li><a onClick="Dajaxice.app.subject(loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
 			{{subject.name}}
 		</a></li>
 	</ul>
@@ -13,7 +13,7 @@
 
 {% for subject in subjects %}
 	<ul class="subjects_list">
-		<li><a onClick="Dajaxice.app.subject(insertHtml, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
+		<li><a onClick="Dajaxice.app.subject(loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
 		{{subject.name}}
 		</a></li>
 	</ul>
