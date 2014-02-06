@@ -48,3 +48,7 @@
 	text-align:center;
 }
 
+#loading_page img{
+	position: absolute;
+    z-index: 9;
+}
