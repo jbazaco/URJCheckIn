@@ -1,6 +1,6 @@
 from django.utils import simplejson
 from dajaxice.decorators import dajaxice_register
-from django.template import loader, Context
+from django.template import loader, RequestContext
 from forms import ReviewClassForm, ProfileEditionForm
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -12,7 +12,7 @@ def profile(request, iduser):
 	"""Devuelve el contenido de la pagina de perfil"""
 	if request.method == "GET":
 		templ = loader.get_template('profile.html')
-		cont = Context({'user': {'name':iduser, 'student': False, 'id':iduser}, 
+		cont = RequestContext(request, {'user': {'name':iduser, 'student': False, 'id':iduser}, 
 						'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
 						'form': ProfileEditionForm()})
 		html = templ.render(cont)
@@ -46,7 +46,7 @@ def process_class(request,form):#TODO mirar el campo class del form
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		html = loader.get_template('checkin.html').render(Context({}))
+		html = loader.get_template('checkin.html').render(RequestContext(request, {}))
 		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
 	else:
 		return wrongMethodJson(request)
@@ -71,7 +71,7 @@ def subjects(request):
 	"""Devuelve el contenido de la pagina de las asignaturas"""
 	if request.method == "GET":
 		templ = loader.get_template('subjects.html')
-		cont = Context({'subjects':[{'name':'subject1', 'id':'111'}, {'name':'subject2', 'id':'222'}]})
+		cont = RequestContext(request, {'subjects':[{'name':'subject1', 'id':'111'}, {'name':'subject2', 'id':'222'}]})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
 	else:
@@ -82,7 +82,7 @@ def subject(request, idsubj):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
 		templ = loader.get_template('subject.html')
-		cont = Context({'classes':[{'name':'class1', 'id':'111'}, {'name':'class2', 'id':'222'}]})
+		cont = RequestContext(request, {'classes':[{'name':'class1', 'id':'111'}, {'name':'class2', 'id':'222'}]})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects/'+str(idsubj)})
 	else:
@@ -93,7 +93,7 @@ def class_info(request, idclass):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
 		templ = loader.get_template('class.html')
-		cont = Context({'form': ReviewClassForm()})
+		cont = RequestContext(request, {'form': ReviewClassForm()})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
 	else:
@@ -104,7 +104,7 @@ def forum(request):
 	"""Devuelve el contenido de la pagina del foro"""
 	if request.method == "GET":
 		templ = loader.get_template('forum.html')
-		cont = Context({'comments':[
+		cont = RequestContext(request, {'comments':[
 					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
 					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
 				]
@@ -129,7 +129,7 @@ def publish_forum(request, comment):
 def home(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		html = loader.get_template('home.html').render(Context({}))
+		html = loader.get_template('home.html').render(RequestContext(request, {}))
 		return simplejson.dumps({'#mainbody':html, 'url': '/'})
 	else:
 		return wrongMethodJson(request)
@@ -137,6 +137,6 @@ def home(request):
 @dajaxice_register(method='GET')
 def not_found(request, path):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
-	html = loader.get_template('404.html').render(Context({}))
+	html = loader.get_template('404.html').render(RequestContext(request, {}))
 	return simplejson.dumps({'#mainbody':html, 'url': path})
 
