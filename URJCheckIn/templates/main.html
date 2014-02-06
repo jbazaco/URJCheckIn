@@ -27,16 +27,20 @@
 			<!imagen cabecera>
 		</div>
 
+		<div id="loading_page" style="display:none">
+			<img src="/img/loading_64.gif" height="64" width="64">
+		</div>
+
 		<div id="menu_bar">
-			<a onClick="Dajaxice.app.home(loadAjaxPage); return false;" href="/">Inicio </a>
+			<a onClick="ask_ajax_page('home', loadAjaxPage, {}); return false;" href="/">Inicio </a>
 			<!a onClick=corchete{"\"Dajaxice.app.sayhello(my_js_callback, {'iduser':"|add:uid|add:'}); return false;"'|safe}} 
 			href="/profile/view/nick">
-			<a onClick="Dajaxice.app.profile(loadAjaxPage, {'iduser': 'blabla'}); return false;" href="/profile/view/blabla">
+			<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': 'blabla'}); return false;" href="/profile/view/blabla">
 				| Profile 
 			</a>
-			<a onClick="Dajaxice.app.checkin(loadAjaxPage); return false;" href="/checkin">| Checkin </a>
-			<a onClick="Dajaxice.app.forum(loadAjaxPage); return false;" href="/forum">| Foro </a>
-			<a onClick="Dajaxice.app.subjects(loadAjaxPage); return false;" href="/subjects">| Asignaturas </a>
+			<a onClick="ask_ajax_page('checkin', loadAjaxPage, {}); return false;" href="/checkin">| Checkin </a>
+			<a onClick="ask_ajax_page('forum', loadAjaxPage, {}); return false;" href="/forum">| Foro </a>
+			<a onClick="ask_ajax_page('subjects', loadAjaxPage, {}); return false;" href="/subjects">| Asignaturas </a>
 		</div>
 
 		<div id="mainbody">

@@ -20,10 +20,12 @@ function hideElements(elems){
 }
 
 /*Inserta el html en data segun la id y cambia la url por la que haya en data.url
+	y esconde el elemento #loading_page
 	Callback para funciones de dajaxice*/
 function loadAjaxPage(data) {
 	/*echarle un ojo a lo de onpopstate*/
 	window.history.pushState({/*datos para window.onpopstate*/}, "URJCheckin", data.url);
+	hideElements(['#loading_page']);
 	insertHtml(data);		
 }
 
@@ -33,6 +35,13 @@ function insertHtml(data) {
 	for (var id in data) {
 		if (id) $(id).html(data[id]);
 	}
+}
+
+/*Realiza una peticion ajax al recurso app.dfunct, pasandole un callback
+	y los argumento a enviar, mostrando el elemento #loading_page*/
+function ask_ajax_page(dfunct, callback, arg) {
+	$('#loading_page').css('display','inherit');
+	Dajaxice.app[dfunct](callback, arg);
 }
 
 /*Para controlar el boton de atras y alante del navegador*/
