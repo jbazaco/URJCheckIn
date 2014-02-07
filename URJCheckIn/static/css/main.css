@@ -38,6 +38,11 @@
 	border-right: 1px solid;
 }
 
+#menu_bar a.first {
+	border-left: 1px solid;
+}
+
+
 #menu_bar a:hover {
 	background-color: red;
 }
