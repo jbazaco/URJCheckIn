@@ -8,8 +8,10 @@ function loadAjaxPage(data) {
 	insertHtml(data);		
 }
 
-/*Inserta el html en data segun la id ignorando el elemento url*/
+/*Inserta el html en data segun la id ignorando el elemento url y realiza un scroll
+	al principio de la ventana*/
 function insertHtml(data) {
+	window.scrollTo(window.pageXOffset, 0);
 	delete data.url;
 	for (var id in data) {
 		if (id) $(id).html(data[id]);
