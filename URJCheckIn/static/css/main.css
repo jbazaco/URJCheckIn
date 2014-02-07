@@ -12,18 +12,40 @@
 	text-align:center;
 }
 
-#header {
+/*#header {
 	margin-left:auto;
 	margin-right:auto;
 	background: url('/img/header.jpg') no-repeat top left;
 	height: 200px;
 	width: 600px;
-}
+}*/
 
 #menu_bar {
+	width:100%;
 	text-align: center;
+	padding: 1em 0;
+	background: url('/img/menubar.jpg') center repeat-x;/*La imagen tiene que extenderse en el eje-y TODO*/
+	background-size: auto 100%;
+	position:fixed;
+	top: 0px;
+	z-index:9999;
 }
 
+#menu_bar a {
+	padding: 1em 1em;
+	color: white;
+	text-decoration: none;
+	border-right: 1px solid;
+}
+
+#menu_bar a:hover {
+	background-color: red;
+}
+
+#menu_bar_space {
+	width: 100%;
+	margin-bottom: 5em;
+}
 #checkinbox {
 	text-align:center;
 }

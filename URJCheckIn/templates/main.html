@@ -24,24 +24,36 @@
 
 
 	<body>
-		<div id="header">
+		<!div id="header">
 			<!imagen cabecera>
-		</div>
+		<!/div>
 
 		<div id="loading_page" style="display:none">
 			<img src="/img/loading_64.gif" height="64" width="64">
 		</div>
 
 		<div id="menu_bar">
-			<a onClick="ask_ajax_page('home', loadAjaxPage, {}); return false;" href="/">Inicio </a>
+			<a onClick="ask_ajax_page('home', loadAjaxPage, {}); return false;" href="/">
+				Inicio
+			</a>
 			<!a onClick=corchete{"\"Dajaxice.app.sayhello(my_js_callback, {'iduser':"|add:uid|add:'}); return false;"'|safe}} 
 			href="/profile/view/nick">
 			<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': 'blabla'}); return false;" href="/profile/view/blabla">
-				| Profile 
+				Profile
 			</a>
-			<a onClick="ask_ajax_page('checkin', loadAjaxPage, {}); return false;" href="/checkin">| Checkin </a>
-			<a onClick="ask_ajax_page('forum', loadAjaxPage, {}); return false;" href="/forum">| Foro </a>
-			<a onClick="ask_ajax_page('subjects', loadAjaxPage, {}); return false;" href="/subjects">| Asignaturas </a>
+			<a onClick="ask_ajax_page('checkin', loadAjaxPage, {}); return false;" href="/checkin">
+				Checkin
+			</a>
+			<a onClick="ask_ajax_page('forum', loadAjaxPage, {}); return false;" href="/forum">
+				Foro
+			</a>
+			<a onClick="ask_ajax_page('subjects', loadAjaxPage, {}); return false;" href="/subjects">
+				Asignaturas
+			</a>
+		</div>
+
+		<div id="menu_bar_space">
+			<!para dejar el espacio que ocupa la barra de menu>
 		</div>
 
 		<div id="mainbody">
