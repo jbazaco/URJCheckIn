@@ -17,7 +17,8 @@
 		<div class="comment">
 			<dt class="nick_comment">
 				<!add foto de perfil>
-				<a href="/profile/view/{{comment.user.id}}">
+				<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{comment.user.id}}'}); return false;" 
+				href="/profile/view/{{comment.user.id}}">
 					{{comment.user.name}} {{comment.user.surname1}} {{comment.user.surname2}}
 				</a>
 			</dt>
