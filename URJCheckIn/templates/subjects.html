@@ -1,13 +1,11 @@
-{% extends "main.html" %}
-
-
-{% block mainbody %}
 
 <h1 id="maintitle">Mis asignaturas</h1>
 
 {% for subject in subjects %}
 	<ul class="subjects_list">
-		<li><a href={{'"/subjects/'|add:subject.id|add:'"'|safe}}>{{subject.name}}</a></li>
+		<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
+			{{subject.name}}
+		</a></li>
 	</ul>
 {% endfor %}
 <br/>
@@ -15,9 +13,9 @@
 
 {% for subject in subjects %}
 	<ul class="subjects_list">
-		<li><a href={{'"/subjects/'|add:subject.id|add:'"'|safe}}>{{subject.name}}</a></li>
+		<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
+		{{subject.name}}
+		</a></li>
 	</ul>
 {% endfor %}
-
-{% endblock %}
 

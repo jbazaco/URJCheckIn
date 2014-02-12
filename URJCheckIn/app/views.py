@@ -12,38 +12,27 @@ from forms import ReviewClassForm, ProfileEditionForm
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
-	return render_to_response('404.html', {},	#mostrar en el html las paginas mas "frecuentes"
+	return render_to_response('main.html', {'htmlname': '404.html'},	#mostrar en el html las paginas mas "frecuentes"
 																	#checkin, inicio, perfil...
 		context_instance=RequestContext(request))
 
 
-def home(request):
+def home(request):#TODO la pagina home.html realmente es la de login, la home real tengo que hacerla
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
 	
-	return render_to_response('home.html', {},
+	return render_to_response('main.html', {'htmlname': 'home.html'},
 		context_instance=RequestContext(request))
 
 
 def checkin(request):
-	"""Devuelve la pagina para hacer check in (GET) o procesa un check in (POST)"""
-	if request.method == "POST":
-		#TODO guardar la informacion en la BD y procesarla si es necesario
-		#de momento hago prints
-		qd = request.POST
-		try:
-			print qd.__getitem__("longitude")
-			print qd.__getitem__("latitude")
-			print qd.__getitem__("accuracy")
-			print qd.__getitem__("codeword")
-		except MultiValueDictKeyError:
-			return HttpResponseBadRequest()
-
-	elif request.method != "GET":
+	"""Devuelve la pagina para hacer check in, no procesa un checkin ya que la informacion enviada
+		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
+	if request.method != "GET":
 		return method_not_allowed(request)
 	
-	return render_to_response('checkin.html', {},
+	return render_to_response('main.html', {'htmlname': 'checkin.html'},
 			context_instance=RequestContext(request))
 
 #TODO
@@ -66,7 +55,7 @@ def profile(request, iduser):
 		return method_not_allowed(request)
 	#if existe el usuario
 	
-	return render_to_response('profile.html', {'user': {'name':iduser, 'student': False, 'id':iduser}, 
+	return render_to_response('main.html', {'htmlname': 'profile.html', 'user': {'name':iduser, 'student': False, 'id':iduser}, 
 					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
 					'form': ProfileEditionForm()
 					},#pasar user info
@@ -78,7 +67,7 @@ def profile(request, iduser):
 #TODO
 def profile_img(request, user):
 	"""Devuelve la foto de perfil del usuario user"""
-	return render_to_response('404.html', {},
+	return render_to_response('main.html', {'htmlname': '404.html'},
 		context_instance=RequestContext(request))
 
 
@@ -87,14 +76,14 @@ def delete_class(request, idclass):
 	"""Elimina una clase si lo solicita el usuario que la creo"""
 	#Comprobar que esta la clase y que se puede borrar, si no informar del error
 	print "delete!"
-	return render_to_response('404.html', {},
+	return render_to_response('main.html', {'htmlname': '404.html'},
 		context_instance=RequestContext(request))
 
 #TODO
 def uncheck_class(request, idclass):
 	"""El usuario que lo solicita deja de estar suscrito a esa clase(solo para seminarios)"""
 	print "uncheck!"
-	return render_to_response('404.html', {},
+	return render_to_response('main.html', {'htmlname': '404.html'},
 		context_instance=RequestContext(request))
 
 action_class = {'delete': delete_class,
@@ -115,7 +104,7 @@ def process_class(request, idclass):
 			pass
 		return HttpResponseBadRequest()
 
-	return render_to_response('class.html', {'form': ReviewClassForm()},
+	return render_to_response('main.html', {'htmlname': 'class.html','form': ReviewClassForm()},
 		context_instance=RequestContext(request))
 
 
@@ -141,8 +130,8 @@ def forum(request):
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
-	return render_to_response('forum.html', 
-				{'comments':[
+	return render_to_response('main.html', {'htmlname': 'forum.html',
+				'comments':[
 					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
 					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
 				]
@@ -151,10 +140,10 @@ def forum(request):
 
 def subjects(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
-	return render_to_response('subjects.html', {'subjects':[{'name':'subject1', 'id':'111'}, 
+	return render_to_response('main.html', {'htmlname': 'subjects.html', 'subjects':[{'name':'subject1', 'id':'111'}, 
 					{'name':'subject2', 'id':'222'}]}, context_instance=RequestContext(request))
 
 def subject(request, idsubj):
 	"""Devuelve la pagina con las clases de una asignatura"""
-	return render_to_response('subject.html', {'classes':[{'name':'class1', 'id':'111'}, 
+	return render_to_response('main.html', {'htmlname': 'subject.html','classes':[{'name':'class1', 'id':'111'}, 
 					{'name':'class2', 'id':'222'}]}, context_instance=RequestContext(request))

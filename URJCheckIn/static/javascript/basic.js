@@ -18,3 +18,4 @@ function hideElements(elems){
 		$(elem).css('display', 'none'); 
 	});
 }
+

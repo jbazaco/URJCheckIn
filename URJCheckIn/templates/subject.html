@@ -1,14 +1,13 @@
-{% extends "main.html" %}
 
-
-{% block mainbody %}
 <h1 id="maintitle">Clases</h1>
 
 <h2 class="subtitle">Pr&oacute;ximas clases</h1>
 
 {% for class in classes %}
 	<ul id="subjects_list">
-		<li><a href={{'"/class/'|add:class.id|add:'"'|safe}}>{{class.name}}</a></li>
+		<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
+			{{class.name}}
+		</a></li>
 	</ul>
 {% endfor %}
 <!boton para cargar mas>
@@ -17,12 +16,10 @@
 
 {% for class in classes %}
 	<ul id="subjects_list">
-		<li><a href={{'"/class/'|add:class.id|add:'"'|safe}}>
+		<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
 			{{class.name}} QUE PONGA SI HAY CHECKIN
 		</a></li>
 	</ul>
 {% endfor %}
 <!boton para cargar mas>
-
-{% endblock %}
 
