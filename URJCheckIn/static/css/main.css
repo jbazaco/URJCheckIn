@@ -29,6 +29,7 @@
 	position:fixed;
 	top: 0px;
 	z-index:9999;
+	left: 0px;
 }
 
 #menu_bar a {
