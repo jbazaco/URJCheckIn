@@ -3,9 +3,19 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MaxValueValidator
 
+WEEK_DAYS = (
+	('Mon', 'Monday'),
+	('Tue', 'Tuesday'),
+	('Wed', 'Wednesday'),
+	('Thu', 'Thursday'),
+	('Fri', 'Friday'),
+	('Sat', 'Saturday'),
+	('Sun', 'Sunday')
+)
+
 class Degree(models.Model):
 	name = models.CharField(max_length=100, unique=True, verbose_name='Nombre')
-	code = models.CharField(max_length=6)
+	code = models.CharField(max_length=6, unique=True, verbose_name='Codigo')
 
 	class Meta:
 		verbose_name='Grado'
@@ -46,7 +56,7 @@ class Room(models.Model):
 
 
 class UserProfile(models.Model):
-	user = models.CharField(max_length=20, verbose_name='Usuario') #models.OneToOneField(User)
+	user = models.OneToOneField(User, verbose_name='Usuario')
 	description = models.CharField(max_length=200, blank=True, verbose_name='Descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='Asignatura')
 
@@ -62,16 +72,16 @@ class StudentProfile(UserProfile):
 	start_date = models.DateField(verbose_name='Fecha de inicio') #cuando comenzo los estudios
 
 	class Meta:
-		verbose_name='Perfil de profesor'
-		verbose_name_plural='Perfiles de profesores'
+		verbose_name='Perfil de estudiante'
+		verbose_name_plural='Perfiles de estudiantes'
 	
 
 class TeacherProfile(UserProfile):
 	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='Grado') #en los que imparte clase
 	#TODO si se introduce una clase(+profesor) se debe poner el degree si no estaba
 	class Meta:
-		verbose_name='Perfil de estudiante'
-		verbose_name_plural='Perfiles de estudiantes'
+		verbose_name='Perfil de profesor'
+		verbose_name_plural='Perfiles de profesores'
 
 
 class Lesson(models.Model):
@@ -79,6 +89,7 @@ class Lesson(models.Model):
 	end_time = models.DateTimeField(verbose_name='Hora de finalizacion')
 	subject = models.ForeignKey(Subject, verbose_name='Asignatura')
 	room =	models.ForeignKey(Room, verbose_name='Aula')
+	#No se si poner profesor o todos los de la asignatura
 	
 	class Meta:
 		verbose_name='Clase'
@@ -90,12 +101,15 @@ class Lesson(models.Model):
 class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='Usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
+	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='Puntuacion', blank=True)
+	comment = models.CharField(max_length=250, verbose_name='Comentario', blank=True)
 
 	def __unicode__(self):
 		return u"Checkin de %s" % (self.lesson)
 
 
 class LessonComment(models.Model):
+	user = models.ForeignKey(User, verbose_name='Usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
 	date =  models.DateTimeField(default=timezone.now(), verbose_name='Hora')
 	comment = models.CharField(max_length=250, verbose_name='Comentario')
@@ -107,18 +121,6 @@ class LessonComment(models.Model):
 	def __unicode__(self):
 		return u"Comentario de %s" % (self.lesson)
 
-
-class ClassReview(models.Model):
-	user = models.ForeignKey(User, verbose_name='Usuario')
-	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
-	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='Puntuacion')
-	comment = models.CharField(max_length=250, verbose_name='Comentario')
-
-	class Meta:
-		verbose_name='Opinion de la Clase'
-
-	def __unicode__(self):
-		return u"Opinion de %s" % (self.lesson)
 
 class ForumComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='Usuario')
@@ -132,5 +134,21 @@ class ForumComment(models.Model):
 	def __unicode__(self):
 		return u"Comentario %i" % (self.id)
 
+
+class TimeTable(models.Model):
+	subject = models.ForeignKey(Subject, verbose_name='Asignatura')
+	day = models.CharField(max_length=3, choices=WEEK_DAYS)
+	start_time =  models.TimeField(verbose_name='Hora de inicio')
+	end_time = models.TimeField(verbose_name='Hora de finalizacion')
+	room =	models.ForeignKey(Room, verbose_name='Aula')
+	#No se si poner profesor o todos los de la asignatura
 	
+	class Meta:
+		verbose_name='Horario'
+
+	def __unicode__(self):
+		return u"Horario de %s" % (self.subject)
+
+
+
 
