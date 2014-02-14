@@ -56,6 +56,12 @@
 			<!para dejar el espacio que ocupa la barra de menu>
 		</div>
 
+		<div id="logout">
+			Registrado como {{request.user.username}}, 
+			<!ponerlo mas bonito, click sobre el nombre muestra logout>
+			<a href="/logout?next=/"> cerrar sesi&oacute;n</a>.
+		</div>
+
 		<div id="mainbody">
 			{% include htmlname %}
 		</div>

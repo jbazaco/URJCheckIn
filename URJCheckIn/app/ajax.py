@@ -4,10 +4,12 @@ from django.template import loader, RequestContext
 from forms import ReviewClassForm, ProfileEditionForm
 
 from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth.decorators import login_required
 
 #Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
 
 @dajaxice_register(method='GET')
+@login_required
 def profile(request, iduser):
 	"""Devuelve el contenido de la pagina de perfil"""
 	if request.method == "GET":
@@ -22,6 +24,7 @@ def profile(request, iduser):
 
 
 @dajaxice_register(method='POST')
+@login_required
 def update_profile(request, iduser, form):
 	"""Modifica el perfil del usuario registrado"""
 	if request.method == "POST":
@@ -36,6 +39,7 @@ def update_profile(request, iduser, form):
 
 
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@login_required
 def process_class(request,form):#TODO mirar el campo class del form
 	if request.method == "POST":
 		return simplejson.dumps({'deleteFromDOM':['#xc_'+form['idclass']]})
@@ -43,6 +47,7 @@ def process_class(request,form):#TODO mirar el campo class del form
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
@@ -52,6 +57,7 @@ def checkin(request):
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@login_required
 def process_checkin(request, form):
 	""" procesa un check in"""
 	if request.method == "POST":
@@ -67,6 +73,7 @@ def wrongMethodJson(request):
 	return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
 
 @dajaxice_register(method='GET')
+@login_required
 def subjects(request):
 	"""Devuelve el contenido de la pagina de las asignaturas"""
 	if request.method == "GET":
@@ -78,6 +85,7 @@ def subjects(request):
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def subject(request, idsubj):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
@@ -89,6 +97,7 @@ def subject(request, idsubj):
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def class_info(request, idclass):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
@@ -100,6 +109,7 @@ def class_info(request, idclass):
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def forum(request):
 	"""Devuelve el contenido de la pagina del foro"""
 	if request.method == "GET":
@@ -116,6 +126,7 @@ def forum(request):
 
 
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@login_required
 def publish_forum(request, comment):
 	""" procesa un check in"""
 	if request.method == "POST":
@@ -126,6 +137,7 @@ def publish_forum(request, comment):
 
 
 @dajaxice_register(method='GET')
+@login_required
 def home(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
@@ -135,6 +147,7 @@ def home(request):
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def not_found(request, path):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
 	html = loader.get_template('404.html').render(RequestContext(request, {}))

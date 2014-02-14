@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth.decorators import login_required
 
 from forms import ReviewClassForm, ProfileEditionForm
 
@@ -17,6 +18,7 @@ def not_found(request):
 		context_instance=RequestContext(request))
 
 
+@login_required
 def home(request):#TODO la pagina home.html realmente es la de login, la home real tengo que hacerla
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
@@ -25,7 +27,7 @@ def home(request):#TODO la pagina home.html realmente es la de login, la home re
 	return render_to_response('main.html', {'htmlname': 'home.html'},
 		context_instance=RequestContext(request))
 
-
+@login_required
 def checkin(request):
 	"""Devuelve la pagina para hacer check in, no procesa un checkin ya que la informacion enviada
 		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
@@ -36,6 +38,7 @@ def checkin(request):
 			context_instance=RequestContext(request))
 
 #TODO
+@login_required
 def profile(request, iduser):
 	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
 	if request.method == "POST":
@@ -65,6 +68,7 @@ def profile(request, iduser):
 
 
 #TODO
+@login_required
 def profile_img(request, user):
 	"""Devuelve la foto de perfil del usuario user"""
 	return render_to_response('main.html', {'htmlname': '404.html'},
@@ -91,7 +95,7 @@ action_class = {'delete': delete_class,
 				#'check': check_class,
 }
 
-
+@login_required
 def process_class(request, idclass):
 	"""Procesa las peticiones sobre una clase o seminario"""
 	if request.method == "POST":
@@ -115,7 +119,7 @@ def method_not_allowed(request):
 						context_instance=RequestContext(request))
 	#405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);
 
-
+@login_required
 def forum(request):
 	"""Devuelve la pagina del foro y almacena comentarios nuevos"""
 	if request.method == "POST":
@@ -138,11 +142,13 @@ def forum(request):
 				},
 				context_instance=RequestContext(request))
 
+@login_required
 def subjects(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
 	return render_to_response('main.html', {'htmlname': 'subjects.html', 'subjects':[{'name':'subject1', 'id':'111'}, 
 					{'name':'subject2', 'id':'222'}]}, context_instance=RequestContext(request))
 
+@login_required
 def subject(request, idsubj):
 	"""Devuelve la pagina con las clases de una asignatura"""
 	return render_to_response('main.html', {'htmlname': 'subject.html','classes':[{'name':'class1', 'id':'111'}, 
