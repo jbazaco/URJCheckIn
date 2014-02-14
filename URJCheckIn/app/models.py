@@ -32,7 +32,7 @@ class Subject(models.Model):
 	last_date = models.DateField(verbose_name='fecha de finalizacion')
 
 	class Meta:
-		verbose_name='asignatura'
+		verbose_name = 'asignatura'
 		unique_together = ("name", "degree")
 	
 	def __unicode__(self):
@@ -76,7 +76,7 @@ class Lesson(models.Model):
 	start_time =  models.DateTimeField(verbose_name='hora de inicio')
 	end_time = models.DateTimeField(verbose_name='hora de finalizacion')
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
-	room =	models.ForeignKey(Room, verbose_name='aula')
+	room =	models.ForeignKey(Room, verbose_name='aula')#TODO on_delete funcion para buscar otra aula
 	#No se si poner profesor o todos los de la asignatura
 	
 	class Meta:
@@ -128,8 +128,8 @@ class TimeTable(models.Model):
 	day = models.CharField(max_length=3, choices=WEEK_DAYS)
 	start_time =  models.TimeField(verbose_name='hora de inicio')
 	end_time = models.TimeField(verbose_name='hora de finalizacion')
-	room =	models.ForeignKey(Room, verbose_name='aula')
-	#No se si poner profesor o todos los de la asignatura
+	room =	models.ForeignKey(Room, verbose_name='aula')#TODO on_delete decidir que hago
+	#TODO No se si poner profesor o nada y que sean todos los de la asignatura
 	
 	class Meta:
 		verbose_name='horario'
