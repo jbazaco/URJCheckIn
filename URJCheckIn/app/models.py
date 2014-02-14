@@ -59,30 +59,18 @@ class UserProfile(models.Model):
 	#TODO photo = models.ImageField()
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='asignatura')
+	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grados')
+	#TODO si se introduce una clase(+profesor) se debe poner el degree si no estaba
+	is_student = models.BooleanField(default=True, verbose_name='es alumno')
+	#TODO quizas mejor poner como grupo de usuario
 
 	class Meta:
-		abstract = True
+		verbose_name='perfil de usuario'
+		verbose_name_plural='perfiles de usuario'
 	
 	def __unicode__(self):
 		return u"Perfil de %s" % (self.user)
-
-
-class StudentProfile(UserProfile):
-	degree = models.ForeignKey(Degree, verbose_name='grado')
-	start_date = models.DateField(verbose_name='fecha de inicio') #cuando comenzo los estudios
-
-	class Meta:
-		verbose_name='perfil de estudiante'
-		verbose_name_plural='perfiles de estudiantes'
 	
-
-class TeacherProfile(UserProfile):
-	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grado') #en los que imparte clase
-	#TODO si se introduce una clase(+profesor) se debe poner el degree si no estaba
-	class Meta:
-		verbose_name='perfil de profesor'
-		verbose_name_plural='perfiles de profesores'
-
 
 class Lesson(models.Model):
 	start_time =  models.DateTimeField(verbose_name='hora de inicio')
