@@ -14,25 +14,25 @@ WEEK_DAYS = (
 )
 
 class Degree(models.Model):
-	name = models.CharField(max_length=100, unique=True, verbose_name='Nombre')
-	code = models.CharField(max_length=6, unique=True, verbose_name='Codigo')
+	name = models.CharField(max_length=100, unique=True, verbose_name='nombre')
+	code = models.CharField(max_length=6, unique=True, verbose_name='codigo')
 
 	class Meta:
-		verbose_name='Grado'
+		verbose_name='grado'
 
 	def __unicode__(self):
 		return self.code
 
 
 class Subject(models.Model):
-	name = models.CharField(max_length=100, verbose_name='Nombre')
-	degree = models.ForeignKey(Degree, verbose_name='Grado')
-	n_students = models.PositiveIntegerField(verbose_name='Num. estudiantes', default=0)
-	first_date = models.DateField(verbose_name='Fecha de inicio')
-	last_date = models.DateField(verbose_name='Fecha de finalizacion')
+	name = models.CharField(max_length=100, verbose_name='nombre')
+	degree = models.ForeignKey(Degree, verbose_name='grado')
+	n_students = models.PositiveIntegerField(verbose_name='num. estudiantes', default=0)
+	first_date = models.DateField(verbose_name='fecha de inicio')
+	last_date = models.DateField(verbose_name='fecha de finalizacion')
 
 	class Meta:
-		verbose_name='Asignatura'
+		verbose_name='asignatura'
 		unique_together = ("name", "degree")
 	
 	def __unicode__(self):
@@ -40,25 +40,25 @@ class Subject(models.Model):
 
 
 class Room(models.Model):
-	room = models.CharField(max_length=20, verbose_name='Aula')
-	building = models.CharField(max_length=20, verbose_name='Edificio')
-	centre_longitude = models.IntegerField(verbose_name='Centro Longitud')
-	centre_latitude = models.IntegerField(verbose_name='Centro Latitud')
-	radius = models.IntegerField(verbose_name='Radio')
+	room = models.CharField(max_length=20, verbose_name='aula')
+	building = models.CharField(max_length=20, verbose_name='edificio')
+	centre_longitude = models.IntegerField(verbose_name='centro longitud')
+	centre_latitude = models.IntegerField(verbose_name='centro latitud')
+	radius = models.IntegerField(verbose_name='radio')
 
 	class Meta:
-		verbose_name='Aula'
+		verbose_name='aula'
 		unique_together = ("room", "building")
 
 	def __unicode__(self):
-		return u"aula %i" % (self.id)
+		return u"Aula %i" % (self.id)
 
 
 class UserProfile(models.Model):
-	user = models.OneToOneField(User, verbose_name='Usuario')
+	user = models.OneToOneField(User, verbose_name='usuario')
 	#TODO photo = models.ImageField()
-	description = models.TextField(max_length=200, blank=True, verbose_name='Descripcion')
-	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='Asignatura')
+	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
+	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='asignatura')
 
 	class Meta:
 		abstract = True
@@ -68,83 +68,83 @@ class UserProfile(models.Model):
 
 
 class StudentProfile(UserProfile):
-	degree = models.ForeignKey(Degree, verbose_name='Grado')
-	start_date = models.DateField(verbose_name='Fecha de inicio') #cuando comenzo los estudios
+	degree = models.ForeignKey(Degree, verbose_name='grado')
+	start_date = models.DateField(verbose_name='fecha de inicio') #cuando comenzo los estudios
 
 	class Meta:
-		verbose_name='Perfil de estudiante'
-		verbose_name_plural='Perfiles de estudiantes'
+		verbose_name='perfil de estudiante'
+		verbose_name_plural='perfiles de estudiantes'
 	
 
 class TeacherProfile(UserProfile):
-	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='Grado') #en los que imparte clase
+	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grado') #en los que imparte clase
 	#TODO si se introduce una clase(+profesor) se debe poner el degree si no estaba
 	class Meta:
-		verbose_name='Perfil de profesor'
-		verbose_name_plural='Perfiles de profesores'
+		verbose_name='perfil de profesor'
+		verbose_name_plural='perfiles de profesores'
 
 
 class Lesson(models.Model):
-	start_time =  models.DateTimeField(verbose_name='Hora de inicio')
-	end_time = models.DateTimeField(verbose_name='Hora de finalizacion')
-	subject = models.ForeignKey(Subject, verbose_name='Asignatura')
-	room =	models.ForeignKey(Room, verbose_name='Aula')
+	start_time =  models.DateTimeField(verbose_name='hora de inicio')
+	end_time = models.DateTimeField(verbose_name='hora de finalizacion')
+	subject = models.ForeignKey(Subject, verbose_name='asignatura')
+	room =	models.ForeignKey(Room, verbose_name='aula')
 	#No se si poner profesor o todos los de la asignatura
 	
 	class Meta:
-		verbose_name='Clase'
+		verbose_name='clase'
 
 	def __unicode__(self):
 		return u"Clase de %s" % (self.subject)
 
 
 class CheckIn(models.Model):
-	user = models.ForeignKey(User, verbose_name='Usuario')
-	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
-	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='Puntuacion', blank=True)
-	comment = models.TextField(max_length=250, verbose_name='Comentario', blank=True)
+	user = models.ForeignKey(User, verbose_name='usuario')
+	lesson = models.ForeignKey(Lesson, verbose_name='clase')
+	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='puntuacion', blank=True)
+	comment = models.TextField(max_length=250, verbose_name='comentario', blank=True)
 
 	def __unicode__(self):
 		return u"Checkin de %s" % (self.lesson)
 
 
 class LessonComment(models.Model):
-	user = models.ForeignKey(User, verbose_name='Usuario')
-	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
-	date =  models.DateTimeField(default=timezone.now(), verbose_name='Hora')
-	comment = models.TextField(max_length=250, verbose_name='Comentario')
+	user = models.ForeignKey(User, verbose_name='usuario')
+	lesson = models.ForeignKey(Lesson, verbose_name='clase')
+	date =  models.DateTimeField(default=timezone.now(), verbose_name='hora')
+	comment = models.TextField(max_length=250, verbose_name='comentario')
 	
 	class Meta:
-		verbose_name='Comentario en clase'
-		verbose_name_plural='Comentarios en clase'
+		verbose_name='comentario en clase'
+		verbose_name_plural='comentarios en clase'
 
 	def __unicode__(self):
 		return u"Comentario de %s" % (self.lesson)
 
 
 class ForumComment(models.Model):
-	user = models.ForeignKey(User, verbose_name='Usuario')
-	comment = models.TextField(max_length=150, verbose_name='Comentario')
-	date =  models.DateTimeField(default=timezone.now(), verbose_name='Hora')
+	user = models.ForeignKey(User, verbose_name='usuario')
+	comment = models.TextField(max_length=150, verbose_name='comentario')
+	date =  models.DateTimeField(default=timezone.now(), verbose_name='hora')
 
 	class Meta:
-		verbose_name='Comentario del foro'
-		verbose_name_plural='Comentarios del foro'
+		verbose_name='comentario del foro'
+		verbose_name_plural='comentarios del foro'
 
 	def __unicode__(self):
 		return u"Comentario %i" % (self.id)
 
 
 class TimeTable(models.Model):
-	subject = models.ForeignKey(Subject, verbose_name='Asignatura')
+	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	day = models.CharField(max_length=3, choices=WEEK_DAYS)
-	start_time =  models.TimeField(verbose_name='Hora de inicio')
-	end_time = models.TimeField(verbose_name='Hora de finalizacion')
-	room =	models.ForeignKey(Room, verbose_name='Aula')
+	start_time =  models.TimeField(verbose_name='hora de inicio')
+	end_time = models.TimeField(verbose_name='hora de finalizacion')
+	room =	models.ForeignKey(Room, verbose_name='aula')
 	#No se si poner profesor o todos los de la asignatura
 	
 	class Meta:
-		verbose_name='Horario'
+		verbose_name='horario'
 
 	def __unicode__(self):
 		return u"Horario de %s" % (self.subject)
