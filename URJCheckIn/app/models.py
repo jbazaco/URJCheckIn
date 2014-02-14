@@ -30,7 +30,6 @@ class Subject(models.Model):
 	n_students = models.PositiveIntegerField(verbose_name='Num. estudiantes', default=0)
 	first_date = models.DateField(verbose_name='Fecha de inicio')
 	last_date = models.DateField(verbose_name='Fecha de finalizacion')
-	#TODO#timetable
 
 	class Meta:
 		verbose_name='Asignatura'
@@ -57,7 +56,8 @@ class Room(models.Model):
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, verbose_name='Usuario')
-	description = models.CharField(max_length=200, blank=True, verbose_name='Descripcion')
+	#TODO photo = models.ImageField()
+	description = models.TextField(max_length=200, blank=True, verbose_name='Descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='Asignatura')
 
 	class Meta:
@@ -102,7 +102,7 @@ class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='Usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
 	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='Puntuacion', blank=True)
-	comment = models.CharField(max_length=250, verbose_name='Comentario', blank=True)
+	comment = models.TextField(max_length=250, verbose_name='Comentario', blank=True)
 
 	def __unicode__(self):
 		return u"Checkin de %s" % (self.lesson)
@@ -112,7 +112,7 @@ class LessonComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='Usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='Clase')
 	date =  models.DateTimeField(default=timezone.now(), verbose_name='Hora')
-	comment = models.CharField(max_length=250, verbose_name='Comentario')
+	comment = models.TextField(max_length=250, verbose_name='Comentario')
 	
 	class Meta:
 		verbose_name='Comentario en clase'
@@ -124,7 +124,7 @@ class LessonComment(models.Model):
 
 class ForumComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='Usuario')
-	comment = models.CharField(max_length=150, verbose_name='Comentario')
+	comment = models.TextField(max_length=150, verbose_name='Comentario')
 	date =  models.DateTimeField(default=timezone.now(), verbose_name='Hora')
 
 	class Meta:
