@@ -6,6 +6,9 @@ from forms import ReviewClassForm, ProfileEditionForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 
+from models import UserProfile
+from django.contrib.auth.models import User
+
 #Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
 
 @dajaxice_register(method='GET')
@@ -51,6 +54,7 @@ def process_class(request,form):#TODO mirar el campo class del form
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
+		print UserProfile.objects.get(user=request.user)
 		templ = loader.get_template('checkin.html')
 		cont = RequestContext(request, {'form': ReviewClassForm()})
 		html = templ.render(cont)
@@ -67,6 +71,8 @@ def process_checkin(request, form):
 		print form["latitude"]
 		print form["accuracy"]
 		print form["codeword"]
+		print form["id_mark"]
+		print form["id_comment"]
 		return simplejson.dumps({'ok': True})
 	else:
 		return wrongMethodJson(request)
