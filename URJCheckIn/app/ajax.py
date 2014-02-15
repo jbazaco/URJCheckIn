@@ -51,7 +51,9 @@ def process_class(request,form):#TODO mirar el campo class del form
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		html = loader.get_template('checkin.html').render(RequestContext(request, {}))
+		templ = loader.get_template('checkin.html')
+		cont = RequestContext(request, {'form': ReviewClassForm()})
+		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
 	else:
 		return wrongMethodJson(request)
@@ -101,9 +103,7 @@ def subject(request, idsubj):
 def class_info(request, idclass):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
-		templ = loader.get_template('class.html')
-		cont = RequestContext(request, {'form': ReviewClassForm()})
-		html = templ.render(cont)
+		html = loader.get_template('class.html').render(RequestContext(request, {}))
 		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
 	else:
 		return wrongMethodJson(request)

@@ -13,7 +13,9 @@ function sendLocation(position) {
 					'latitude':  position.coords.latitude,
 					'longitude': position.coords.longitude,
 					'accuracy': position.coords.accuracy,
-					'codeword': codeword.val()
+					'codeword': codeword.val(),
+					'id_mark': $('#id_mark') ? $('#id_mark').val():-1,
+					'id_comment': $('#id_comment') ? $('#id_comment').val():""
 				};
 		/*$.post("http://" + document.location.host + "/checkin", info, 
 				function() { codeword.val("CheckIn realizado"); }) //TODO cambiar, poner en otro sitio el mensaje

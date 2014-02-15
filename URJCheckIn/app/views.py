@@ -34,8 +34,8 @@ def checkin(request):
 	if request.method != "GET":
 		return method_not_allowed(request)
 	
-	return render_to_response('main.html', {'htmlname': 'checkin.html'},
-			context_instance=RequestContext(request))
+	return render_to_response('main.html', {'htmlname': 'checkin.html',
+		'form': ReviewClassForm()}, context_instance=RequestContext(request))
 
 #TODO
 @login_required
@@ -108,7 +108,7 @@ def process_class(request, idclass):
 			pass
 		return HttpResponseBadRequest()
 
-	return render_to_response('main.html', {'htmlname': 'class.html','form': ReviewClassForm()},
+	return render_to_response('main.html', {'htmlname': 'class.html'},
 		context_instance=RequestContext(request))
 
 

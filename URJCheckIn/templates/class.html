@@ -29,20 +29,7 @@
 
 {if alumno}
 	{if fecha menor que actual}
-		{if checkin and no valorada}
-			<form id="review_form">
-				<fieldset>
-					<legend> Valoraci&oacute;n de la clase</legend>
-					<label for="id_mark">Puntuaci&oacute;n:</label>
-					{{form.mark}}
-					<br/>
-					<label for="id_comment">Comentario:</label>
-					{{form.comment}}
-					<br/>
-					<button type="submit">Enviar valoraci&oacute;n</button>
-				</fieldset>
-			</form>
-		{elif checkin and valorada}
+		{if checkin and valorada}
 			<div id="class_review">
 				<strong>Puntuaci&oacute;n: </strong> 1..5
 				<br/>
@@ -51,7 +38,7 @@
 		{endif}		
 	{endif}
 {else}
-	{if fecha menor que actual}
+	{if fecha mayor que actual}
 		<form id="change_date">
 			<label for="id_date">Cambiar fecha </label>
 			<input id="id_date" type="datetime-local" required> <!no sale en firefox!!!!>
