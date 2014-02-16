@@ -6,7 +6,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 
 from forms import ReviewClassForm, ProfileEditionForm
-from models import UserProfile
+from models import UserProfile, ForumComment
 from django.contrib.auth.models import User
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
@@ -140,12 +140,10 @@ def forum(request):
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
+	#TODO paginator si no hay javascript?
+	comments = ForumComment.objects.filter().order_by('-date')[:10]
 	return render_to_response('main.html', {'htmlname': 'forum.html',
-				'comments':[
-					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
-					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
-				]
-				},
+				'comments':comments},
 				context_instance=RequestContext(request))
 
 @login_required

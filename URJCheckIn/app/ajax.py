@@ -6,7 +6,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 
-from models import UserProfile
+from models import UserProfile, ForumComment
 from django.contrib.auth.models import User
 
 #Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
@@ -120,12 +120,9 @@ def class_info(request, idclass):
 def forum(request):
 	"""Devuelve el contenido de la pagina del foro"""
 	if request.method == "GET":
+		comments = ForumComment.objects.filter().order_by('-date')[:10]
 		templ = loader.get_template('forum.html')
-		cont = RequestContext(request, {'comments':[
-					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
-					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
-				]
-				})
+		cont = RequestContext(request, {'comments': comments})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/forum'})
 	else:
