@@ -6,7 +6,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 
-from models import UserProfile, ForumComment
+from models import UserProfile, ForumComment, Subject
 from django.contrib.auth.models import User
 
 #Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
@@ -18,7 +18,7 @@ def profile(request, iduser):
 	if request.method == "GET":
 		templ = loader.get_template('profile.html')
 		try:
-			profile = UserProfile.objects.get(user=User.objects.get(id=iduser))#if user
+			profile = UserProfile.objects.get(user=User.objects.get(id=iduser))
 		except (UserProfile.DoesNotExist, User.DoesNotExist):			
 			return not_found(request, "/profile/view/"+iduser)
 		cont = RequestContext(request, {'profile': profile, 
@@ -86,8 +86,14 @@ def wrongMethodJson(request):
 def subjects(request):
 	"""Devuelve el contenido de la pagina de las asignaturas"""
 	if request.method == "GET":
+		try:
+			profile = UserProfile.objects.get(user=request.user)
+		except (UserProfile.DoesNotExist, User.DoesNotExist):			
+			return not_found(request, "/subjects")#TODO cambiar por pagina de error
+		subjects = profile.subjects.all()
+		#TODO separar las que son seminarios de las que no
 		templ = loader.get_template('subjects.html')
-		cont = RequestContext(request, {'subjects':[{'name':'subject1', 'id':'111'}, {'name':'subject2', 'id':'222'}]})
+		cont = RequestContext(request, {'subjects':subjects})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
 	else:
@@ -115,6 +121,7 @@ def class_info(request, idclass):
 	else:
 		return wrongMethodJson(request)
 
+#TODO una funcion que mande nuevos comentarios si hay nuevos y se sigue en la pagina
 @dajaxice_register(method='GET')
 @login_required
 def forum(request):

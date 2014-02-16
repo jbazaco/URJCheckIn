@@ -30,6 +30,7 @@ class Subject(models.Model):
 	n_students = models.PositiveIntegerField(verbose_name='num. estudiantes', default=0)
 	first_date = models.DateField(verbose_name='fecha de inicio')
 	last_date = models.DateField(verbose_name='fecha de finalizacion')
+	#is_seminar = models.BooleanField(verbose_name='es seminario', default=False)
 
 	class Meta:
 		verbose_name = 'asignatura'
