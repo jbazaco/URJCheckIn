@@ -13,6 +13,7 @@ function showEditProfile(id) {
 function setForm() {
 	$('#id_name').attr('value', $('#name_profile').html());
 	$('#id_age').attr('value', $('#age_profile').html()); //FIREFOX NO LO MUESTRA COMO NUMBER
+	$('#id_description').attr('value', $('#desc_profile').html());
 	//TODO para el resto de campos
 	hideElements(['#profile .fields']);
 	$('#profile_form').css('display','inherit');
@@ -22,6 +23,7 @@ function setForm() {
 function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 	$('#name_profile').html($('#id_name').val());
 	$('#age_profile').html(user.age);
+	$('#desc_profile').html(user.description);
 	//TODO hacerlo con el resto de propiedades
 	hideElements(['#profile_form']);
 	$('#profile .fields').css('display','inherit');

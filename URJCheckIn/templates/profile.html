@@ -1,12 +1,16 @@
 
 <div id="profile">
 	<!Cambiar lo de iduser>
-	<img src="/profile/img/{{user.id}}" alt="foto de perfil" height="60" width="60">
+	<img src="/profile/img/{{profile.user.id}}" alt="foto de perfil" height="60" width="60">
 	<div class="fields">
-		<strong>Nombre: </strong> <span id="name_profile">{{user.name}} {surname1} {surname2}</span>
+		<strong>Nombre: </strong> <span id="name_profile">
+			{{profile.user.first_name}} {{profile.user.last_name}} {surname2}
+		</span>
 		<br/>
 		<strong>Edad: </strong> <span id="age_profile">{age}</span>
-		{% if user.student %}
+		<br/>
+		<strong>Descripci&oacute;n: </strong> <span id="desc_profile">{{profile.description}}</span>
+		{% if profile.is_student %}
 			<br/>
 			info exclusiva alumno
 		{% else %}
@@ -16,9 +20,9 @@
 	</div>
 </div>
 
-{if estoy_mirando_mi_perfil}
+{%if request.user == profile.user %}
 	<form name="profile_form" id="profile_form" style="display:none"
-			onsubmit="sendChanges('{{user.id}}'); return false;" action="" method="POST">
+			onsubmit="sendChanges('{{profile.user.id}}'); return false;" action="" method="POST">
 		{% csrf_token %}
 		<!input type="file" accept="image/*"/>
 		<label for="id_name">Nombre:</label>
@@ -27,18 +31,21 @@
 		<label for="id_age">Edad:</label>
 		{{form.age}}
 		<br/>
+		<label for="id_description">Descripci&oacute;n:</label>
+		{{form.description}}
+		<br/>
 	</form>
 
 	<!script src='/jscript/basic.js' type='text/javascript'script>
 	<!script src='/jscript/edit_profile.js' type='text/javascript'script>
 	<br/>
-	<button name="show_form" onclick="showEditProfile('{{user.id}}')" id="show_form">Editar perfil</button>
+	<button name="show_form" onclick="showEditProfile('{{profile.user.id}}')" id="show_form">Editar perfil</button>
 	<img src="/img/loading_32.gif" id="saving_profile" alt="cargando" height="22" width="22" style="display:none">
 
 	<div id="extra_classes">
 		<!script src="/jscript/csrf_token.js" type="text/javascript"script><!posiblemente ya no sea necesario, quitar de todos los sitios donde este si no hace falta>
 		<!script src="/jscript/extra_class.js" type="text/javascript"script>
-		{% if user.student %}
+		{% if profile.is_student %}
 			{% for class in classes %}
 				<br/><!TODO que se pueda realizar sin javascript>
 				<div id={{'"xc_'|add:class.id|add:'"'|safe}}>
@@ -56,5 +63,5 @@
 			{% endfor %}
 		{% endif %}
 	</div>
-{end if}
+{%endif%}
 

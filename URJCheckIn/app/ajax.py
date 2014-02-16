@@ -17,7 +17,11 @@ def profile(request, iduser):
 	"""Devuelve el contenido de la pagina de perfil"""
 	if request.method == "GET":
 		templ = loader.get_template('profile.html')
-		cont = RequestContext(request, {'user': {'name':iduser, 'student': False, 'id':iduser}, 
+		try:
+			profile = UserProfile.objects.get(user=User.objects.get(id=iduser))#if user
+		except (UserProfile.DoesNotExist, User.DoesNotExist):			
+			return not_found(request, "/profile/view/"+iduser)
+		cont = RequestContext(request, {'profile': profile, 
 						'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
 						'form': ProfileEditionForm()})
 		html = templ.render(cont)
@@ -36,7 +40,7 @@ def update_profile(request, iduser, form):
 		if not pform.is_valid():
 			return simplejson.dumps({'errors': pform.errors});
 		data = pform.cleaned_data
-		return simplejson.dumps({'user':{'id': iduser, 'age':data['age']}})#coger datos del usuario tras guardar
+		return simplejson.dumps({'user':{'id': iduser, 'age':data['age'], 'description':data['description']}})#coger datos del usuario tras guardar
 	else:
 		return wrongMethodJson(request)
 
@@ -54,7 +58,6 @@ def process_class(request,form):#TODO mirar el campo class del form
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		print UserProfile.objects.get(user=request.user)
 		templ = loader.get_template('checkin.html')
 		cont = RequestContext(request, {'form': ReviewClassForm()})
 		html = templ.render(cont)
@@ -71,8 +74,6 @@ def process_checkin(request, form):
 		print form["latitude"]
 		print form["accuracy"]
 		print form["codeword"]
-		print form["id_mark"]
-		print form["id_comment"]
 		return simplejson.dumps({'ok': True})
 	else:
 		return wrongMethodJson(request)

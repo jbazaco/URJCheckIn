@@ -38,7 +38,7 @@
 			</a>
 			<!a onClick=corchete{"\"Dajaxice.app.sayhello(my_js_callback, {'iduser':"|add:uid|add:'}); return false;"'|safe}} 
 			href="/profile/view/nick">
-			<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': 'blabla'}); return false;" href="/profile/view/blabla">
+			<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{request.user.id}}'}); return false;" href="/profile/view/{{request.user.id}}">
 				Profile
 			</a>
 			<a onClick="ask_ajax_page('checkin', loadAjaxPage, {}); return false;" href="/checkin">

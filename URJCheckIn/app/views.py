@@ -6,6 +6,8 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 
 from forms import ReviewClassForm, ProfileEditionForm
+from models import UserProfile
+from django.contrib.auth.models import User
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -58,7 +60,11 @@ def profile(request, iduser):
 		return method_not_allowed(request)
 	#if existe el usuario
 	
-	return render_to_response('main.html', {'htmlname': 'profile.html', 'user': {'name':iduser, 'student': False, 'id':iduser}, 
+	try:
+		profile = UserProfile.objects.get(user=User.objects.get(id=iduser))#if user
+	except (UserProfile.DoesNotExist, User.DoesNotExist):			
+		return not_found(request)
+	return render_to_response('main.html', {'htmlname': 'profile.html', 'profile': profile, 
 					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
 					'form': ProfileEditionForm()
 					},#pasar user info
