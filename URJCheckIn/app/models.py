@@ -100,7 +100,7 @@ class CheckIn(models.Model):
 class LessonComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
-	date =  models.DateTimeField(default=timezone.now(), verbose_name='hora')
+	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
 	comment = models.TextField(max_length=250, verbose_name='comentario')
 	
 	class Meta:
@@ -114,7 +114,7 @@ class LessonComment(models.Model):
 class ForumComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
 	comment = models.TextField(max_length=150, verbose_name='comentario')
-	date =  models.DateTimeField(default=timezone.now(), verbose_name='hora')
+	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
 
 	class Meta:
 		verbose_name='comentario del foro'
