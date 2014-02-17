@@ -6,7 +6,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 
-from models import UserProfile, ForumComment, Subject
+from models import UserProfile, ForumComment, Subject, ForumComment
 from django.contrib.auth.models import User
 
 #Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
@@ -141,7 +141,7 @@ def forum(request):
 def publish_forum(request, comment):
 	""" procesa un check in"""
 	if request.method == "POST":
-		print comment
+		ForumComment(comment=comment, user=request.user).save()
 		return simplejson.dumps({'ok': True})
 	else:
 		return wrongMethodJson(request)

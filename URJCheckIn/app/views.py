@@ -135,8 +135,7 @@ def forum(request):
 		except MultiValueDictKeyError:
 			return HttpResponseBadRequest()
 		comment = comment[:150] #si el comentario tiene mas de 150 caracteres se corta
-		print comment
-	
+		ForumComment(comment=comment, user=request.user).save()
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
