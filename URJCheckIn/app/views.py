@@ -61,7 +61,7 @@ def profile(request, iduser):
 	#if existe el usuario
 	
 	try:
-		profile = UserProfile.objects.get(user=User.objects.get(id=iduser))#if user
+		profile = UserProfile.objects.get(user=iduser)#if user
 	except (UserProfile.DoesNotExist, User.DoesNotExist):			
 		return not_found(request)
 	return render_to_response('main.html', {'htmlname': 'profile.html', 'profile': profile, 

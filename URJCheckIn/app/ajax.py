@@ -18,7 +18,7 @@ def profile(request, iduser):
 	if request.method == "GET":
 		templ = loader.get_template('profile.html')
 		try:
-			profile = UserProfile.objects.get(user=User.objects.get(id=iduser))
+			profile = UserProfile.objects.get(user=iduser)
 		except (UserProfile.DoesNotExist, User.DoesNotExist):			
 			return not_found(request, "/profile/view/"+iduser)
 		cont = RequestContext(request, {'profile': profile, 
