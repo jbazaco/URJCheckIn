@@ -4,10 +4,13 @@ from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from forms import ReviewClassForm, ProfileEditionForm
-from models import UserProfile, ForumComment
+from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
+
+from getctx import get_class_ctx
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -35,9 +38,16 @@ def checkin(request):
 		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
 	if request.method != "GET":
 		return method_not_allowed(request)
-	
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		return render_to_response('main.html', {'htmlname': 'error.html',
+								'message': 'No tienes un perfil creado.'}, 
+								context_instance=RequestContext(request))
+
 	return render_to_response('main.html', {'htmlname': 'checkin.html',
-		'form': ReviewClassForm()}, context_instance=RequestContext(request))
+							'form': ReviewClassForm(), 'profile':profile}, 
+							context_instance=RequestContext(request))
 
 #TODO
 @login_required
@@ -63,7 +73,9 @@ def profile(request, iduser):
 	try:
 		profile = UserProfile.objects.get(user=iduser)#if user
 	except (UserProfile.DoesNotExist, User.DoesNotExist):			
-		return not_found(request)
+		return render_to_response('main.html', {'htmlname': 'error.html',
+							'message': 'El usuario con id ' + iduser + ' no tiene perfil'}, 
+							context_instance=RequestContext(request))
 	return render_to_response('main.html', {'htmlname': 'profile.html', 'profile': profile, 
 					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
 					'form': ProfileEditionForm()
@@ -113,9 +125,13 @@ def process_class(request, idclass):
 		except MultiValueDictKeyError:
 			pass
 		return HttpResponseBadRequest()
-
-	return render_to_response('main.html', {'htmlname': 'class.html'},
-		context_instance=RequestContext(request))
+	
+	ctx = get_class_ctx(request, idclass)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'class.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
 def method_not_allowed(request):
@@ -148,8 +164,20 @@ def forum(request):
 @login_required
 def subjects(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
-	return render_to_response('main.html', {'htmlname': 'subjects.html', 'subjects':[{'name':'subject1', 'id':'111'}, 
-					{'name':'subject2', 'id':'222'}]}, context_instance=RequestContext(request))
+	if request.method != 'GET':
+		return method_not_allowed(request)
+
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		return render_to_response('main.html', {'htmlname': 'error.html',
+								'message': 'No tienes un perfil creado.'}, 
+								context_instance=RequestContext(request))
+
+	subjects = profile.subjects.all()
+	return render_to_response('main.html', {'htmlname': 'subjects.html', 
+							'subjects':subjects}, 
+							context_instance=RequestContext(request))
 
 @login_required
 def subject(request, idsubj):

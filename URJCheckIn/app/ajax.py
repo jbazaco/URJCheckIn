@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from models import UserProfile, ForumComment, Subject, ForumComment
 from django.contrib.auth.models import User
 
-#Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
+from getctx import get_class_ctx
 
 @dajaxice_register(method='GET')
 @login_required
@@ -20,7 +20,9 @@ def profile(request, iduser):
 		try:
 			profile = UserProfile.objects.get(user=iduser)
 		except (UserProfile.DoesNotExist, User.DoesNotExist):			
-			return not_found(request, "/profile/view/"+iduser)
+			return send_error(request,
+						'El usuario con id ' + iduser + ' no tiene perfil', 
+						'/profile/view/'+iduser)
 		cont = RequestContext(request, {'profile': profile, 
 						'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
 						'form': ProfileEditionForm()})
@@ -59,7 +61,11 @@ def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
 		templ = loader.get_template('checkin.html')
-		cont = RequestContext(request, {'form': ReviewClassForm()})
+		try:
+			profile = request.user.userprofile
+		except UserProfile.DoesNotExist:
+			return send_error(request, 'No tienes un perfil creado.', '/checkin')
+		cont = RequestContext(request, {'profile':profile, 'form': ReviewClassForm()})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
 	else:
@@ -89,7 +95,7 @@ def subjects(request):
 		try:
 			profile = UserProfile.objects.get(user=request.user)
 		except (UserProfile.DoesNotExist, User.DoesNotExist):			
-			return not_found(request, "/subjects")#TODO cambiar por pagina de error
+			return send_error(request, 'No tienes un perfil creado.', '/subjects')
 		subjects = profile.subjects.all()
 		#TODO separar las que son seminarios de las que no
 		templ = loader.get_template('subjects.html')
@@ -114,9 +120,12 @@ def subject(request, idsubj):
 @dajaxice_register(method='GET')
 @login_required
 def class_info(request, idclass):
-	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
+	"""Devuelve el contenido de la pagina de la clase indicada en idclass"""
 	if request.method == "GET":
-		html = loader.get_template('class.html').render(RequestContext(request, {}))
+		ctx = get_class_ctx(request, idclass)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/class/"+str(idclass))
+		html = loader.get_template('class.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
 	else:
 		return wrongMethodJson(request)
@@ -164,3 +173,8 @@ def not_found(request, path):
 	html = loader.get_template('404.html').render(RequestContext(request, {}))
 	return simplejson.dumps({'#mainbody':html, 'url': path})
 
+def send_error(request, error, url):
+	templ = loader.get_template('error.html')
+	cont = RequestContext(request, {'message':error})
+	html = templ.render(cont)
+	return simplejson.dumps({'#mainbody':html, 'url':url})
