@@ -1,21 +1,25 @@
 
-<h1 id="maintitle">Mis asignaturas</h1>
+<div id="subjects">
+	<h1 id="maintitle">Mis asignaturas</h1>
 
-{% for subject in subjects %}
-	<ul class="subjects_list">
-		<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
-			{{subject.name}}
-		</a></li>
-	</ul>
-{% endfor %}
+	{% for subject in subjects %}
+		<ul class="subjects_list">
+			<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
+				{{subject.name}}
+			</a></li>
+		</ul>
+	{% endfor %}
+</div>
 <br/>
-<h1 id="maintitle">Mis seminarios</h1>
+<div id="seminars">
+	<h1 id="maintitle">Mis seminarios</h1>
 
-{% for subject in subjects %}
-	<ul class="subjects_list">
-		<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
-		{{subject.name}}
-		</a></li>
-	</ul>
-{% endfor %}
+	{% for subject in subjects %}
+		<ul class="subjects_list">
+			<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
+			{{subject.name}}
+			</a></li>
+		</ul>
+	{% endfor %}
+</div>
 

@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from getctx import get_class_ctx
+from getctx import get_class_ctx, get_subject_ctx
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -181,6 +181,14 @@ def subjects(request):
 
 @login_required
 def subject(request, idsubj):
-	"""Devuelve la pagina con las clases de una asignatura"""
-	return render_to_response('main.html', {'htmlname': 'subject.html','classes':[{'name':'class1', 'id':'111'}, 
-					{'name':'class2', 'id':'222'}]}, context_instance=RequestContext(request))
+	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
+	if request.method != 'GET':
+		return method_not_allowed(request)
+	
+	ctx = get_subject_ctx(request, idsubj)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'subject.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+

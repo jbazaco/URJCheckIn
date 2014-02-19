@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from models import UserProfile, ForumComment, Subject, ForumComment
 from django.contrib.auth.models import User
 
-from getctx import get_class_ctx
+from getctx import get_class_ctx, get_subject_ctx
 
 @dajaxice_register(method='GET')
 @login_required
@@ -110,9 +110,10 @@ def subjects(request):
 def subject(request, idsubj):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
-		templ = loader.get_template('subject.html')
-		cont = RequestContext(request, {'classes':[{'name':'class1', 'id':'111'}, {'name':'class2', 'id':'222'}]})
-		html = templ.render(cont)
+		ctx = get_subject_ctx(request, idsubj)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/subjects/"+str(idsubj))
+		html = loader.get_template('subject.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects/'+str(idsubj)})
 	else:
 		return wrongMethodJson(request)
