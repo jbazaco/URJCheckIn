@@ -8,7 +8,11 @@
 		<ul id="profesor_list">
 			{%for prof in profesors%}
 				<li>
-					<a href="/profile/view/{{prof.user.id}}">{{prof.user.first_name}} {{prof.user.last_name}}</a>
+					<a onClick="ask_ajax_page('profile', loadAjaxPage, 
+					{'iduser': '{{prof.user.id}}'}); return false;" 
+					href="/profile/view/{{prof.user.id}}">
+						{{prof.user.first_name}} {{prof.user.last_name}}
+					</a>
 				</li>
 			{% empty %}
 				La asignatura no es impartida por ning&uacute;n profesor.
