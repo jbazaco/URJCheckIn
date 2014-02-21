@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -14,13 +15,15 @@ urlpatterns = patterns('',
     url(r'^$', 'app.views.home'),
 	url(r'^checkin$', 'app.views.checkin'),
 	url(r'^profile/view/(\d+)$', 'app.views.profile'),
-	url(r'^profile/img/(\d+)$', 'app.views.profile_img'),
+	url(r'^profile/img/(\d+)$', 'app.views.profile_img'),#TODO quitar, lo sustituye media/
 	url(r'^class/(\d+)$', 'app.views.process_class'),
 	url(r'^forum$', 'app.views.forum'),
 	url(r'^subjects$', 'app.views.subjects'),
 	url(r'^subjects/(\d+)$', 'app.views.subject'),
 	url(r'^img/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/images'}),
+	url(r'^media/(?P<path>.*)$', 'django.views.static.serve', 
+						{'document_root': settings.MEDIA_ROOT}),
 	url(r'^css/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'static/css'}),
 	url(r'^jscript/(?P<path>.*)$', 'django.views.static.serve',

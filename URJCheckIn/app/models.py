@@ -30,7 +30,7 @@ class Subject(models.Model):
 	n_students = models.PositiveIntegerField(verbose_name='num. estudiantes', default=0)
 	first_date = models.DateField(verbose_name='fecha de inicio')
 	last_date = models.DateField(verbose_name='fecha de finalizacion')
-	#is_seminar = models.BooleanField(verbose_name='es seminario', default=False)
+	is_seminar = models.BooleanField(verbose_name='es seminario', default=False)
 
 	class Meta:
 		verbose_name = 'asignatura'
@@ -57,7 +57,7 @@ class Room(models.Model):
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, verbose_name='usuario')
-	#TODO photo = models.ImageField()
+	photo = models.ImageField(upload_to='profile_photos', blank=True)#Poner una por defecto (la tipica silueta)
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='asignatura')
 	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grados')
@@ -130,6 +130,7 @@ class TimeTable(models.Model):
 	start_time =  models.TimeField(verbose_name='hora de inicio')
 	end_time = models.TimeField(verbose_name='hora de finalizacion')
 	room =	models.ForeignKey(Room, verbose_name='aula')#TODO on_delete decidir que hago
+	#Posible solucion poner edificio por si el aula no esta disponible
 	#TODO No se si poner profesor o nada y que sean todos los de la asignatura
 	
 	class Meta:

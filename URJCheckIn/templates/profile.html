@@ -21,6 +21,11 @@
 </div>
 
 {%if request.user == profile.user %}
+	<form name="photo_form" id="photo_form" style="display:none"
+			onsubmit="return false;" action="" method="POST">
+		{% csrf_token %}
+		<input type="file" accept="image/*"/>
+	</form>
 	<form name="profile_form" id="profile_form" style="display:none"
 			onsubmit="sendChanges('{{profile.user.id}}'); return false;" action="" method="POST">
 		{% csrf_token %}

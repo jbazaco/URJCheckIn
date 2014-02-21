@@ -17,6 +17,7 @@ function setForm() {
 	//TODO para el resto de campos
 	hideElements(['#profile .fields']);
 	$('#profile_form').css('display','inherit');
+	$('#photo_form').css('display','inherit');
 }
 
 /* Oculta el formulario y muestra y modifica el perfil con los nuevos datos del usuario */
@@ -25,7 +26,7 @@ function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 	$('#age_profile').html(user.age);
 	$('#desc_profile').html(user.description);
 	//TODO hacerlo con el resto de propiedades
-	hideElements(['#profile_form']);
+	hideElements(['#profile_form', '#photo_form']);
 	$('#profile .fields').css('display','inherit');
 }
 
@@ -73,7 +74,7 @@ function sendChanges(id) {
 
 /* Quita el formulario y vuelve a mostrar el perfil */
 function cancelEditProfile(id) {
-	hideElements(['#profile_form']);
+	hideElements(['#profile_form', '#photo_form']);
 	$('#profile .fields').css('display','inherit');
 	restartButtons(id);
 }
