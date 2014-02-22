@@ -55,7 +55,7 @@ function errorSaving(errors) {
 	hideElements(['#saving_profile']);
 	var errorstr = "";
 	for (error in errors)
-		errorstr = error + ": " + errors[error] + "\n";
+		errorstr += error + ": " + errors[error] + "\n";
 	alert(errorstr);
 	enableButtons(['button']);
 }
