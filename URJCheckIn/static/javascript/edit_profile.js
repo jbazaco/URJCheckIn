@@ -13,7 +13,7 @@ function showEditProfile(id) {
 function setForm() {
 	$('#id_name').attr('value', $('#name_profile').html());
 	$('#id_age').attr('value', $('#age_profile').html()); //FIREFOX NO LO MUESTRA COMO NUMBER
-	$('#id_description').attr('value', $('#desc_profile').html());
+	$('#id_description').html($('#desc_profile').html());
 	//TODO para el resto de campos
 	hideElements(['#profile .fields']);
 	$('#profile_form').css('display','inherit');
