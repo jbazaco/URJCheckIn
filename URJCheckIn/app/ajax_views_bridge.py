@@ -1,9 +1,12 @@
-
-"""Estas funciones tienen el nombre get_XXXX_ctx y devuelven en un diccionario 
+"""Las funciones con el nombre process_XXXX_post procesan los cambios de los post sobre 
+	la pagina XXXX
+	
+	Las funciones con el nombre get_XXXX_ctx y devuelven en un diccionario 
 	el contexto para renderizar la plantilla XXXX.html o un diccionario {'error':'XXXX'}
 	si se produce un error, siendo 'XXXX' un string describiendo el error"""
 from models import UserProfile, Lesson, Subject
 from django.utils import timezone
+from forms import ProfileEditionForm
 
 def get_class_ctx(request, idclass):
 	"""Devuelve el contexto para la plantilla class.html"""
@@ -51,4 +54,20 @@ def get_subject_ctx(request, idsubj):
 			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject}
+
+def process_profile_post(form, user):
+	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
+	pform = ProfileEditionForm(form)
+	if not pform.is_valid():
+		return {'errors': pform.errors};
+	data = pform.cleaned_data
+	try:
+		profile = UserProfile.objects.get(user=user)
+	except UserProfile.DoesNotExist:
+		return {'errors': ['No tienes un perfil creado.']}#TODO Pone en el alert '0:No tienes...'
+	profile.age = data['age']
+	profile.description = data['description']
+	profile.save()
+	return {'user':{'id': user.id, 'age':data['age'], 'description':data['description']}}#coger datos del usuario tras guardar TODO cambiar esto y el js
+
 

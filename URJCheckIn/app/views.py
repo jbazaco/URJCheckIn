@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from getctx import get_class_ctx, get_subject_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, process_profile_post
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -54,9 +54,19 @@ def checkin(request):
 def profile(request, iduser):
 	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
 	if request.method == "POST":
+		if iduser == str(request.user.id):
+			resp = process_profile_post(request.POST, request.user)
+		else:
+			return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': 'Est&aacute;s intentando cambiar un perfil distinto del tuyo'}, 
+					context_instance=RequestContext(request))
+		if ('errors' in resp):
+			return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': resp['errors']}, 
+					context_instance=RequestContext(request))
 		#comprobar user = usuarioregistrado
-		qd = request.POST
-		try:
+		#qd = request.POST
+		"""try:
 			#TODO con el resto de campos
 			try:
 				age = int(qd.__getitem__("age"))
@@ -64,7 +74,7 @@ def profile(request, iduser):
 				return HttpResponseBadRequest()
 			print age
 		except MultiValueDictKeyError:
-			return HttpResponseBadRequest()
+			return HttpResponseBadRequest()"""
 
 	elif request.method != "GET":
 		return method_not_allowed(request)

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from models import UserProfile, ForumComment, Subject, ForumComment
 from django.contrib.auth.models import User
 
-from getctx import get_class_ctx, get_subject_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx,  process_profile_post
 
 @dajaxice_register(method='GET')
 @login_required
@@ -37,12 +37,10 @@ def profile(request, iduser):
 def update_profile(request, iduser, form):
 	"""Modifica el perfil del usuario registrado"""
 	if request.method == "POST":
-		#comprobar user = usuarioregistrado
-		pform = ProfileEditionForm(form)
-		if not pform.is_valid():
-			return simplejson.dumps({'errors': pform.errors});
-		data = pform.cleaned_data
-		return simplejson.dumps({'user':{'id': iduser, 'age':data['age'], 'description':data['description']}})#coger datos del usuario tras guardar
+		if iduser == str(request.user.id):
+			return simplejson.dumps(process_profile_post(form, request.user))
+		else:
+			return simplejson.dumps({'errors': ['Estas intentando cambiar un perfil distinto del tuyo']})#TODO pone en el alert '0: Estas....'
 	else:
 		return wrongMethodJson(request)
 

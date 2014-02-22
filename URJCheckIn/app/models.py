@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 WEEK_DAYS = (
 	('Mon', 'Monday'),
@@ -63,6 +63,7 @@ class UserProfile(models.Model):
 	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grados')
 	#TODO si se introduce una clase(+profesor) se debe poner el degree si no estaba
 	is_student = models.BooleanField(default=True, verbose_name='es alumno')
+	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
 
 	class Meta:
