@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, process_profile_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -38,16 +38,14 @@ def checkin(request):
 		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
 	if request.method != "GET":
 		return method_not_allowed(request)
-	try:
-		profile = request.user.userprofile
-	except UserProfile.DoesNotExist:
-		return render_to_response('main.html', {'htmlname': 'error.html',
-								'message': 'No tienes un perfil creado.'}, 
-								context_instance=RequestContext(request))
 
-	return render_to_response('main.html', {'htmlname': 'checkin.html',
-							'form': ReviewClassForm(), 'profile':profile}, 
-							context_instance=RequestContext(request))
+	ctx = get_checkin_ctx(request)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'checkin.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
 
 #TODO
 @login_required
@@ -64,17 +62,6 @@ def profile(request, iduser):
 			return render_to_response('main.html', {'htmlname': 'error.html',
 					'message': resp['errors']}, 
 					context_instance=RequestContext(request))
-		#comprobar user = usuarioregistrado
-		#qd = request.POST
-		"""try:
-			#TODO con el resto de campos
-			try:
-				age = int(qd.__getitem__("age"))
-			except ValueError:
-				return HttpResponseBadRequest()
-			print age
-		except MultiValueDictKeyError:
-			return HttpResponseBadRequest()"""
 
 	elif request.method != "GET":
 		return method_not_allowed(request)

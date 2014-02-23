@@ -2,14 +2,16 @@ from django.utils import simplejson
 from dajaxice.decorators import dajaxice_register
 from django.template import loader, RequestContext
 from forms import ReviewClassForm, ProfileEditionForm
+from django.utils import timezone
 
 from django.utils.datastructures import MultiValueDictKeyError
+from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 
-from models import UserProfile, ForumComment, Subject, ForumComment
+from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx,  process_profile_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post
 
 @dajaxice_register(method='GET')
 @login_required
@@ -58,13 +60,10 @@ def process_class(request,form):#TODO mirar el campo class del form
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		templ = loader.get_template('checkin.html')
-		try:
-			profile = request.user.userprofile
-		except UserProfile.DoesNotExist:
-			return send_error(request, 'No tienes un perfil creado.', '/checkin')
-		cont = RequestContext(request, {'profile':profile, 'form': ReviewClassForm()})
-		html = templ.render(cont)
+		ctx = get_checkin_ctx(request)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/checkin")
+		html = loader.get_template('checkin.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
 	else:
 		return wrongMethodJson(request)
@@ -74,10 +73,41 @@ def checkin(request):
 def process_checkin(request, form):
 	""" procesa un check in"""
 	if request.method == "POST":
-		print form["longitude"]
-		print form["latitude"]
-		print form["accuracy"]
-		print form["codeword"]
+		try:
+			try:
+				idsubj = int(form["idsubj"])
+			except ValueError:
+				return simplejson.dumps({'error':'Informacion de la asignatura incorrecta.'})
+			try:
+				profile = UserProfile.objects.get(user=request.user)
+				subject = profile.subjects.get(id=idsubj)
+				lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
+													end_time__gte=timezone.now())
+			except UserProfile.DoesNotExist:
+				return simplejson.dumps({'error':'No tienes un perfil creado.'})
+			except Subject.DoesNotExist:
+				return simplejson.dumps({'error':'No estas matriculado en esa asignatura.'})
+			except Lesson.DoesNotExist:
+				return simplejson.dumps({'error':'Ahora no hay ninguna clase de la asignatura ' + 
+										str(subject)})
+			except Lesson.MultipleObjectsReturned:
+				return simplejson.dumps({'error':'Actualmente hay dos clases de ' + 
+										str(subject) + 
+										', por favor, contacte con un administrador'})
+
+			print form["longitude"]
+			print form["latitude"]
+			print form["accuracy"]
+			print form["codeword"]
+			
+			checkin = CheckIn(user=request.user, lesson=lesson, mark=form["id_mark"],
+								comment=form["id_comment"])
+		except KeyError:
+			return simplejson.dumps({'error': 'Formulario incorrecto.'})
+		try:
+			checkin.save()
+		except IntegrityError:
+			return simplejson.dumps({'error': 'Ya habias realizado el checkin para esta clase.'})
 		return simplejson.dumps({'ok': True})
 	else:
 		return wrongMethodJson(request)

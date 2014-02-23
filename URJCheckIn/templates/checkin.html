@@ -3,12 +3,18 @@
 <!script src="/jscript/location.js"script>
 
 <h1 id="maintitle">URJCheckIn</h1>
-<h3 id= "subtitle">Realiza el Check In de la clase/seminario {info clase}</h3>
+<h3 id= "subtitle">Realiza el Check In</h3>
 
 <form name="checkin" id="checkinbox" onsubmit="checkIn(); return false;">
 	{% csrf_token %}
 	<fieldset>
 		<legend>Check in</legend>
+		Asignatura: 
+		<select id="subject_select" required>
+			{% for subject in subjects %}
+				<option value="{{subject.id}}">{{subject}}</option>
+			{% endfor %}
+		</select> <br/>
 		<label for="codeword">C&oacute;digo: </label>
 		<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required/>
 		{%if profile.is_student%}
@@ -23,5 +29,8 @@
 		<button type="submit" name="checkin_submit" >Check In</button>
 	</fieldset>
 </form>
+
+<div id="result_checkin">
+</div>
 
 

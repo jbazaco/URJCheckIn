@@ -6,11 +6,10 @@
 	si se produce un error, siendo 'XXXX' un string describiendo el error"""
 from models import UserProfile, Lesson, Subject
 from django.utils import timezone
-from forms import ProfileEditionForm
+from forms import ProfileEditionForm, ReviewClassForm
 
 def get_class_ctx(request, idclass):
 	"""Devuelve el contexto para la plantilla class.html"""
-	#TODO a otro fichero en el que explique lo que devuelve
 	try:
 		lesson = Lesson.objects.get(id=idclass)
 		try:
@@ -37,7 +36,6 @@ def get_class_ctx(request, idclass):
 
 def get_subject_ctx(request, idsubj):
 	"""Devuelve el contexto para la plantilla class.html"""
-	#TODO a otro fichero en el que explique lo que devuelve
 	try:
 		subject = Subject.objects.get(id=idsubj)
 		try:
@@ -54,6 +52,18 @@ def get_subject_ctx(request, idsubj):
 			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject}
+
+def get_checkin_ctx(request):
+	"""Devuelve el contexto para la plantilla class.html"""
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	
+	subjects = profile.subjects.all()
+	return {'htmlname': 'checkin.html', 'form': ReviewClassForm(), 
+			'profile':profile, 'subjects':subjects}
+
 
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""

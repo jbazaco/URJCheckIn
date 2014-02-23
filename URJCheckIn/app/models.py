@@ -94,6 +94,9 @@ class CheckIn(models.Model):
 	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='puntuacion', blank=True)
 	comment = models.TextField(max_length=250, verbose_name='comentario', blank=True)
 
+	class Meta:
+		unique_together = ("user", "lesson")
+
 	def __unicode__(self):
 		return u"Checkin de %s" % (self.lesson)
 
@@ -101,7 +104,7 @@ class CheckIn(models.Model):
 class LessonComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
-	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
+	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')#TODO Quitar?,innecesario
 	comment = models.TextField(max_length=250, verbose_name='comentario')
 	
 	class Meta:
