@@ -42,13 +42,12 @@ def get_subject_ctx(request, idsubj):
 			profile = subject.userprofile_set.get(user=request.user)
 		except UserProfile.DoesNotExist:
 			return {'error': 'No est&aacutes matriculado en ' + subject}
-		#TODO lessons = subject.lesson_set.filter(date__gte = start, date__lte = end)
-		lessons = subject.lesson_set.all()#TODO cambiar por la linea anterior
+		lessons = subject.lesson_set.all()
 		profesors = subject.userprofile_set.filter(is_student=False)
 	except Subject.DoesNotExist:
 		return {'error': '#404 La asignatura a la que intentas acceder no existe.'}
-	return {'classes_f': lessons.filter(start_time__gt=timezone.now()),
-			'classes_p': lessons.filter(end_time__lt=timezone.now()),
+	return {'classes_f': lessons.filter(start_time__gte=timezone.now()),
+			'classes_p': lessons.filter(end_time__lte=timezone.now()),
 			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject}

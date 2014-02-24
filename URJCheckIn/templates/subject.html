@@ -27,7 +27,7 @@
 		{% for class in classes_n %}
 			<ul class="classes_list">
 				<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-					{{class.start_time}} QUE PONGA SI HAY CHECKIN
+					{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 				</a></li>
 			</ul>
 		{% endfor %}
@@ -37,8 +37,8 @@
 	{% for class in classes_f%}
 		<ul class="classes_list">
 			<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-				{{class.start_time}}
-			</a></li>
+				{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+			</a> dentro de {{ class.start_time|timeuntil }}</li>
 		</ul>
 	{%empty%}
 		<span>No hay clases programadas</span>
@@ -50,9 +50,11 @@
 	{% for class in classes_p %}
 		<ul class="classes_list">
 			<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-				{{class.start_time}} QUE PONGA SI HAY CHECKIN
+				{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 			</a></li>
 		</ul>
+	{%empty%}
+		<span>Todav&iacute;a no ha habido clases</span>
 	{% endfor %}
 	<!boton para cargar mas>
 </div>
