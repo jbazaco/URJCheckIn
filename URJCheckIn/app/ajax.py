@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
 
 @dajaxice_register(method='GET')
 @login_required
@@ -113,15 +113,10 @@ def wrongMethodJson(request):
 def subjects(request):
 	"""Devuelve el contenido de la pagina de las asignaturas"""
 	if request.method == "GET":
-		try:
-			profile = UserProfile.objects.get(user=request.user)
-		except (UserProfile.DoesNotExist, User.DoesNotExist):			
-			return send_error(request, 'No tienes un perfil creado.', '/subjects')
-		subjects = profile.subjects.all()
-		#TODO separar las que son seminarios de las que no
-		templ = loader.get_template('subjects.html')
-		cont = RequestContext(request, {'subjects':subjects})
-		html = templ.render(cont)
+		ctx = get_subjects_ctx(request)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], '/subjects')
+		html = loader.get_template('subjects.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
 	else:
 		return wrongMethodJson(request)

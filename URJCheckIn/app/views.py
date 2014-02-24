@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -54,13 +54,13 @@ def profile(request, iduser):
 	if request.method == "POST":
 		if iduser == str(request.user.id):
 			resp = process_profile_post(request.POST, request.user)
+			if ('errors' in resp):
+				return render_to_response('main.html', {'htmlname': 'error.html',
+						'message': resp['errors']}, 
+						context_instance=RequestContext(request))
 		else:
 			return render_to_response('main.html', {'htmlname': 'error.html',
 					'message': 'Est&aacute;s intentando cambiar un perfil distinto del tuyo'}, 
-					context_instance=RequestContext(request))
-		if ('errors' in resp):
-			return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': resp['errors']}, 
 					context_instance=RequestContext(request))
 
 	elif request.method != "GET":
@@ -157,17 +157,13 @@ def subjects(request):
 	if request.method != 'GET':
 		return method_not_allowed(request)
 
-	try:
-		profile = request.user.userprofile
-	except UserProfile.DoesNotExist:
+	ctx = get_subjects_ctx(request)
+	if ('error' in ctx):
 		return render_to_response('main.html', {'htmlname': 'error.html',
-								'message': 'No tienes un perfil creado.'}, 
-								context_instance=RequestContext(request))
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'subjects.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
-	subjects = profile.subjects.all()
-	return render_to_response('main.html', {'htmlname': 'subjects.html', 
-							'subjects':subjects}, 
-							context_instance=RequestContext(request))
 
 @login_required
 def subject(request, idsubj):
