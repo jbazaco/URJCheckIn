@@ -25,7 +25,7 @@ def get_class_ctx(request, idclass):
 			except CheckIn.DoesNotExist:
 				lesson_state = 'no asististe'
 		else:
-			lesson_state = 'imperti&eacute;ndose en este momento'#TODO comprobar tilde(safe)
+			lesson_state = 'imperti&eacute;ndose en este momento'
 		comments = lesson.lessoncomment_set.all().order_by('-date')
 		profesors = lesson.subject.userprofile_set.filter(is_student=False)
 		#En caso de que se asigne un profesor a una clase en vez de todos se obtendria de otra forma

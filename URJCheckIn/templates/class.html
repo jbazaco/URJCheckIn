@@ -4,7 +4,7 @@
 <h1 id="maintitle">{{lesson}}</h1>
 
 <div id="class_info"> 
-	<strong>Estado: </strong> {{lesson_state}} </br><!se saca de la fecha>
+	<strong>Estado: </strong> {{lesson_state|safe}} </br><!se saca de la fecha>
 	<strong>Fecha: </strong> {{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}} <br/>
 	<strong>Profesor{{profesors|length|pluralize:"es"}}: </strong> 
 		<ul id="profesor_list">
