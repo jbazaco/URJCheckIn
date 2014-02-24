@@ -12,10 +12,6 @@ from django.contrib.auth.models import User
 
 from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
 
-#TODO comprobar que el usuario esta registrado antes de enviar una pagina
-# y actuar en consecuencia
-
-
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
 	return render_to_response('main.html', {'htmlname': '404.html'},	#mostrar en el html las paginas mas "frecuentes"
@@ -24,7 +20,7 @@ def not_found(request):
 
 
 @login_required
-def home(request):#TODO la pagina home.html realmente es la de login, la home real tengo que hacerla
+def home(request):#TODO tengo que hacer la pagina
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
@@ -47,7 +43,6 @@ def checkin(request):
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
-#TODO
 @login_required
 def profile(request, iduser):
 	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
@@ -65,7 +60,6 @@ def profile(request, iduser):
 
 	elif request.method != "GET":
 		return method_not_allowed(request)
-	#if existe el usuario
 	
 	ctx = get_profile_ctx(request, iduser)
 	if ('error' in ctx):

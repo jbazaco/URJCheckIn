@@ -40,7 +40,7 @@ def update_profile(request, iduser, form):
 		return wrongMethodJson(request)
 
 
-@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@dajaxice_register(method='POST')
 @login_required
 def process_class(request,form):#TODO mirar el campo class del form
 	if request.method == "POST":
@@ -61,7 +61,7 @@ def checkin(request):
 	else:
 		return wrongMethodJson(request)
 
-@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@dajaxice_register(method='POST')
 @login_required
 def process_checkin(request, form):
 	""" procesa un check in"""
@@ -85,14 +85,11 @@ def process_checkin(request, form):
 										str(subject)})
 			except Lesson.MultipleObjectsReturned:
 				return simplejson.dumps({'error':'Actualmente hay dos clases de ' + 
-										str(subject) + 
-										', por favor, contacte con un administrador'})
-
+						str(subject) + ', por favor, contacte con un administrador'})
 			print form["longitude"]
 			print form["latitude"]
 			print form["accuracy"]
 			print form["codeword"]
-			
 			checkin = CheckIn(user=request.user, lesson=lesson, mark=form["id_mark"],
 								comment=form["id_comment"])
 		except KeyError:
