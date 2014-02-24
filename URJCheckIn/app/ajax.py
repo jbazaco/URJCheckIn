@@ -11,24 +11,17 @@ from django.contrib.auth.decorators import login_required
 from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx
 
 @dajaxice_register(method='GET')
 @login_required
 def profile(request, iduser):
 	"""Devuelve el contenido de la pagina de perfil"""
 	if request.method == "GET":
-		templ = loader.get_template('profile.html')
-		try:
-			profile = UserProfile.objects.get(user=iduser)
-		except (UserProfile.DoesNotExist, User.DoesNotExist):			
-			return send_error(request,
-						'El usuario con id ' + iduser + ' no tiene perfil', 
-						'/profile/view/'+iduser)
-		cont = RequestContext(request, {'profile': profile, 
-						'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
-						'form': ProfileEditionForm()})
-		html = templ.render(cont)
+		ctx = get_profile_ctx(request, iduser)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], '/profile/view/'+iduser)
+		html = loader.get_template('profile.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/profile/view/'+iduser})
 	else:
 		return wrongMethodJson(request)

@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx
 
 #TODO comprobar que el usuario esta registrado antes de enviar una pagina
 # y actuar en consecuencia
@@ -67,19 +67,12 @@ def profile(request, iduser):
 		return method_not_allowed(request)
 	#if existe el usuario
 	
-	try:
-		profile = UserProfile.objects.get(user=iduser)#if user
-	except (UserProfile.DoesNotExist, User.DoesNotExist):			
+	ctx = get_profile_ctx(request, iduser)
+	if ('error' in ctx):
 		return render_to_response('main.html', {'htmlname': 'error.html',
-							'message': 'El usuario con id ' + iduser + ' no tiene perfil'}, 
-							context_instance=RequestContext(request))
-	return render_to_response('main.html', {'htmlname': 'profile.html', 'profile': profile, 
-					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
-					'form': ProfileEditionForm()
-					},#pasar user info
-			context_instance=RequestContext(request))
-	#else 
-	#return not_found(request)
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'profile.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
 #TODO

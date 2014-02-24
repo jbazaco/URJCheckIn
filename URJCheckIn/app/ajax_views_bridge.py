@@ -64,6 +64,13 @@ def get_checkin_ctx(request):
 	return {'htmlname': 'checkin.html', 'form': ReviewClassForm(), 
 			'profile':profile, 'subjects':subjects}
 
+def get_profile_ctx(request, iduser):
+	"""Devuelve el contexto para la plantilla profile.html"""
+	try:
+		profile = UserProfile.objects.get(user=iduser)
+	except UserProfile.DoesNotExist:			
+		return {'error': 'El usuario con id ' + iduser + ' no tiene perfil'}
+	return {'profile': profile, 'form': ProfileEditionForm()}
 
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
