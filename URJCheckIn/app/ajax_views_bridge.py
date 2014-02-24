@@ -79,8 +79,8 @@ def get_subjects_ctx(request):
 	except (UserProfile.DoesNotExist, User.DoesNotExist):			
 		return {'error': 'No tienes un perfil creado.'}
 	subjects = profile.subjects.all()
-	#TODO separar las que son seminarios de las que no
-	return {'subjects':subjects}
+	return {'subjects':subjects.filter(is_seminar=False), 
+			'seminars':subjects.filter(is_seminar=True)}
 
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
