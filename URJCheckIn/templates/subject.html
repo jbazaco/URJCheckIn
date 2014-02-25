@@ -1,25 +1,60 @@
 
-<h1 id="maintitle">Clases</h1>
+<h1 id="maintitle">Clases de {{subject}}</h1>
 
-<h2 class="subtitle">Pr&oacute;ximas clases</h1>
+<div id="subject_info"> 
+	<strong>Asignatura: </strong> {{subject.name}} </br>
+	<strong>Grado: </strong> {{subject.degree.name}} </br>
+	<strong>Profesor{{profesors|length|pluralize:"es"}}: </strong> 
+		<ul id="profesor_list">
+			{%for prof in profesors%}
+				<li>
+					<a onClick="ask_ajax_page('profile', loadAjaxPage, 
+					{'iduser': '{{prof.user.id}}'}); return false;" 
+					href="/profile/view/{{prof.user.id}}">
+						{{prof.user.first_name}} {{prof.user.last_name}}
+					</a>
+				</li>
+			{% empty %}
+				La asignatura no es impartida por ning&uacute;n profesor.
+			{%endfor%}
+		</ul>
+</div>
 
-{% for class in classes %}
-	<ul id="subjects_list">
-		<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-			{{class.name}}
-		</a></li>
-	</ul>
-{% endfor %}
-<!boton para cargar mas>
-<br/>
-<h2 class="subtitle">&Uacuteltimas clases</h1>
+<div id="classes">
+	{%if classes_n%}
+		<br/>
+		<h2 class="subtitle">Clases imparti&eacute;ndose</h1>
+		{% for class in classes_n %}
+			<ul class="classes_list">
+				<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
+					{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+				</a></li>
+			</ul>
+		{% endfor %}
+	{%endif%}
+	<br/>
+	<h2 class="subtitle">Pr&oacute;ximas clases</h1>
+	{% for class in classes_f%}
+		<ul class="classes_list">
+			<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
+				{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+			</a> dentro de {{ class.start_time|timeuntil }}</li>
+		</ul>
+	{%empty%}
+		<span>No hay clases programadas</span>
+	{% endfor %}
+	<!boton para cargar mas>
+	<br/>
+	<h2 class="subtitle">&Uacuteltimas clases</h1>
 
-{% for class in classes %}
-	<ul id="subjects_list">
-		<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-			{{class.name}} QUE PONGA SI HAY CHECKIN
-		</a></li>
-	</ul>
-{% endfor %}
-<!boton para cargar mas>
-
+	{% for class in classes_p %}
+		<ul class="classes_list">
+			<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
+				{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+			</a></li>
+		</ul>
+	{%empty%}
+		<span>Todav&iacute;a no ha habido clases</span>
+	{% endfor %}
+	<!boton para cargar mas>
+</div>

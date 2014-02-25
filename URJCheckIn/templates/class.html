@@ -1,67 +1,60 @@
 <!Este fichero tiene muchos elementos con los atributos justos para empezar a ver como queda, hay que poner mas atributos a muchos elementos>
 
 
-<h1 id="maintitle">Clase de {class.subject}</h1>
+<h1 id="maintitle">{{lesson}}</h1>
 
 <div id="class_info"> 
-	<strong>Estado: </strong> {sin asistir | asistida | sin realizar} </br><!se saca de la fecha>
-	<strong>Fecha: </strong> {class.date} <br/>
-	<strong>Profesor: </strong> {class.teacher}	<br/>
+	<strong>Estado: </strong> {{lesson_state|safe}} </br><!se saca de la fecha>
+	<strong>Fecha: </strong> {{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}} <br/>
+	<strong>Profesor{{profesors|length|pluralize:"es"}}: </strong> 
+		<ul id="profesor_list">
+			{%for prof in profesors%}
+				<li>
+					<a onClick="ask_ajax_page('profile', loadAjaxPage, 
+					{'iduser': '{{prof.user.id}}'}); return false;" 
+					href="/profile/view/{{prof.user.id}}">
+						{{prof.user.first_name}} {{prof.user.last_name}}
+					</a>
+				</li>
+			{% empty %}
+				La clase no es impartida por ning&uacute;n profesor.
+			{%endfor%}
+		</ul>
+	<br/>
+	<strong>Aula: </strong> {{lesson.room}}	<br/>
 	<strong>More: </strong> {more} <br/>
 </div>
 
 <div id="class_coments">
 	<h3>Comentarios del profesor</h3> <!no se todavia si solo comenta el profesor o todos>
 	<ul>
-	{for comment in comments}
-		<li>comentario con info de fecha</li> <!no se todavia si solo comenta el profesor o todos>
-	{endfor}
+	{%for comment in comments%}
+		<li>{{comment.comment}} {{comment.date|date:'d-m-Y H:i'}}</li> <!no se todavia si solo comenta el profesor o todos>
+	{%endfor%}
 	</ul>
-	{if profesor}<!no se todavia si solo comenta el profesor o todos>
+	{%if not profile.is_student%}<!no se todavia si solo comenta el profesor o todos>
 		<button type="button"> Editar comentarios </button> <!codigo javascript que pone botones para eliminar comentarios>
 		<br/>
 		<form id="comment_class_form"> 
 			<input type="text" maxlength="150">
 			<button type="submit">Enviar comentario</button>
 		</form>
-	{endif}
+	{%endif%}
 </div>
-
-{if alumno}
-	{if fecha menor que actual}
-		{if checkin and no valorada}
-			<form id="review_form">
-				<fieldset>
-					<legend> Valoraci&oacute;n de la clase</legend>
-					<label for="id_mark">Puntuaci&oacute;n:</label>
-					{{form.mark}}
-					<br/>
-					<label for="id_comment">Comentario:</label>
-					{{form.comment}}
-					<br/>
-					<button type="submit">Enviar valoraci&oacute;n</button>
-				</fieldset>
-			</form>
-		{elif checkin and valorada}
-			<div id="class_review">
-				<strong>Puntuaci&oacute;n: </strong> 1..5
+<div id="change_date">
+	{%if not profile.is_student%}
+		{%ifequal lesson_state "sin realizar"%}
+			<form id="change_date">
+				<label for="id_date">Cambiar fecha </label>
+				<input id="id_date" type="datetime-local" required> <!no sale en firefox!!!!>
+				<button type="button">Ver aulas</button><!javascript pregunta aulas libres>
 				<br/>
-				<strong>Comentario: </strong> comentario o en blanco
-			</div>
-		{endif}		
-	{endif}
-{else}
-	{if fecha menor que actual}
-		<form id="change_date">
-			<label for="id_date">Cambiar fecha </label>
-			<input id="id_date" type="datetime-local" required> <!no sale en firefox!!!!>
-			<button type="button">Ver aulas</button><!javascript pregunta aulas libres>
-			<br/>
-			<label for="id_room">Aula </label>
-			<input id="id_room" type="number" required>
-			<br/>
-			<button type="submit">Cambiar fecha</button>
-		</form>
-	{endif}	
-{endif}
+				<label for="id_room">Aula </label>
+				<input id="id_room" type="number" required>
+				<br/>
+				<button type="submit">Cambiar fecha</button>
+			</form>
+		{%endifequal%}
+	{%endif%}
+</div>
 

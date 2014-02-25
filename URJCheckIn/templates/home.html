@@ -2,24 +2,5 @@
 <h1 id="maintitle">URJCheckIn</h1>
 <h3 id= "subtitle">Bienvenido a la p&aacute;gina</h3>
 
-{% if request.user.is_authenticated %}
-	<h2>Sesion iniciada:</h2>
-	Registrado como {{request.user.username}}. 
-	<a href="/logout?next={{request.path}}">Logout</a>.
-{% else %}
-	<div id="logbox">
-		<form name="login" action="/login?next={{request.path}}" method="POST">
-			<fieldset>		
-				<legend>Inicia Sesi&oacute;n:</legend>
-				{% csrf_token %}
-				<label for="id_username">Usuario:</label>
-				<input id="id_username" type="text" name="username" maxlength="30" size="15px"/><br/>
-				<label for="id_password">Contrase&ntildea:</label>
-				<input type="password" name="password" id="id_password" size="15px"/><!la consola avisa de problemas de seguridad desde que utilizo dajaxixe, solo por este input><!ponerlo en otra pagina sin el esquema de main>
-				</br>
-				<input type="submit" value="Enviar">
-			</fieldset>
-		</form>
-	</div>
-{% endif %}
+P&aacute;gina principal, sin hacer
 

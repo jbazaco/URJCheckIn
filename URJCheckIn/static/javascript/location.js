@@ -7,13 +7,17 @@ function checkIn() {
 }
 
 function sendLocation(position) {
+	$('#result_checkin').html("");
 	var codeword = $('#codeword');
 	if (codeword && codeword.val()) {
 		var info = {
 					'latitude':  position.coords.latitude,
 					'longitude': position.coords.longitude,
 					'accuracy': position.coords.accuracy,
-					'codeword': codeword.val()
+					'idsubj': $('#subject_select').val(),
+					'codeword': codeword.val(),
+					'id_mark': $('#id_mark').val() ? $('#id_mark').val():0,
+					'id_comment': $('#id_comment').val() ? $('#id_comment').val():""
 				};
 		/*$.post("http://" + document.location.host + "/checkin", info, 
 				function() { codeword.val("CheckIn realizado"); }) //TODO cambiar, poner en otro sitio el mensaje
@@ -26,12 +30,12 @@ function sendLocation(position) {
 
 function checkinDone(data) {
 	if (data.error) {
-		alert("Error: " + data.error);
+		$('#result_checkin').html("Error: " + data.error);
 	} else if (data.ok) {
 		$('#codeword').val('');
 					//TODO enviar a la pagina de la clase para que la valore
 		//TODO quitar cuando este el TODO anterior
-		alert("¡Check in realizado!")
+		$('#result_checkin').html("¡Check in realizado!");
 	}
 }
 

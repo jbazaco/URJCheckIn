@@ -3,12 +3,14 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from forms import ReviewClassForm, ProfileEditionForm
+from models import UserProfile, ForumComment, Lesson, CheckIn
+from django.contrib.auth.models import User
 
-#TODO comprobar que el usuario esta registrado antes de enviar una pagina
-# y actuar en consecuencia
-
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -17,7 +19,8 @@ def not_found(request):
 		context_instance=RequestContext(request))
 
 
-def home(request):#TODO la pagina home.html realmente es la de login, la home real tengo que hacerla
+@login_required
+def home(request):#TODO tengo que hacer la pagina
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
@@ -25,46 +28,49 @@ def home(request):#TODO la pagina home.html realmente es la de login, la home re
 	return render_to_response('main.html', {'htmlname': 'home.html'},
 		context_instance=RequestContext(request))
 
-
+@login_required
 def checkin(request):
 	"""Devuelve la pagina para hacer check in, no procesa un checkin ya que la informacion enviada
 		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
 	if request.method != "GET":
 		return method_not_allowed(request)
-	
-	return render_to_response('main.html', {'htmlname': 'checkin.html'},
-			context_instance=RequestContext(request))
 
-#TODO
+	ctx = get_checkin_ctx(request)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'checkin.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
+
+@login_required
 def profile(request, iduser):
 	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
 	if request.method == "POST":
-		#comprobar user = usuarioregistrado
-		qd = request.POST
-		try:
-			#TODO con el resto de campos
-			try:
-				age = int(qd.__getitem__("age"))
-			except ValueError:
-				return HttpResponseBadRequest()
-			print age
-		except MultiValueDictKeyError:
-			return HttpResponseBadRequest()
+		if iduser == str(request.user.id):
+			resp = process_profile_post(request.POST, request.user)
+			if ('errors' in resp):
+				return render_to_response('main.html', {'htmlname': 'error.html',
+						'message': resp['errors']}, 
+						context_instance=RequestContext(request))
+		else:
+			return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': 'Est&aacute;s intentando cambiar un perfil distinto del tuyo'}, 
+					context_instance=RequestContext(request))
 
 	elif request.method != "GET":
 		return method_not_allowed(request)
-	#if existe el usuario
 	
-	return render_to_response('main.html', {'htmlname': 'profile.html', 'user': {'name':iduser, 'student': False, 'id':iduser}, 
-					'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
-					'form': ProfileEditionForm()
-					},#pasar user info
-			context_instance=RequestContext(request))
-	#else 
-	#return not_found(request)
+	ctx = get_profile_ctx(request, iduser)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'profile.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
 #TODO
+@login_required
 def profile_img(request, user):
 	"""Devuelve la foto de perfil del usuario user"""
 	return render_to_response('main.html', {'htmlname': '404.html'},
@@ -91,7 +97,7 @@ action_class = {'delete': delete_class,
 				#'check': check_class,
 }
 
-
+@login_required
 def process_class(request, idclass):
 	"""Procesa las peticiones sobre una clase o seminario"""
 	if request.method == "POST":
@@ -103,9 +109,13 @@ def process_class(request, idclass):
 		except MultiValueDictKeyError:
 			pass
 		return HttpResponseBadRequest()
-
-	return render_to_response('main.html', {'htmlname': 'class.html','form': ReviewClassForm()},
-		context_instance=RequestContext(request))
+	
+	ctx = get_class_ctx(request, idclass)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'class.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
 def method_not_allowed(request):
@@ -115,7 +125,7 @@ def method_not_allowed(request):
 						context_instance=RequestContext(request))
 	#405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);
 
-
+@login_required
 def forum(request):
 	"""Devuelve la pagina del foro y almacena comentarios nuevos"""
 	if request.method == "POST":
@@ -125,25 +135,40 @@ def forum(request):
 		except MultiValueDictKeyError:
 			return HttpResponseBadRequest()
 		comment = comment[:150] #si el comentario tiene mas de 150 caracteres se corta
-		print comment
-	
+		ForumComment(comment=comment, user=request.user).save()
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
+	#TODO paginator si no hay javascript?
+	comments = ForumComment.objects.filter().order_by('-date')[:10]
 	return render_to_response('main.html', {'htmlname': 'forum.html',
-				'comments':[
-					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
-					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
-				]
-				},
+				'comments':comments},
 				context_instance=RequestContext(request))
 
+@login_required
 def subjects(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
-	return render_to_response('main.html', {'htmlname': 'subjects.html', 'subjects':[{'name':'subject1', 'id':'111'}, 
-					{'name':'subject2', 'id':'222'}]}, context_instance=RequestContext(request))
+	if request.method != 'GET':
+		return method_not_allowed(request)
 
+	ctx = get_subjects_ctx(request)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'subjects.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
+
+@login_required
 def subject(request, idsubj):
-	"""Devuelve la pagina con las clases de una asignatura"""
-	return render_to_response('main.html', {'htmlname': 'subject.html','classes':[{'name':'class1', 'id':'111'}, 
-					{'name':'class2', 'id':'222'}]}, context_instance=RequestContext(request))
+	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
+	if request.method != 'GET':
+		return method_not_allowed(request)
+	
+	ctx = get_subject_ctx(request, idsubj)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'subject.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+

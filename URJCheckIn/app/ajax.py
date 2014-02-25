@@ -2,40 +2,46 @@ from django.utils import simplejson
 from dajaxice.decorators import dajaxice_register
 from django.template import loader, RequestContext
 from forms import ReviewClassForm, ProfileEditionForm
+from django.utils import timezone
 
 from django.utils.datastructures import MultiValueDictKeyError
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
-#Por ahora todas las funciones estan incompletas, hay que terminarlas cuando este la BD
+from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
+from django.contrib.auth.models import User
+
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
 
 @dajaxice_register(method='GET')
+@login_required
 def profile(request, iduser):
 	"""Devuelve el contenido de la pagina de perfil"""
 	if request.method == "GET":
-		templ = loader.get_template('profile.html')
-		cont = RequestContext(request, {'user': {'name':iduser, 'student': False, 'id':iduser}, 
-						'classes': [{'id':'idclase1', 'name':'clase1'}, {'id':'idclase2', 'name':'clase2'}],
-						'form': ProfileEditionForm()})
-		html = templ.render(cont)
+		ctx = get_profile_ctx(request, iduser)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], '/profile/view/'+iduser)
+		html = loader.get_template('profile.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/profile/view/'+iduser})
 	else:
 		return wrongMethodJson(request)
 
 
 @dajaxice_register(method='POST')
+@login_required
 def update_profile(request, iduser, form):
 	"""Modifica el perfil del usuario registrado"""
 	if request.method == "POST":
-		#comprobar user = usuarioregistrado
-		pform = ProfileEditionForm(form)
-		if not pform.is_valid():
-			return simplejson.dumps({'errors': pform.errors});
-		data = pform.cleaned_data
-		return simplejson.dumps({'user':{'id': iduser, 'age':data['age']}})#coger datos del usuario tras guardar
+		if iduser == str(request.user.id):
+			return simplejson.dumps(process_profile_post(form, request.user))
+		else:
+			return simplejson.dumps({'errors': ['Estas intentando cambiar un perfil distinto del tuyo']})#TODO pone en el alert '0: Estas....'
 	else:
 		return wrongMethodJson(request)
 
 
-@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@dajaxice_register(method='POST')
+@login_required
 def process_class(request,form):#TODO mirar el campo class del form
 	if request.method == "POST":
 		return simplejson.dumps({'deleteFromDOM':['#xc_'+form['idclass']]})
@@ -43,22 +49,55 @@ def process_class(request,form):#TODO mirar el campo class del form
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def checkin(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		html = loader.get_template('checkin.html').render(RequestContext(request, {}))
+		ctx = get_checkin_ctx(request)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/checkin")
+		html = loader.get_template('checkin.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
 	else:
 		return wrongMethodJson(request)
 
-@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@dajaxice_register(method='POST')
+@login_required
 def process_checkin(request, form):
 	""" procesa un check in"""
 	if request.method == "POST":
-		print form["longitude"]
-		print form["latitude"]
-		print form["accuracy"]
-		print form["codeword"]
+		try:
+			try:
+				idsubj = int(form["idsubj"])
+			except ValueError:
+				return simplejson.dumps({'error':'Informacion de la asignatura incorrecta.'})
+			try:
+				profile = UserProfile.objects.get(user=request.user)
+				subject = profile.subjects.get(id=idsubj)
+				lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
+													end_time__gte=timezone.now())
+			except UserProfile.DoesNotExist:
+				return simplejson.dumps({'error':'No tienes un perfil creado.'})
+			except Subject.DoesNotExist:
+				return simplejson.dumps({'error':'No estas matriculado en esa asignatura.'})
+			except Lesson.DoesNotExist:
+				return simplejson.dumps({'error':'Ahora no hay ninguna clase de la asignatura ' + 
+										str(subject)})
+			except Lesson.MultipleObjectsReturned:
+				return simplejson.dumps({'error':'Actualmente hay dos clases de ' + 
+						str(subject) + ', por favor, contacte con un administrador'})
+			print form["longitude"]
+			print form["latitude"]
+			print form["accuracy"]
+			print form["codeword"]
+			checkin = CheckIn(user=request.user, lesson=lesson, mark=form["id_mark"],
+								comment=form["id_comment"])
+		except KeyError:
+			return simplejson.dumps({'error': 'Formulario incorrecto.'})
+		try:
+			checkin.save()
+		except IntegrityError:
+			return simplejson.dumps({'error': 'Ya habias realizado el checkin para esta clase.'})
 		return simplejson.dumps({'ok': True})
 	else:
 		return wrongMethodJson(request)
@@ -67,48 +106,53 @@ def wrongMethodJson(request):
 	return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
 
 @dajaxice_register(method='GET')
+@login_required
 def subjects(request):
 	"""Devuelve el contenido de la pagina de las asignaturas"""
 	if request.method == "GET":
-		templ = loader.get_template('subjects.html')
-		cont = RequestContext(request, {'subjects':[{'name':'subject1', 'id':'111'}, {'name':'subject2', 'id':'222'}]})
-		html = templ.render(cont)
+		ctx = get_subjects_ctx(request)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], '/subjects')
+		html = loader.get_template('subjects.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
 	else:
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def subject(request, idsubj):
 	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
 	if request.method == "GET":
-		templ = loader.get_template('subject.html')
-		cont = RequestContext(request, {'classes':[{'name':'class1', 'id':'111'}, {'name':'class2', 'id':'222'}]})
-		html = templ.render(cont)
+		ctx = get_subject_ctx(request, idsubj)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/subjects/"+str(idsubj))
+		html = loader.get_template('subject.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects/'+str(idsubj)})
 	else:
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def class_info(request, idclass):
-	"""Devuelve el contenido de la pagina de la asignatura indicada en idsubj"""
+	"""Devuelve el contenido de la pagina de la clase indicada en idclass"""
 	if request.method == "GET":
-		templ = loader.get_template('class.html')
-		cont = RequestContext(request, {'form': ReviewClassForm()})
-		html = templ.render(cont)
+		ctx = get_class_ctx(request, idclass)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/class/"+str(idclass))
+		html = loader.get_template('class.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
 	else:
 		return wrongMethodJson(request)
 
+#TODO una funcion que mande nuevos comentarios si hay nuevos y se sigue en la pagina
 @dajaxice_register(method='GET')
+@login_required
 def forum(request):
 	"""Devuelve el contenido de la pagina del foro"""
 	if request.method == "GET":
+		comments = ForumComment.objects.filter().order_by('-date')[:10]
 		templ = loader.get_template('forum.html')
-		cont = RequestContext(request, {'comments':[
-					{'user':{'id':'id1', 'name':'name1', 'surname1':'sur1', 'surname2':'sur2'}, 'content':'comentario 1'},
-					{'user':{'id':'id2', 'name':'name2', 'surname1':'sur12', 'surname2':'sur22'}, 'content':'comentario 2'}
-				]
-				})
+		cont = RequestContext(request, {'comments': comments})
 		html = templ.render(cont)
 		return simplejson.dumps({'#mainbody':html, 'url': '/forum'})
 	else:
@@ -116,16 +160,18 @@ def forum(request):
 
 
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@login_required
 def publish_forum(request, comment):
 	""" procesa un check in"""
 	if request.method == "POST":
-		print comment
+		ForumComment(comment=comment, user=request.user).save()
 		return simplejson.dumps({'ok': True})
 	else:
 		return wrongMethodJson(request)
 
 
 @dajaxice_register(method='GET')
+@login_required
 def home(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
@@ -135,8 +181,14 @@ def home(request):
 		return wrongMethodJson(request)
 
 @dajaxice_register(method='GET')
+@login_required
 def not_found(request, path):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
 	html = loader.get_template('404.html').render(RequestContext(request, {}))
 	return simplejson.dumps({'#mainbody':html, 'url': path})
 
+def send_error(request, error, url):
+	templ = loader.get_template('error.html')
+	cont = RequestContext(request, {'message':error})
+	html = templ.render(cont)
+	return simplejson.dumps({'#mainbody':html, 'url':url})
