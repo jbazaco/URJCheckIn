@@ -24,8 +24,10 @@
 	width:100%;
 	text-align: center;
 	padding: 1em 0;
-	background: url('/img/menubar.jpg') center repeat-x;/*La imagen tiene que extenderse en el eje-y TODO*/
-	background-size: auto 100%;
+	background: -webkit-linear-gradient(#FF3636, #A61212);
+	background: -o-linear-gradient(#FF3636, #A61212);
+	background: -moz-linear-gradient(#FF3636, #A61212);
+	background: linear-gradient(#FF3636, #A61212);
 	position:fixed;
 	top: 0px;
 	z-index:9999;
