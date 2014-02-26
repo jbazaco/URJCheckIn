@@ -2,28 +2,18 @@
 #maintitle {
 	color: red;
 	text-align: center;
-}
-
-#subtitle {
-	text-align: center;
+	margin-bottom: 1em;
 }
 
 #logbox {
 	text-align:center;
 }
 
-/*#header {
-	margin-left:auto;
-	margin-right:auto;
-	background: url('/img/header.jpg') no-repeat top left;
-	height: 200px;
-	width: 600px;
-}*/
-
-#menu_bar {
+/*start MENU_BAR*/
+#menu_bar header {
 	width:100%;
 	text-align: center;
-	padding: 1em 0;
+	/*padding: 1em 0;*/
 	background: -webkit-linear-gradient(#FF3636, #A61212);
 	background: -o-linear-gradient(#FF3636, #A61212);
 	background: -moz-linear-gradient(#FF3636, #A61212);
@@ -35,18 +25,19 @@
 }
 
 #menu_bar a {
-	padding: 1em 1em;
 	color: white;
 	text-decoration: none;
-	border-right: 1px solid;
+}
+
+.navbar-header .navbar-toggle .icon-bar {
+	background-color: white;
 }
 
 #menu_bar a.first {
-	border-left: 1px solid;
+	padding-right: 3em;
 }
 
-
-#menu_bar a:hover {
+#menu_bar a:hover,  #menu_bar a:focus {
 	background-color: red;
 }
 
@@ -57,17 +48,10 @@
 #checkinbox {
 	text-align:center;
 }
+/*end MENU_BAR*/
 
 #profile img{
 	float:left;
-}
-
-#comments {/*que no se centre el texto, solo el bloque*/
-	text-align:center;
-}
-
-#comment_form {
-	text-align:center;
 }
 
 #profile {
@@ -82,3 +66,35 @@
 	position: absolute;
     z-index: 9;
 }
+
+/*start FORUM*/
+.comments .mic-info {
+	color: #666666;
+	font-size: 11px;
+}
+.comments .panel-heading a {
+	float: right;
+}
+.comment-text {
+	word-wrap: break-word;
+}
+
+#comment_form {
+	padding: 1em;
+}
+
+#comment_form button {
+	margin-top:10px;
+}
+
+#comment_form textarea {
+	resize: none;
+}
+
+#comment_box {
+	padding-right: 1em;
+	padding-left: 1em;
+}
+/*end FORUM*/
+
+
