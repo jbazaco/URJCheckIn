@@ -1,27 +1,48 @@
 
-<div id="subjects">
-	<h1 id="maintitle">Mis asignaturas</h1>
+<h2 id="maintitle">
+	Asignaturas y seminarios <br/>
+	<small>Accede a la informaci&oacute;n de tus asignaturas</small>
+</h2>
 
-	{% for subject in subjects %}
-		<ul class="subjects_list">
-			<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}">
-				{{subject.name}}
-			</a></li>
-		</ul>
-	{% endfor %}
+ <div class="row">
+	<div class="col-sm-6">
+		<div id="subjects">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Mis asignaturas</h3>
+				</div>
+				<ul class="subjects_list list-group">
+					{% for subject in subjects %}
+						<a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="/subjects/{{subject.id}}" class="list-group-item">
+							{{subject.name}}
+						</a>
+					{% empty %}
+						<li class="list-group-item">
+							No est&aacute;s matriculado en ninguna asignatura
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+		<div class="col-sm-6">
+			<div id="seminars">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Mis seminarios</h3>
+				</div>
+				<ul class="subjects_list list-group">
+					{% for seminar in seminars %}
+						<a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{seminar.id}}}); return false;" href="/subjects/{{subject.id}}" class="list-group-item">
+							{{seminar.name}}
+						</a>
+					{% empty %}
+						<li class="list-group-item">
+							No est&aacute;s apuntado a ning&uacute;n seminario
+						</li>
+						<!TODO link a pagina para apuntarse>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
 </div>
-<br/>
-<div id="seminars">
-	<h1 id="maintitle">Mis seminarios</h1>
-
-	{% for seminar in seminars %}
-		<ul class="subjects_list">
-			<li><a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{seminar.id}}}); return false;" href="/subjects/{{subject.id}}">
-			{{seminar.name}}
-			</a></li>
-		</ul>
-	{% empty %}
-		No est&aacute;s apuntado a ning&uacute;n seminario<!TODO link a pagina para apuntarse>
-	{% endfor %}
-</div>
-
