@@ -1,12 +1,15 @@
 
-<!script src="/jscript/csrf_token.js"script>
-<!script src="/jscript/location.js"script>
+<!--
+<script src="/jscript/csrf_token.js"script>
+<script src="/jscript/location.js"script>
+-->
 
 <h2 id="maintitle">
 	URJCheckIn <br/>
 	<small>Realiza el Check In</small>
 </h2>
 
+<!--TODO poner varios metodos en un rectangulo con pestanas, mostrando la de sin js siempre o la primera-->
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div class="span2 well">
@@ -28,7 +31,7 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="codeword">C&oacute;digo: </label>
 						<div class="col-sm-10">
-							<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required/>
+							<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required>
 						</div>
 					</div>
 					{%if profile.is_student%}

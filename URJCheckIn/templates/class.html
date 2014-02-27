@@ -1,4 +1,4 @@
-<!Este fichero tiene muchos elementos con los atributos justos para empezar a ver como queda, hay que poner mas atributos a muchos elementos>
+<!--TODO Este fichero tiene muchos elementos con los atributos justos para empezar a ver como queda, hay que poner mas atributos a muchos elementos-->
 
 <h2 id="maintitle">{{lesson}}</h2>
 
@@ -33,16 +33,16 @@
 	</dl>
 </div>
 
-<div id="class_coments" class="row"><!partiendo de http://bootsnipp.com/snippets/featured/recent-comments-admin-panel>
+<div id="class_coments" class="row"><!--partiendo de http://bootsnipp.com/snippets/featured/recent-comments-admin-panel-->
 	<div class="col-md-10 col-md-offset-1">
 		<div class="panel panel-default comments">
 			<div class="panel-heading">
 				<span class="glyphicon glyphicon-comment"></span> Comentarios de{{profesors|length|pluralize:"l, los"}} profesor{{profesors|length|pluralize:"es"}}
 			</div>
 			<ul class="list-group">
-				{%if not profile.is_student%}<!no se todavia si solo comenta el profesor o todos>
+				{%if not profile.is_student%}<!--no se todavia si solo comenta el profesor o todos-->
 					<li class="list-group-item">
-						<!TODO procesar el envio de mensajes>	
+						<!--TODO procesar el envio de mensajes-->	
 						<form name="comment_form" id="comment_form" onsubmit="sendComment(); return false;" action="" method="POST">
 							{% csrf_token %}
 							<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
