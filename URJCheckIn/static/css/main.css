@@ -50,13 +50,23 @@
 }
 /*end MENU_BAR*/
 
-#profile img{
-	float:left;
+
+/*start PROFILE*/
+
+#desc_profile {
+	word-wrap: break-word;
 }
 
 #profile {
 
 }
+
+#editing_profile textarea {
+	resize: none;
+}
+
+/*end PROFILE*/
+
 
 .subjects_list {
 	text-align:center;

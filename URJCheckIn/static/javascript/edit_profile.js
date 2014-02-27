@@ -3,10 +3,12 @@
 function showEditProfile(id) {
 	setForm();
 	$('#show_form')
-					.html('Cancelar')
-					.attr('onclick', "cancelEditProfile('"+id+"')")
-					.after('<button type="submit" name="checkin_submit" id="save_changes" form="profile_form"' + 
-								'>Guardar Cambios</button>');
+					.removeClass('show')
+					.addClass('hidden')
+	$('#editing_profile')
+					.removeClass('hidden')
+					.addClass('show')
+
 }
 
 /* Muestra el formulario inicializando su valor con la informacion del perfil y oculta el perfil*/
@@ -33,9 +35,11 @@ function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 /* Elimina el boton de cancelar y cambia el texto del otro boton a 'Editar perfil' y lo habilita */
 function restartButtons(id) {
 	$('#show_form')
-						.html('Editar perfil')
-						.attr('onclick', "showEditProfile('"+id+"')");
-	$('#save_changes').remove();
+					.removeClass('hidden')
+					.addClass('show');
+	$('#editing_profile')
+					.removeClass('show')
+					.addClass('hidden')
 	enableButtons(['button']);
 }
 
@@ -45,6 +49,7 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 		errorSaving(data.errors);
 	} else {
 		restartButtons(data.user.id);//TODO necesito la id!!
+		emptyPasswords();
 		hideElements(['#saving_profile']);
 		unsetForm(data.user);
 	}
@@ -75,7 +80,15 @@ function sendChanges(id) {
 /* Quita el formulario y vuelve a mostrar el perfil */
 function cancelEditProfile(id) {
 	hideElements(['#profile_form', '#photo_form']);
+	emptyPasswords();
 	$('#profile .fields').css('display','inherit');
 	restartButtons(id);
+}
+
+/*Vacia los inputs de passwords*/
+function emptyPasswords() {
+	$('#old_password').val('');
+	$('#new_password').val('');
+	$('#rep_password').val('');
 }
 

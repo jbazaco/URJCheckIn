@@ -8,7 +8,8 @@ class ReviewClassForm(forms.Form):
 class ProfileEditionForm(forms.Form):
 	age = forms.IntegerField(min_value=17, max_value=80, widget=forms.TextInput(attrs={
 			'required':'required','type':'number', 'min':17, 'max':'80', 'step':'1'}))
-	description = forms.CharField(max_length=200, widget=forms.Textarea(attrs={'maxlength':'200'}))
+	description = forms.CharField(max_length=200, widget=forms.Textarea(attrs={
+			'maxlength':'200', 'class': 'form-control', 'rows': '3'}))
 	#TODO poner el resto de campos
 
 

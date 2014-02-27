@@ -1,61 +1,155 @@
 
-<div id="profile">
-	<!Cambiar lo de iduser>
-	<img src="/profile/img/{{profile.user.id}}" alt="foto de perfil" height="60" width="60">
-	<div class="fields">
-		<strong>Nombre: </strong> <span id="name_profile">
-			{{profile.user.first_name}} {{profile.user.last_name}} {surname2}
-		</span>
-		<br/>
-		<strong>Edad: </strong> <span id="age_profile">{{profile.age}}</span>
-		<br/>
-		<strong>Descripci&oacute;n: </strong> <span id="desc_profile">{{profile.description}}</span>
-		{% if profile.is_student %}
-			<br/>
-			<strong>Estudia: </strong>
-			{% for degree in profile.degrees.all %}
-				{% if not forloop.first %}
-					,
-				{% endif %}
-				{{degree.name}}
-			{% endfor %}
-		{% else %}
-			<br/>
-			<strong>Ense&ntilde;a: </strong>
-			<ul id="degrees_list">
-				{% for degree in profile.degrees.all %}
-					<li class="degree">{{degree.name}}</li>
-				{% endfor %}
-			</ul>
-		{% endif %}
+<h1 id="maintitle">
+	Perfil de {{profile.user.first_name}} {{profile.user.last_name}}
+</h1>
+
+<div class="row">
+	<div id="profile">
+		<!Cambiar lo de iduser>
+		<div class="col-xs-6 col-xs-offset-3 col-sm-3 col-sm-offset-1">
+			<img src="{{ MEDIA_URL }}{profile.user.photo.url}" alt="foto de perfil" alt="foto de perfil" class="img-rounded img-responsive"><!TODO url imagen>
+		</div>
+		<dl class=" dl-horizontal fields col-xs-8 col-xs-offset-2 col-sm-8 col-sm-offset-0">
+			<div class="span2 well">
+			<dt>Nombre: </dt>
+			<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}</dd>
+			<dt>Edad: </dt>
+			<dd id="age_profile">{{profile.age}}</dd>
+			<dt>Descripci&oacute;n: </dt>
+			<dd id="desc_profile">{{profile.description}}</dd>
+			{% if profile.is_student %}
+				<dt>Estudia: </dt>
+				<dd>
+					{% for degree in profile.degrees.all %}
+						{% if not forloop.first %}
+							,
+						{% endif %}
+						{{degree.name}}
+					{% endfor %}
+				</dd>
+			{% else %}
+				<dt>Ense&ntilde;a: </dt>
+				<dd>
+					<ul id="degrees_list">
+						{% for degree in profile.degrees.all %}
+							<li class="degree">{{degree.name}}</li>
+						{% endfor %}
+					</ul>
+				</dd>
+			{% endif %}
+			</div>
+		</dl>
 	</div>
 </div>
 
 {%if request.user == profile.user %}
-	<form name="photo_form" id="photo_form" style="display:none"
-			onsubmit="return false;" action="" method="POST">
-		{% csrf_token %}
-		<input type="file" accept="image/*"/>
-	</form>
-	<form name="profile_form" id="profile_form" style="display:none"
-			onsubmit="sendChanges('{{profile.user.id}}'); return false;" action="" method="POST">
-		{% csrf_token %}
-		<!input type="file" accept="image/*"/>
-		<label for="id_name">Nombre:</label>
-		<input id="id_name" type="text" name="name" maxlength="30" disabled="disabled">
-		<br/>
-		<label for="id_age">Edad:</label>
-		{{form.age}}
-		<br/>
-		<label for="id_description">Descripci&oacute;n:</label>
-		{{form.description}}
-		<br/>
-	</form>
+	<button name="show_form" class="btn btn-primary btn-block show" onclick="showEditProfile('{{profile.user.id}}')" id="show_form">
+		<span class="glyphicon glyphicon-pencil"></span> Editar perfil
+	</button>
+	<div id="editing_profile" class="hidden">
+		<div class="row">
+			<div class="span2 well col-md-8 col-md-offset-2">
+				<form name="photo_form" id="photo_form"
+						onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
+					{% csrf_token %}
+					<fieldset>
+						<legend>Imagen de perfil</legend>
+						<input class="btn btn-default btn-block" type="file" accept="image/*"/>
+					</fieldset>
+					<br/>
+					<!TODO enviar para cambiar foto>
+					<button type="submit" name="checkin_submit" id="save_changes" 
+							class="btn btn-success btn-block">
+						<span class="glyphicon glyphicon-save"></span> Cambiar foto
+					</button>
+				</form>
+			</div>
+		</div>
+	
+		<div class="row">
+			<div class="span2 well col-md-8 col-md-offset-2">
+				<form name="profile_form" class="form-horizontal" id="profile_form" 
+						onsubmit="sendChanges('{{profile.user.id}}'); return false;" 
+						action="" method="POST">
+					{% csrf_token %}
+					<fieldset>
+						<legend>Informaci&oacute;n del perfil</legend>
+						<div class="form-group">
+							<label for="id_name" class="col-sm-2 control-label">Nombre:</label>
+							<div class="col-sm-10">
+								<input id="id_name" type="text" name="name" maxlength="30" disabled="disabled">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="id_age" class="col-sm-2 control-label">Edad:</label>
+							<div class="col-sm-10">
+								{{form.age}}
+							</div>
+						</div>
+				
+						<div class="form-group">
+							<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
+							<div class="col-sm-10">
+								{{form.description}}
+							</div>
+						</div>
+					</fieldset>
+				</form>
+				<div class="row">
+					<button type="submit" name="checkin_submit" id="save_changes" 
+							class="btn btn-success btn-block" form="profile_form">
+						<span class="glyphicon glyphicon-save"></span>Guardar Cambios
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="span2 well col-md-8 col-md-offset-2">
+				<form name="password_form" class="form-horizontal" id="password_form" 
+						onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
+					{% csrf_token %}
+					<fieldset>
+						<legend>Cambiar contrase&ntilde;a</legend>
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="old_password">Contrase&ntilde;a antigua:</label>
+							<div class="col-sm-9">
+								<input id="old_password" type="password" maxlength="20" name="old_password">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="new_password">Contrase&ntilde;a nueva:</label>
+							<div class="col-sm-9">
+								<input id="new_password" type="password" maxlength="20" name="new_password">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="rep_password">Repetir contrase&ntilde;a:</label>
+							<div class="col-sm-9">
+								<input id="rep_password" type="password" maxlength="20" name="rep_password">
+							</div>
+						</div>
+					</fieldset>
+					<!TODO enviar password para cambiar>
+					<button type="submit" name="checkin_submit" id="save_changes" 
+							class="btn btn-success btn-block">
+						<span class="glyphicon glyphicon-save"></span> Cambiar contrase&ntilde;a
+					</button>
+				</form>
+			</div>
+		</div>
+		<button name="show_form" class="btn btn-danger btn-block" 
+							onclick="cancelEditProfile('{{profile.user.id}}')" id="hide_form">
+				<span class="glyphicon glyphicon-remove"></span> Cancelar y volver al perfil
+		</button>
+	</div>
 
 	<!script src='/jscript/basic.js' type='text/javascript'script>
 	<!script src='/jscript/edit_profile.js' type='text/javascript'script>
 	<br/>
-	<button name="show_form" onclick="showEditProfile('{{profile.user.id}}')" id="show_form">Editar perfil</button>
 	<img src="/img/loading_32.gif" id="saving_profile" alt="cargando" height="22" width="22" style="display:none">
 	<!--TODO poner en otra pagina mas adecuada
 	<div id="extra_classes">
