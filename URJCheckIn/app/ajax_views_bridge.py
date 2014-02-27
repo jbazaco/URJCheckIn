@@ -47,7 +47,7 @@ def get_subject_ctx(request, idsubj):
 	except Subject.DoesNotExist:
 		return {'error': '#404 La asignatura a la que intentas acceder no existe.'}
 	return {'classes_f': lessons.filter(start_time__gte=timezone.now()),
-			'classes_p': lessons.filter(end_time__lte=timezone.now()),
+			'classes_p': lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
 			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject}
