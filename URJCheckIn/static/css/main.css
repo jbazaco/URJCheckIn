@@ -43,7 +43,7 @@ textarea {
 	resize:none;
 }
 
-#menu_bar a.first:hover {
+#menu_bar a.first:hover, #menu_bar a.first:focus {
 	background-color: #DF0101;
 }
 
