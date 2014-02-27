@@ -43,7 +43,7 @@
 </div>
 
 {%if request.user == profile.user %}
-	<button name="show_form" class="btn btn-primary btn-block show" onclick="showEditProfile('{{profile.user.id}}')" id="show_form">
+	<button name="show_form" class="btn btn-primary btn-block" onclick="showEditProfile('{{profile.user.id}}')" id="show_form">
 		<span class="glyphicon glyphicon-pencil"></span> Editar perfil
 	</button>
 	<div id="editing_profile" class="hidden">
