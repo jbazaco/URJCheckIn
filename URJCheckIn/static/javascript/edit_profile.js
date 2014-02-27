@@ -2,12 +2,8 @@
 /* Genera un formulario para editar el perfil */
 function showEditProfile(id) {
 	setForm();
-	$('#show_form')
-					.removeClass('show')
-					.addClass('hidden')
-	$('#editing_profile')
-					.removeClass('hidden')
-					.addClass('show')
+	$('#show_form').addClass('hidden');
+	$('#editing_profile').removeClass('hidden');
 
 }
 
@@ -34,12 +30,8 @@ function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 
 /* Elimina el boton de cancelar y cambia el texto del otro boton a 'Editar perfil' y lo habilita */
 function restartButtons(id) {
-	$('#show_form')
-					.removeClass('hidden')
-					.addClass('show');
-	$('#editing_profile')
-					.removeClass('show')
-					.addClass('hidden')
+	$('#editing_profile').addClass('hidden');
+	$('#show_form').removeClass('hidden');
 	enableButtons(['button']);
 }
 

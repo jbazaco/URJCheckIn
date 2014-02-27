@@ -9,7 +9,7 @@
 		<div class="col-xs-6 col-xs-offset-3 col-sm-3 col-sm-offset-1">
 			<img src="{{ MEDIA_URL }}{profile.user.photo.url}" alt="foto de perfil" alt="foto de perfil" class="img-rounded img-responsive"><!TODO url imagen>
 		</div>
-		<dl class=" dl-horizontal fields col-xs-8 col-xs-offset-2 col-sm-8 col-sm-offset-0">
+		<dl class="dl-horizontal fields col-xs-12 col-sm-8 col-sm-offset-0">
 			<div class="span2 well">
 			<dt>Nombre: </dt>
 			<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}</dd>
@@ -48,97 +48,103 @@
 	</button>
 	<div id="editing_profile" class="hidden">
 		<div class="row">
-			<div class="span2 well col-md-8 col-md-offset-2">
-				<form name="photo_form" id="photo_form"
-						onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
-					{% csrf_token %}
-					<fieldset>
-						<legend>Imagen de perfil</legend>
-						<input class="btn btn-default btn-block" type="file" accept="image/*"/>
-					</fieldset>
-					<br/>
-					<!TODO enviar para cambiar foto>
-					<button type="submit" name="checkin_submit" id="save_changes" 
-							class="btn btn-success btn-block">
-						<span class="glyphicon glyphicon-save"></span> Cambiar foto
-					</button>
-				</form>
+			<div class="col-md-8 col-md-offset-2">
+				<div class="span2 well">
+					<form name="photo_form" id="photo_form"
+							onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
+						{% csrf_token %}
+						<fieldset>
+							<legend>Imagen de perfil</legend>
+							<input class="btn btn-default btn-block" type="file" accept="image/*"/>
+						</fieldset>
+						<br/>
+						<!TODO enviar para cambiar foto>
+						<button type="submit" name="checkin_submit" id="save_changes" 
+								class="btn btn-success btn-block">
+							<span class="glyphicon glyphicon-save"></span> Cambiar foto
+						</button>
+					</form>
+				</div>
 			</div>
 		</div>
 	
 		<div class="row">
-			<div class="span2 well col-md-8 col-md-offset-2">
-				<form name="profile_form" class="form-horizontal" id="profile_form" 
-						onsubmit="sendChanges('{{profile.user.id}}'); return false;" 
-						action="" method="POST">
-					{% csrf_token %}
-					<fieldset>
-						<legend>Informaci&oacute;n del perfil</legend>
-						<div class="form-group">
-							<label for="id_name" class="col-sm-2 control-label">Nombre:</label>
-							<div class="col-sm-10">
-								<input id="id_name" type="text" name="name" maxlength="30" disabled="disabled">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="span2 well">
+					<form name="profile_form" class="form-horizontal" id="profile_form" 
+							onsubmit="sendChanges('{{profile.user.id}}'); return false;" 
+							action="" method="POST">
+						{% csrf_token %}
+						<fieldset>
+							<legend>Informaci&oacute;n del perfil</legend>
+							<div class="form-group">
+								<label for="id_name" class="col-sm-2 control-label">Nombre:</label>
+								<div class="col-sm-10">
+									<input id="id_name" type="text" name="name" maxlength="30" disabled="disabled">
+								</div>
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label for="id_age" class="col-sm-2 control-label">Edad:</label>
-							<div class="col-sm-10">
-								{{form.age}}
+							<div class="form-group">
+								<label for="id_age" class="col-sm-2 control-label">Edad:</label>
+								<div class="col-sm-10">
+									{{form.age}}
+								</div>
 							</div>
-						</div>
 				
-						<div class="form-group">
-							<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
-							<div class="col-sm-10">
-								{{form.description}}
+							<div class="form-group">
+								<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
+								<div class="col-sm-10">
+									{{form.description}}
+								</div>
 							</div>
-						</div>
-					</fieldset>
-				</form>
-				<div class="row">
-					<button type="submit" name="checkin_submit" id="save_changes" 
-							class="btn btn-success btn-block" form="profile_form">
-						<span class="glyphicon glyphicon-save"></span>Guardar Cambios
-					</button>
+						</fieldset>
+					</form>
+					<div class="row">
+						<button type="submit" name="checkin_submit" id="save_changes" 
+								class="btn btn-success btn-block" form="profile_form">
+							<span class="glyphicon glyphicon-save"></span>Guardar Cambios
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="row">
-			<div class="span2 well col-md-8 col-md-offset-2">
-				<form name="password_form" class="form-horizontal" id="password_form" 
-						onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
-					{% csrf_token %}
-					<fieldset>
-						<legend>Cambiar contrase&ntilde;a</legend>
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="old_password">Contrase&ntilde;a antigua:</label>
-							<div class="col-sm-9">
-								<input id="old_password" type="password" maxlength="20" name="old_password">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="span2 well">
+					<form name="password_form" class="form-horizontal" id="password_form" 
+							onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
+						{% csrf_token %}
+						<fieldset>
+							<legend>Cambiar contrase&ntilde;a</legend>
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="old_password">Contrase&ntilde;a antigua:</label>
+								<div class="col-sm-9">
+									<input id="old_password" type="password" maxlength="20" name="old_password">
+								</div>
 							</div>
-						</div>
 						
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="new_password">Contrase&ntilde;a nueva:</label>
-							<div class="col-sm-9">
-								<input id="new_password" type="password" maxlength="20" name="new_password">
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="new_password">Contrase&ntilde;a nueva:</label>
+								<div class="col-sm-9">
+									<input id="new_password" type="password" maxlength="20" name="new_password">
+								</div>
 							</div>
-						</div>
 						
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="rep_password">Repetir contrase&ntilde;a:</label>
-							<div class="col-sm-9">
-								<input id="rep_password" type="password" maxlength="20" name="rep_password">
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="rep_password">Repetir contrase&ntilde;a:</label>
+								<div class="col-sm-9">
+									<input id="rep_password" type="password" maxlength="20" name="rep_password">
+								</div>
 							</div>
-						</div>
-					</fieldset>
-					<!TODO enviar password para cambiar>
-					<button type="submit" name="checkin_submit" id="save_changes" 
-							class="btn btn-success btn-block">
-						<span class="glyphicon glyphicon-save"></span> Cambiar contrase&ntilde;a
-					</button>
-				</form>
+						</fieldset>
+						<!TODO enviar password para cambiar>
+						<button type="submit" name="checkin_submit" id="save_changes" 
+								class="btn btn-success btn-block">
+							<span class="glyphicon glyphicon-save"></span> Cambiar contrase&ntilde;a
+						</button>
+					</form>
+				</div>
 			</div>
 		</div>
 		<button name="show_form" class="btn btn-danger btn-block" 
