@@ -1,60 +1,98 @@
 
-<h1 id="maintitle">Clases de {{subject}}</h1>
+<h2 id="maintitle">Clases de {{subject}} <br/>
+	<small>Accede a la informaci&oacute;n de las clases</small>
+</h2>
 
-<div id="subject_info"> 
-	<strong>Asignatura: </strong> {{subject.name}} </br>
-	<strong>Grado: </strong> {{subject.degree.name}} </br>
-	<strong>Profesor{{profesors|length|pluralize:"es"}}: </strong> 
-		<ul id="profesor_list">
-			{%for prof in profesors%}
-				<li>
-					<a onClick="ask_ajax_page('profile', loadAjaxPage, 
-					{'iduser': '{{prof.user.id}}'}); return false;" 
-					href="/profile/view/{{prof.user.id}}">
-						{{prof.user.first_name}} {{prof.user.last_name}}
-					</a>
-				</li>
-			{% empty %}
-				La asignatura no es impartida por ning&uacute;n profesor.
-			{%endfor%}
-		</ul>
+<div id="subject_info" class="row">
+	<dl class="dl-horizontal col-xs-12 fields">
+		<div class="span2 well">
+			<dt>Asignatura: </dt> <dd>{{subject.name}} </dd>
+			<dt>Grado: </dt> <dd>{{subject.degree.name}} </dd>
+			<dt>Profesor{{profesors|length|pluralize:"es"}}: </dt>
+			<dd>
+				<ul id="profesor_list">
+					{%for prof in profesors%}
+						<li>
+							<a onClick="ask_ajax_page('profile', loadAjaxPage, 
+							{'iduser': '{{prof.user.id}}'}); return false;" 
+							href="/profile/view/{{prof.user.id}}">
+								{{prof.user.first_name}} {{prof.user.last_name}}
+							</a>
+						</li>
+					{% empty %}
+						La asignatura no es impartida por ning&uacute;n profesor.
+					{%endfor%}
+				</ul>
+			</dd>
+		</div>
+	</dl>
 </div>
 
 <div id="classes">
 	{%if classes_n%}
-		<br/>
-		<h2 class="subtitle">Clases imparti&eacute;ndose</h1>
-		{% for class in classes_n %}
-			<ul class="classes_list">
-				<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-					{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
-				</a></li>
-			</ul>
-		{% endfor %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Clases imparti&eacute;ndose</h3>
+				</div>
+				<ul class="subjects_list list-group classes_list">
+					{% for class in classes_n %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
+							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+						</a>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
 	{%endif%}
-	<br/>
-	<h2 class="subtitle">Pr&oacute;ximas clases</h1>
-	{% for class in classes_f%}
-		<ul class="classes_list">
-			<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-				{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
-			</a> dentro de {{ class.start_time|timeuntil }}</li>
-		</ul>
-	{%empty%}
-		<span>No hay clases programadas</span>
-	{% endfor %}
-	<!boton para cargar mas>
-	<br/>
-	<h2 class="subtitle">&Uacuteltimas clases</h1>
 
-	{% for class in classes_p %}
-		<ul class="classes_list">
-			<li><a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}">
-				{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
-			</a></li>
-		</ul>
-	{%empty%}
-		<span>Todav&iacute;a no ha habido clases</span>
-	{% endfor %}
-	<!boton para cargar mas>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h3 class="panel-title">Pr&oacute;ximas clases</h3>
+				</div>
+				<ul class="subjects_list list-group classes_list">
+					{% for class in classes_f%}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
+							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+							 dentro de {{ class.start_time|timeuntil }}
+						</a>
+					{%empty%}
+						<li class="list-group-item">No hay clases programadas</li>
+					{% endfor %}
+				</ul>
+				<div class="panel-footer">
+					<a href="#" class="btn btn-primary btn-sm btn-block" role="button">
+						<span class="glyphicon glyphicon-refresh"></span> Siguientes clases
+					</a>
+				</div>
+				<!TODO funcionalidad boton para cargar mas>
+			</div>
+		</div>
+
+		<div class="col-sm-6">
+			<div class="panel panel-success">
+				<div class="panel-heading">
+					<h3 class="panel-title">&Uacute;ltimas clases</h3>
+				</div>
+				<ul class="subjects_list list-group classes_list">
+					{% for class in classes_p %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
+							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+						</a>
+					{%empty%}
+						<li class="list-group-item">Todav&iacute;a no ha habido clases</li>
+					{% endfor %}
+				</ul>
+				<div class="panel-footer">
+					<a href="#" class="btn btn-primary btn-sm btn-block" role="button">
+						<span class="glyphicon glyphicon-refresh"></span> Clases anteriores
+					</a>
+				</div>
+				<!TODO funcionalidad boton para cargar mas>
+		</div>
+	</div>
 </div>
