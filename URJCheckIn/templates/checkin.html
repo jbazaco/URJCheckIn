@@ -2,35 +2,61 @@
 <!script src="/jscript/csrf_token.js"script>
 <!script src="/jscript/location.js"script>
 
-<h1 id="maintitle">URJCheckIn</h1>
-<h3 id= "subtitle">Realiza el Check In</h3>
+<h1 id="maintitle">
+	URJCheckIn <br/>
+	<small>Realiza el Check In</small>
+</h1>
 
-<form name="checkin" id="checkinbox" onsubmit="checkIn(); return false;">
-	{% csrf_token %}
-	<fieldset>
-		<legend>Check in</legend>
-		Asignatura: 
-		<select id="subject_select" required>
-			{% for subject in subjects %}
-				<option value="{{subject.id}}">{{subject}}</option>
-			{% endfor %}
-		</select> <br/>
-		<label for="codeword">C&oacute;digo: </label>
-		<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required/>
-		{%if profile.is_student%}
-			<br/>
-			<label for="id_mark">Puntuaci&oacute;n:</label>
-			{{form.mark}}
-			<br/>
-			<label for="id_comment">Comentario:</label>
-			{{form.comment}}
-			<br/>
-		{%endif%}
-		<button type="submit" name="checkin_submit" >Check In</button>
-	</fieldset>
-</form>
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="span2 well">
+			<form name="checkin" class="form-horizontal" id="checkinbox" onsubmit="checkIn(); return false;">
+				{% csrf_token %}
+				<fieldset>
+					<legend>Check in</legend>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="subject_select">Asignatura:</label>
+						<div class="col-sm-10">
+							<select id="subject_select" class="btn btn-default" required>
+								{% for subject in subjects %}
+									<option value="{{subject.id}}">{{subject}}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+		
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="codeword">C&oacute;digo: </label>
+						<div class="col-sm-10">
+							<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required/>
+						</div>
+					</div>
+					{%if profile.is_student%}
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="id_mark">Puntuaci&oacute;n:</label>
+							<div class="col-sm-10">
+								{{form.mark}}
+							</div>
+						</div>
 
-<div id="result_checkin">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="id_comment">Comentario:</label>
+							<div class="col-sm-10">
+								{{form.comment}}
+							</div>
+						</div>
+					{%endif%}
+					<button type="submit" class="btn btn-success btn-block" name="checkin_submit" >
+						<span class="glyphicon glyphicon-ok-circle"></span> Check In
+					</button>
+				</fieldset>
+			</form>
+		</div>
+	</div>
 </div>
+
+<div id="alert_checkin">
+</div>
+
 
 

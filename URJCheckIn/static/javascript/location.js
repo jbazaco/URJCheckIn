@@ -30,13 +30,16 @@ function sendLocation(position) {
 
 function checkinDone(data) {
 	if (data.error) {
-		$('#result_checkin').html("Error: " + data.error);
+		var msg = "Error: " + data.error;
+		var alert_type = "danger";
 	} else if (data.ok) {
 		$('#codeword').val('');
-					//TODO enviar a la pagina de la clase para que la valore
-		//TODO quitar cuando este el TODO anterior
-		$('#result_checkin').html("¡Check in realizado!");
+		var msg = "Checkin realizado";
+		var alert_type = "success";
 	}
+	$('#alert_checkin').html('<div class="alert alert-' + alert_type + '"><button ' +
+			'type="button" class="close" aria-hidden="true" data-dismiss="alert" ' +
+			'aria-hidden="true">&times;</button><p>'+ msg + '</p></div>');
 }
 
 function geolocationError(error) {

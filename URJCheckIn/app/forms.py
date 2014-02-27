@@ -3,7 +3,8 @@ from django import forms
 class ReviewClassForm(forms.Form):
 	mark = forms.IntegerField(min_value=0, max_value=5, widget=forms.TextInput(attrs={
 			'required':'required','type':'number', 'min':1, 'max':'5', 'value':'3', 'step':'1'}))
-	comment = forms.CharField(max_length=150, required=False)
+	comment = forms.CharField(max_length=150, required=False, widget=forms.Textarea(attrs={
+			'maxlength':'150', 'class': 'form-control', 'rows': '3'}))
 
 class ProfileEditionForm(forms.Form):
 	age = forms.IntegerField(min_value=17, max_value=80, widget=forms.TextInput(attrs={

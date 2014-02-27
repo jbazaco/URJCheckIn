@@ -13,11 +13,13 @@
 #menu_bar header {
 	width:100%;
 	text-align: center;
-	/*padding: 1em 0;*/
-	background: -webkit-linear-gradient(#FF3636, #A61212);
+	/*Necesario bck-color, haya gradiente o no, para los navegadores que no soportan gradiente*/
+	background-color: #DF0101;
+	/*background: -webkit-linear-gradient(#FF3636, #A61212);
 	background: -o-linear-gradient(#FF3636, #A61212);
 	background: -moz-linear-gradient(#FF3636, #A61212);
 	background: linear-gradient(#FF3636, #A61212);
+	Por si cambio de opinion y quiero volver al gradiente*/
 	position:fixed;
 	top: 0px;
 	z-index:9999;
@@ -37,6 +39,14 @@
 	padding-right: 3em;
 }
 
+textarea {
+	resize:none;
+}
+
+#menu_bar a.first:hover {
+	background-color: #DF0101;
+}
+
 #menu_bar a:hover,  #menu_bar a:focus {
 	background-color: red;
 }
@@ -45,9 +55,7 @@
 	width: 100%;
 	margin-bottom: 5em;
 }
-#checkinbox {
-	text-align:center;
-}
+
 /*end MENU_BAR*/
 
 
@@ -59,10 +67,6 @@
 
 #profile {
 
-}
-
-#editing_profile textarea {
-	resize: none;
 }
 
 /*end PROFILE*/
@@ -97,14 +101,27 @@
 	margin-top:10px;
 }
 
-#comment_form textarea {
-	resize: none;
-}
-
 #comment_box {
 	padding-right: 1em;
 	padding-left: 1em;
 }
 /*end FORUM*/
 
+/*start CHECKIN*/
+#alert_checkin {
+	width: 60%;
+	text-align: center;
+	position:fixed;
+	z-index:10;
+	left:20%;
+	top: 30%;
+}
+
+#alert_checkin .alert {
+	box-shadow: 1px 1px 2em black;
+	-webkit-box-shadow: 1px 1px 2em black;
+	-moz-box-shadow: 1px 1px 2em black;
+	-o-box-shadow: 1px 1px 2em black;
+}
+/*end CHECKIN*/
 
