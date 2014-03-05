@@ -105,6 +105,8 @@ class Lesson(models.Model):
 						start_time__gte=self.end_time
 					).exclude(
 						end_time__lte=self.start_time
+					).exclude(
+						id=self.id
 					)
 			try:
 				if lesson_same_time.filter(subject=self.subject).count() > 0:
@@ -185,6 +187,8 @@ class TimeTable(models.Model):#TODO poner con minuscula la segunda t cuando haga
 							start_time__gte=self.end_time
 						).exclude(
 							end_time__lte=self.start_time
+						).exclude(
+							id=self.id
 						)
 			try:
 				if timetables_same_time.filter(subject=self.subject).count() > 0:
