@@ -65,7 +65,6 @@ function sendChanges(id) {
 		/*$.post("http://" + document.location.host + "/profile/view/" + id, 
 								$('#profile_form').serialize(), infoSaved)
 				.fail(errorSaving);*/
-		console.log($('#profile_form').serializeObject());
 		Dajaxice.app.update_profile(infoSaved, {'iduser': id, 'form':$('#profile_form').serializeObject()});
 }
 
