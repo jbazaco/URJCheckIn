@@ -4,7 +4,7 @@
 	Las funciones con el nombre get_XXXX_ctx y devuelven en un diccionario 
 	el contexto para renderizar la plantilla XXXX.html o un diccionario {'error':'XXXX'}
 	si se produce un error, siendo 'XXXX' un string describiendo el error"""
-from models import UserProfile, Lesson, Subject
+from models import UserProfile, Lesson, Subject, CheckIn
 from django.utils import timezone
 from forms import ProfileEditionForm, ReviewClassForm
 
