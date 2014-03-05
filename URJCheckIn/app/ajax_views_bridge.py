@@ -4,8 +4,9 @@
 	Las funciones con el nombre get_XXXX_ctx y devuelven en un diccionario 
 	el contexto para renderizar la plantilla XXXX.html o un diccionario {'error':'XXXX'}
 	si se produce un error, siendo 'XXXX' un string describiendo el error"""
-from models import UserProfile, Lesson, Subject, CheckIn
+from models import UserProfile, Lesson, Subject, CheckIn, LessonComment
 from django.utils import timezone
+from django.utils.datastructures import MultiValueDictKeyError
 from forms import ProfileEditionForm, ReviewClassForm
 
 def get_class_ctx(request, idclass):
@@ -95,5 +96,55 @@ def process_profile_post(form, user):
 	profile.description = data['description']
 	profile.save()
 	return {'user':{'id': user.id, 'age':data['age'], 'description':data['description']}}#coger datos del usuario tras guardar TODO cambiar esto y el js
+
+def process_class_post(form, user, idclass):
+	"""Procesa un POST sobre una clase, pudiendo ser de diferentes tipos"""
+	try:
+		action = form.__getitem__("action")
+		if action in action_class:
+			return action_class[action](form, user, idclass)
+	except MultiValueDictKeyError:
+		pass
+	return {'error': 'Formulario incorrecto'}
+
+"""Funciones para procesar las clases"""
+#TODO
+def delete_class(form, user, idclass):
+	"""Elimina una clase si lo solicita el usuario que la creo"""
+	#Comprobar que esta la clase y que se puede borrar, si no informar del error
+	print "delete!"
+	return {'error': 'funcion sin hacer'}
+
+#TODO
+def uncheck_class(form, user, idclass):
+	"""El usuario que lo solicita deja de estar suscrito a esa clase(solo para seminarios)"""
+	print "uncheck!"
+	return {'error': 'funcion sin hacer'}
+
+def comment_class(form, user, idclass):
+	"""Guarda un comentario de una clase"""
+	try:
+		comment = form.__getitem__("comment")
+		comment = comment[:250]
+	except MultiValueDictKeyError:
+		return {'error': 'Formulario para comentar incorrecto'}
+
+	try:
+		lesson = Lesson.objects.get(id=idclass)
+	except Lesson.DoesNotExist:
+		return {'error': 'La clase en la que comentas no existe'}
+	try:
+		lesson.subject.userprofile_set.get(user=user)
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes permisos para comentar en esta clase'}
+
+	LessonComment(comment=comment, user=user, lesson=lesson).save()
+	return {'ok': True}
+
+action_class = {'delete': delete_class,
+				'uncheck': uncheck_class,
+				'comment': comment_class,
+				#'check': check_class,
+}
 
 

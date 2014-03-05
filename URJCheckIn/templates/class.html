@@ -43,9 +43,11 @@
 				{%if not profile.is_student%}<!--no se todavia si solo comenta el profesor o todos-->
 					<li class="list-group-item">
 						<!--TODO procesar el envio de mensajes-->	
-						<form name="comment_form" id="comment_form" onsubmit="sendComment(); return false;" action="" method="POST">
+						<form name="comment_form" id="comment_form" action="" method="POST" 
+							onsubmit="sendClassComment({{lesson.id}}); return false;">
 							{% csrf_token %}
 							<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
+							<input type="hidden" value="comment" name="action">
 							<div class="row">				
 								<button type="submit" name="comment_submit" id="comment_button" class="btn btn-success btn-block">
 									<span class="glyphicon glyphicon-send"></span> Comentar

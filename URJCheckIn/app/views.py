@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -77,38 +77,14 @@ def profile_img(request, user):
 		context_instance=RequestContext(request))
 
 
-#TODO
-def delete_class(request, idclass):
-	"""Elimina una clase si lo solicita el usuario que la creo"""
-	#Comprobar que esta la clase y que se puede borrar, si no informar del error
-	print "delete!"
-	return render_to_response('main.html', {'htmlname': '404.html'},
-		context_instance=RequestContext(request))
-
-#TODO
-def uncheck_class(request, idclass):
-	"""El usuario que lo solicita deja de estar suscrito a esa clase(solo para seminarios)"""
-	print "uncheck!"
-	return render_to_response('main.html', {'htmlname': '404.html'},
-		context_instance=RequestContext(request))
-
-action_class = {'delete': delete_class,
-				'uncheck': uncheck_class,
-				#'check': check_class,
-}
-
 @login_required
 def process_class(request, idclass):
 	"""Procesa las peticiones sobre una clase o seminario"""
 	if request.method == "POST":
-		qd = request.POST
-		try:
-			action = qd.__getitem__("action")
-			if action in action_class:
-				return action_class[action](request, idclass)
-		except MultiValueDictKeyError:
-			pass
-		return HttpResponseBadRequest()
+		resp = process_class_post(request.POST, request.user, idclass)
+		if ('error' in resp):
+			return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': resp['error']}, context_instance=RequestContext(request))
 	
 	ctx = get_class_ctx(request, idclass)
 	if ('error' in ctx):

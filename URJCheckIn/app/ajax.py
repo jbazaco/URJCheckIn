@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post
 
 @dajaxice_register(method='GET')
 @login_required
@@ -42,9 +42,10 @@ def update_profile(request, iduser, form):
 
 @dajaxice_register(method='POST')
 @login_required
-def process_class(request,form):#TODO mirar el campo class del form
+def process_class(request, form, idclass):#TODO mirar el campo class del form
 	if request.method == "POST":
-		return simplejson.dumps({'deleteFromDOM':['#xc_'+form['idclass']]})
+		resp = process_class_post(form, request.user, idclass)
+		return simplejson.dumps(resp)
 	else:
 		return wrongMethodJson(request)
 
@@ -164,6 +165,7 @@ def forum(request):
 def publish_forum(request, comment):
 	""" procesa un check in"""
 	if request.method == "POST":
+		comment = comment[:150]
 		ForumComment(comment=comment, user=request.user).save()
 		return simplejson.dumps({'ok': True})
 	else:
