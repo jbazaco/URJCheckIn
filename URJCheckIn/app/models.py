@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 
 WEEK_DAYS = (
 	('Mon', 'Monday'),
@@ -26,7 +27,7 @@ class Degree(models.Model):
 
 class Subject(models.Model):
 	name = models.CharField(max_length=100, verbose_name='nombre')
-	degree = models.ForeignKey(Degree, verbose_name='grado')
+	degree = models.ForeignKey(Degree, verbose_name='grado')#TODO una asignatura/seminario para varios grados
 	n_students = models.PositiveIntegerField(verbose_name='num. estudiantes', default=0)
 	first_date = models.DateField(verbose_name='fecha de inicio')
 	last_date = models.DateField(verbose_name='fecha de finalizacion')
@@ -38,6 +39,12 @@ class Subject(models.Model):
 	
 	def __unicode__(self):
 		return u"%s %s" % (self.name, self.degree)
+
+	def clean(self):
+		super(Subject, self).clean()
+		if self.first_date and self.last_date:
+			if (self.first_date > self.last_date):
+				raise ValidationError('First_date can not be greater than last_date')
 
 
 class Room(models.Model):
@@ -57,11 +64,12 @@ class Room(models.Model):
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, verbose_name='usuario')
+	#TODO NIF Unique
 	photo = models.ImageField(upload_to='profile_photos', blank=True)#Poner una por defecto (la tipica silueta)
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='asignatura')
 	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grados')
-	#TODO si se introduce una clase(+profesor) se debe poner el degree si no estaba
+	#TODO si se introduce una asignatura(+profesor) se debe poner el degree si no estaba
 	is_student = models.BooleanField(default=True, verbose_name='es alumno')
 	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
@@ -86,6 +94,28 @@ class Lesson(models.Model):
 
 	def __unicode__(self):
 		return u"Clase de %s" % (self.subject)
+	
+	def clean(self):
+		super(Lesson, self).clean()
+		if self.start_time and self.end_time:
+			if self.start_time >= self.end_time:
+				raise ValidationError('End_time must me greater than start_time')
+			#Para evitar solapamiento de clases
+			lesson_same_time = Lesson.objects.exclude(
+						start_time__gte=self.end_time
+					).exclude(
+						end_time__lte=self.start_time
+					)
+			try:
+				if lesson_same_time.filter(subject=self.subject).count() > 0:
+					raise ValidationError('The lesson can not coincide with \
+											another of the same subject')
+				if lesson_same_time.filter(room=self.room).count() > 0:
+					raise ValidationError('The lesson can not coincide with \
+											another in the same room')
+			except (Subject.DoesNotExist, Room.DoesNotExist):
+				pass
+
 
 
 class CheckIn(models.Model):
@@ -104,7 +134,7 @@ class CheckIn(models.Model):
 class LessonComment(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
-	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')#TODO Quitar?,innecesario
+	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
 	comment = models.TextField(max_length=250, verbose_name='comentario')
 	
 	class Meta:
@@ -128,7 +158,7 @@ class ForumComment(models.Model):
 		return u"Comentario %i" % (self.id)
 
 
-class TimeTable(models.Model):
+class TimeTable(models.Model):#TODO poner con minuscula la segunda t cuando haga cambios en la BD
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	day = models.CharField(max_length=3, choices=WEEK_DAYS)
 	start_time =  models.TimeField(verbose_name='hora de inicio')
@@ -143,6 +173,28 @@ class TimeTable(models.Model):
 	def __unicode__(self):
 		return u"Horario de %s" % (self.subject)
 
+	def clean(self):
+		super(TimeTable, self).clean()
+		if self.start_time and self.end_time and self.day:
+			if (self.start_time >= self.end_time):
+				raise ValidationError('End_time must me greater than start_time')
+			#Para evitar solapamiento de clases
+			timetables_same_time = TimeTable.objects.filter(
+							day=self.day
+						).exclude(
+							start_time__gte=self.end_time
+						).exclude(
+							end_time__lte=self.start_time
+						)
+			try:
+				if timetables_same_time.filter(subject=self.subject).count() > 0:
+					raise ValidationError('The timetable can not coincide with \
+											another of the same subject')
+				if timetables_same_time.filter(room=self.room).count() > 0:
+					raise ValidationError('The timetable can not coincide with \
+											another in the same room')
+			except (Subject.DoesNotExist, Room.DoesNotExist):
+				pass
 
 
 
