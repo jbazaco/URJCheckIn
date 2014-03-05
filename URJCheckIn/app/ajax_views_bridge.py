@@ -16,7 +16,7 @@ def get_class_ctx(request, idclass):
 		try:
 			profile = lesson.subject.userprofile_set.get(user=request.user)
 		except UserProfile.DoesNotExist:
-			return {'error': 'No est&aacutes matriculado en ' + lesson.subject}
+			return {'error': 'No est&aacutes matriculado en ' + str(lesson.subject)}
 		if (lesson.start_time > timezone.now()):
 			lesson_state = 'sin realizar'
 		elif (lesson.end_time < timezone.now()):
