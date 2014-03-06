@@ -42,10 +42,10 @@
 </div>
 
 {%if request.user == profile.user %}
-	<button name="show_form" class="btn btn-primary btn-block" onclick="showEditProfile('{{profile.user.id}}')" id="show_form">
+	<a name="show_form" class="btn btn-primary btn-block hidden" onclick="showEditProfile('{{profile.user.id}}');return false;" id="show_form" href="/profile/edit">
 		<span class="glyphicon glyphicon-pencil"></span> Editar perfil
-	</button>
-	<div id="editing_profile" class="hidden">
+	</a>
+	<div id="editing_profile">
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
@@ -79,7 +79,9 @@
 							<div class="form-group">
 								<label for="id_name" class="col-sm-2 control-label">Nombre:</label>
 								<div class="col-sm-10">
-									<input id="id_name" type="text" name="name" maxlength="30" disabled="disabled">
+									<input id="id_name" type="text" name="name" maxlength="30"
+									 disabled="disabled" 
+									value="{{profile.user.first_name}} {{profile.user.last_name}}">
 								</div>
 							</div>
 
@@ -163,6 +165,12 @@
 	-->
 	<br/>
 	<img src="/img/loading_32.gif" id="saving_profile" alt="cargando" height="22" width="22" style="display:none">
+
+	<!-- si hay javascript esconde la edicion de perfil, que se podra mostrar
+		pulsando el boton, en caso contrario se mostrara -->
+	<script>
+		cancelEditProfile('{{profile.user.id}}');
+	</script>
 	<!--TODO poner en otra pagina mas adecuada, desapuntarse desde la pagina del seminario, borrar codigo js que sobra de edit_profile
 	
 <div id="extra_classes">
