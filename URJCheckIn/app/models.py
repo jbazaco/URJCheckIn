@@ -27,18 +27,17 @@ class Degree(models.Model):
 
 class Subject(models.Model):
 	name = models.CharField(max_length=100, verbose_name='nombre')
-	degree = models.ForeignKey(Degree, verbose_name='grado')#TODO una asignatura/seminario para varios grados
-	n_students = models.PositiveIntegerField(verbose_name='num. estudiantes', default=0)
+	degrees = models.ManyToManyField(Degree, verbose_name='grados')
+	#TODO hacer una funcion dentro de subject que calcule el numero de estudiantes
 	first_date = models.DateField(verbose_name='fecha de inicio')
 	last_date = models.DateField(verbose_name='fecha de finalizacion')
 	is_seminar = models.BooleanField(verbose_name='es seminario', default=False)
 
 	class Meta:
 		verbose_name = 'asignatura'
-		unique_together = ("name", "degree")
 	
 	def __unicode__(self):
-		return u"%s %s" % (self.name, self.degree)
+		return u"%s" % (self.name)
 
 	def clean(self):
 		super(Subject, self).clean()
@@ -64,7 +63,6 @@ class Room(models.Model):
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, verbose_name='usuario')
-	#TODO NIF Unique
 	photo = models.ImageField(upload_to='profile_photos', blank=True)#Poner una por defecto (la tipica silueta)
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='asignatura')
@@ -80,6 +78,7 @@ class UserProfile(models.Model):
 	
 	def __unicode__(self):
 		return u"Perfil de %s" % (self.user)
+
 	
 
 class Lesson(models.Model):
@@ -160,7 +159,7 @@ class ForumComment(models.Model):
 		return u"Comentario %i" % (self.id)
 
 
-class TimeTable(models.Model):#TODO poner con minuscula la segunda t cuando haga cambios en la BD
+class Timetable(models.Model):#TODO poner con minuscula la segunda t cuando haga cambios en la BD
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	day = models.CharField(max_length=3, choices=WEEK_DAYS)
 	start_time =  models.TimeField(verbose_name='hora de inicio')
@@ -199,6 +198,7 @@ class TimeTable(models.Model):#TODO poner con minuscula la segunda t cuando haga
 											another in the same room')
 			except (Subject.DoesNotExist, Room.DoesNotExist):
 				pass
+	#TODO despues de guardar hay que crear las clases
 
 
 

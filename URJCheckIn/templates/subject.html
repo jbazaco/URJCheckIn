@@ -7,7 +7,18 @@
 	<dl class="dl-horizontal col-xs-12 fields">
 		<div class="span2 well">
 			<dt>Asignatura: </dt> <dd>{{subject.name}} </dd>
-			<dt>Grado: </dt> <dd>{{subject.degree.name}} </dd>
+			<dt>Grado{{subject.degrees.all|length|pluralize}}: </dt>
+			<dd>
+				<ul id="degrees_list">
+					{%for degree in subject.degrees.all%}
+						<li>
+							{{degree.name}}
+						</li>
+					{% empty %}
+						La asignatura no es impartida por ning&uacute;n profesor.
+					{%endfor%}
+				</ul>
+			</dd>
 			<dt>Profesor{{profesors|length|pluralize:"es"}}: </dt>
 			<dd>
 				<ul id="profesor_list">
