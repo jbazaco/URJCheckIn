@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django.db.models import Avg
 
 WEEK_DAYS = (
 	('Mon', 'Monday'),
@@ -44,6 +45,9 @@ class Subject(models.Model):
 		if self.first_date and self.last_date:
 			if (self.first_date > self.last_date):
 				raise ValidationError('First_date can not be greater than last_date')
+
+	def n_students(self):
+		return self.userprofile_set.filter(is_student=True).count()
 
 
 class Room(models.Model):
@@ -117,7 +121,20 @@ class Lesson(models.Model):
 			except (Subject.DoesNotExist, Room.DoesNotExist):
 				pass
 
+	def checkin_percent(self):
+		n_students = self.subject.n_students()
+		if n_students > 0:
+			n_checkin = self.checkin_set.filter(user__userprofile__is_student=True).count()
+			return round(100.0*n_checkin/n_students,2)
+		else:
+			return 100
 
+	def avg_mark(self):
+		checkins = self.checkin_set.filter(user__userprofile__is_student=True)
+		if not checkins:
+			return 3
+		mark = checkins.aggregate(Avg('mark'))['mark__avg']
+		return round(mark,2)
 
 class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')

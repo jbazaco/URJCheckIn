@@ -7,12 +7,18 @@
 		<div class="span2 well">
 			<dt>Estado: </dt>
 			<dd>{{lesson_state|safe}}</dd>
+			{% ifequal lesson_state "sin realizar" %}
+				<dt>N&uacute;mero de alumnos: </dt> <dd>{{subject.n_students}} </dd>
+			{% else %}
+				<dt>Asistencia: </dt> <dd>{{lesson.checkin_percent}}%</dd>
+				<dt>Puntuaci&oacute;n media: </dt> <dd>{{lesson.avg_mark}}</dd>
+			{% endifequal %}
 			<dt>Fecha: </dt>
 			<dd>{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}</dd>
 			<dt>Profesor{{profesors|length|pluralize:"es"}}: </dt>
 			<dd>
 				<ul id="profesor_list">
-					{%for prof in profesors%}
+					{% for prof in profesors %}
 						<li>
 							<a onClick="ask_ajax_page('profile', loadAjaxPage, 
 							{'iduser': '{{prof.user.id}}'}); return false;" 
