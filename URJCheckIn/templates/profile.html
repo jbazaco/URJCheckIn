@@ -112,28 +112,34 @@
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="password_form" class="form-horizontal" id="password_form" 
-							onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
+							 action="/password_change/" method="POST">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Cambiar contrase&ntilde;a</legend>
 							<div class="form-group">
-								<label class="col-sm-3 control-label" for="old_password">Contrase&ntilde;a antigua:</label>
+								<label class="col-sm-3 control-label"
+								 for="old_password">
+									Contrase&ntilde;a antigua:
+								</label>
 								<div class="col-sm-9">
-									<input id="old_password" type="password" maxlength="20" name="old_password">
+									<input id="old_password" type="password" maxlength="4096" name="old_password">
 								</div>
 							</div>
 						
 							<div class="form-group">
-								<label class="col-sm-3 control-label" for="new_password">Contrase&ntilde;a nueva:</label>
+								<label class="col-sm-3 control-label"
+								 for="id_new_password1">
+									Contrase&ntilde;a nueva:
+								</label>
 								<div class="col-sm-9">
-									<input id="new_password" type="password" maxlength="20" name="new_password">
+									<input id="new_password1" type="password" maxlength="4096" name="new_password1">
 								</div>
 							</div>
 						
 							<div class="form-group">
-								<label class="col-sm-3 control-label" for="rep_password">Repetir contrase&ntilde;a:</label>
+								<label class="col-sm-3 control-label" for="new_password2">Repetir contrase&ntilde;a:</label>
 								<div class="col-sm-9">
-									<input id="rep_password" type="password" maxlength="20" name="rep_password">
+									<input id="new_password2" type="password" maxlength="4096" name="new_password2">
 								</div>
 							</div>
 						</fieldset>
