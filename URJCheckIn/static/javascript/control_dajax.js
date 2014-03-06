@@ -71,3 +71,13 @@ window.onpopstate = function() {
 	}
 };
 
+/*Para cerrar el menu desplegable en pantallas pequenas al pulsar
+	sobre un enlace*/
+$(document).ready(function() {
+	$('.nav a').on('click touchend', function(){
+		/*Solo si el menu esta compacto (en pantallas pequenas)*/
+		if($('.navbar-toggle').css('display') != 'none')
+			$(".navbar-toggle").trigger( "click" );
+	});
+});
+
