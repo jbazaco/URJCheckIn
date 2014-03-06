@@ -112,10 +112,10 @@ class Lesson(models.Model):
 						id=self.id
 					)
 			try:
-				if lesson_same_time.filter(subject=self.subject).count() > 0:
+				if lesson_same_time.filter(subject=self.subject):
 					raise ValidationError('The lesson can not coincide with \
 											another of the same subject')
-				if lesson_same_time.filter(room=self.room).count() > 0:
+				if lesson_same_time.filter(room=self.room):
 					raise ValidationError('The lesson can not coincide with \
 											another in the same room')
 			except (Subject.DoesNotExist, Room.DoesNotExist):
@@ -131,6 +131,7 @@ class Lesson(models.Model):
 
 	def avg_mark(self):
 		checkins = self.checkin_set.filter(user__userprofile__is_student=True)
+		print checkins
 		if not checkins:
 			return 3
 		mark = checkins.aggregate(Avg('mark'))['mark__avg']
@@ -192,12 +193,12 @@ class Timetable(models.Model):#TODO poner con minuscula la segunda t cuando haga
 		return u"Horario de %s" % (self.subject)
 
 	def clean(self):
-		super(TimeTable, self).clean()
+		super(Timetable, self).clean()
 		if self.start_time and self.end_time and self.day:
 			if (self.start_time >= self.end_time):
 				raise ValidationError('End_time must me greater than start_time')
 			#Para evitar solapamiento de clases
-			timetables_same_time = TimeTable.objects.filter(
+			timetables_same_time = Timetable.objects.filter(
 							day=self.day
 						).exclude(
 							start_time__gte=self.end_time
@@ -207,10 +208,10 @@ class Timetable(models.Model):#TODO poner con minuscula la segunda t cuando haga
 							id=self.id
 						)
 			try:
-				if timetables_same_time.filter(subject=self.subject).count() > 0:
+				if timetables_same_time.filter(subject=self.subject):
 					raise ValidationError('The timetable can not coincide with \
 											another of the same subject')
-				if timetables_same_time.filter(room=self.room).count() > 0:
+				if timetables_same_time.filter(room=self.room):
 					raise ValidationError('The timetable can not coincide with \
 											another in the same room')
 			except (Subject.DoesNotExist, Room.DoesNotExist):
