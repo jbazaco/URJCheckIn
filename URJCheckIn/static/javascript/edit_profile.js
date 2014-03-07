@@ -118,7 +118,7 @@ function alertBefore(errors, elem_id, class_id, alert_type) {
 		error_msg += errors[error];
 	$(elem_id).before('<div class="row ' + class_id + '">' +
 				'<div class="col-sm-10 col-sm-offset-1">' +
-				'<div class="alert alert-success">' +
+				'<div class="alert alert-'+ alert_type + '">' +
 				error_msg + '</div></div></div>');
 }
 
