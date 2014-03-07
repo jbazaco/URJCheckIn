@@ -32,6 +32,10 @@
 					<h3 class="panel-title">Mis seminarios</h3>
 				</div>
 				<ul class="subjects_list list-group">
+					<!--TODO if profesor-->
+					<a onClick="ask_ajax_page('seminars', loadAjaxPage, {}); return false;" href="/seminars" class="list-group-item">
+						<em>Pr&oacute;ximos seminarios</em>
+					</a>
 					{% for seminar in seminars %}
 						<a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{seminar.id}}}); return false;" href="/subjects/{{subject.id}}" class="list-group-item">
 							{{seminar.name}}

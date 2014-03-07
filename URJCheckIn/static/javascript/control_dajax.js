@@ -65,6 +65,12 @@ window.onpopstate = function() {
 		else
 			Dajaxice.app.not_found(insertHtml, {'path': path});
 		break;
+	case "seminars":
+		if (pathsplit.length === 2)
+			Dajaxice.app.seminars(insertHtml);
+		else
+			Dajaxice.app.not_found(insertHtml);
+		break;
 	default:
 		Dajaxice.app.not_found(insertHtml, {'path': path});
 		break;

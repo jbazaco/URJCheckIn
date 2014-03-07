@@ -14,7 +14,7 @@ from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Le
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx
 
 @dajaxice_register(method='GET')
 @login_required
@@ -121,6 +121,20 @@ def subjects(request):
 		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
 	else:
 		return wrongMethodJson(request)
+
+@dajaxice_register(method='GET')
+@login_required
+def seminars(request):
+	"""Devuelve el contenido de la pagina de los proximos seminarios"""
+	if request.method == "GET":
+		ctx = get_seminars_ctx(request)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], '/seminars')
+		html = loader.get_template('seminars.html').render(RequestContext(request, ctx))
+		return simplejson.dumps({'#mainbody':html, 'url': '/seminars'})
+	else:
+		return wrongMethodJson(request)
+
 
 @dajaxice_register(method='GET')
 @login_required

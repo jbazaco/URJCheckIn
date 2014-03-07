@@ -82,6 +82,15 @@ def get_subjects_ctx(request):
 	return {'subjects':subjects.filter(is_seminar=False), 
 			'seminars':subjects.filter(is_seminar=True)}
 
+def get_seminars_ctx(request):
+	"""Devuelve el contexto para la plantilla subjects.html"""
+	try:
+		profile = UserProfile.objects.get(user=request.user)
+	except (UserProfile.DoesNotExist, User.DoesNotExist):			
+		return {'error': 'No tienes un perfil creado.'}
+	
+	return {}
+
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
 	pform = ProfileEditionForm(form)
