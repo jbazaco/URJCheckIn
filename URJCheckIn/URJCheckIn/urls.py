@@ -36,7 +36,7 @@ urlpatterns = patterns('',
 	url(r'^login$', 'django.contrib.auth.views.login'),
 	url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 	url(r'^admin/', include(admin.site.urls)),
-	url(r'password_change/$', 'django.contrib.auth.views.password_change'),
+	url(r'^password_change/$', 'django.contrib.auth.views.password_change'),
 	url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done'),
 
 	url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
