@@ -38,28 +38,22 @@ function restartButtons(id) {
 /* Cuando se recibe una confirmacion de los cambios realizados*/
 function infoSaved(data) {//TODO hace otra cosa!!!
 	if(data.errors) {
-		errorSaving(data.errors);
+		for (error in data.errors)
+			alertBefore(data.errors[error], '#group_'+error, 
+						'profile_alert', 'danger');
+		enableButtons(['button']);
 	} else {
 		restartButtons(data.user.id);//TODO necesito la id!!
 		emptyPasswords();
-		hideElements(['#loading_page']);
 		unsetForm(data.user);
 	}
-}
-
-/* Avisa de que se ha producido un error y revierte los cambios */
-function errorSaving(errors) {
-	hideElements(['#saving_profile']);
-	var errorstr = "";
-	for (error in errors)
-		errorstr += error + ": " + errors[error] + "\n";
-	alert(errorstr);
-	enableButtons(['button']);
+	hideElements(['#loading_page']);
 }
 
 /* Envia un POST al servidor para que actualice el perfil del usuario con la 
 	informacion del formulario */
 function sendChanges(id) {
+		$('.profile_alert').remove();
 		disableButtons(['button']);
 		$('#loading_page').css('display','inline');
 		/*$.post("http://" + document.location.host + "/profile/view/" + id, 
@@ -99,10 +93,10 @@ function passwordChanged(data) {
 		//TODO Poner alerts donde corresponda
 		for (error in data.errors)
 			alertBefore(data.errors[error], 
-				'#group_'+error, 'password_alert', 'danger');
+				'#group_'+error, alert_class, 'danger');
 	} else {
 		alertBefore(['Contrase&ntilde;a cambiada con &eacute;xito'], 
-				'#password_button', 'password_alert', 'success');
+				'#password_button', alert_class, 'success');
 	}
 	emptyPasswords();
 	hideElements(['#loading_page']);
