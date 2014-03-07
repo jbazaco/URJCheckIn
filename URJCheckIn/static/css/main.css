@@ -84,7 +84,7 @@ textarea {
 /*end SUBJECT*/
 
 #loading_page img{
-	position: absolute;
+	position: fixed;
     z-index: 9;
 	top: 50%;
 	left:45%;
