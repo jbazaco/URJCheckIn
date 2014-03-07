@@ -86,7 +86,7 @@ def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
 	pform = ProfileEditionForm(form)
 	if not pform.is_valid():
-		return {'errors': pform.errors};
+		return {'errors': pform.errors}
 	data = pform.cleaned_data
 	try:
 		profile = UserProfile.objects.get(user=user)
