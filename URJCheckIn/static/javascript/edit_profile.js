@@ -42,7 +42,7 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 	} else {
 		restartButtons(data.user.id);//TODO necesito la id!!
 		emptyPasswords();
-		hideElements(['#saving_profile']);
+		hideElements(['#loading_page']);
 		unsetForm(data.user);
 	}
 }
@@ -61,7 +61,7 @@ function errorSaving(errors) {
 	informacion del formulario */
 function sendChanges(id) {
 		disableButtons(['button']);
-		$('#saving_profile').css('display','inline');
+		$('#loading_page').css('display','inline');
 		/*$.post("http://" + document.location.host + "/profile/view/" + id, 
 								$('#profile_form').serialize(), infoSaved)
 				.fail(errorSaving);*/
@@ -79,7 +79,46 @@ function cancelEditProfile(id) {
 /*Vacia los inputs de passwords*/
 function emptyPasswords() {
 	$('#old_password').val('');
-	$('#new_password').val('');
-	$('#rep_password').val('');
+	$('#new_password1').val('');
+	$('#new_password2').val('');
+}
+
+/* Envia un POST al servidor para que modifique la password */
+function changePassword() {
+		$('.password_alert').remove();
+		disableButtons(['button']);
+		$('#loading_page').css('display','inline');
+		Dajaxice.app.password_change(passwordChanged, 
+				{'form':$('#password_form').serializeObject()});
+}
+
+/* Reactiva los botones e indica el resultado del cambio de password*/
+function passwordChanged(data) {
+	var alert_class = 'password_alert';
+	if(data.errors) {
+		//TODO Poner alerts donde corresponda
+		for (error in data.errors)
+			alertBefore(data.errors[error], 
+				'#group_'+error, 'password_alert', 'danger');
+	} else {
+		alertBefore(['Contrase&ntilde;a cambiada con &eacute;xito'], 
+				'#password_button', 'password_alert', 'success');
+	}
+	emptyPasswords();
+	hideElements(['#loading_page']);
+	enableButtons(['button']);
+}
+
+/* Pone un elemento de la clase alert del tipo alert_type antes del 
+	elemento con id elem_id, poniendole la clase class_id y los 
+	mensajes del array errors como texto */
+function alertBefore(errors, elem_id, class_id, alert_type) {
+	var error_msg = "";
+	for (error in errors)
+		error_msg += errors[error];
+	$(elem_id).before('<div class="row ' + class_id + '">' +
+				'<div class="col-sm-10 col-sm-offset-1">' +
+				'<div class="alert alert-success">' +
+				error_msg + '</div></div></div>');
 }
 

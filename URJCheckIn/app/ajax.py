@@ -3,6 +3,8 @@ from dajaxice.decorators import dajaxice_register
 from django.template import loader, RequestContext
 from forms import ReviewClassForm, ProfileEditionForm
 from django.utils import timezone
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.csrf import csrf_protect
 
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
@@ -10,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
 
 from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post
 
@@ -188,6 +191,23 @@ def not_found(request, path):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
 	html = loader.get_template('404.html').render(RequestContext(request, {}))
 	return simplejson.dumps({'#mainbody':html, 'url': path})
+
+@dajaxice_register(method='POST')
+@sensitive_post_parameters()
+@csrf_protect
+@login_required
+def password_change(request, form):
+	"""Metodo de django.contrib.auth adaptado a ajax"""
+	if request.method == "POST":
+		pform = PasswordChangeForm(user=request.user, data=form)
+		if pform.is_valid():
+			pform.save()
+			return simplejson.dumps({'ok': True})
+		else:
+			return simplejson.dumps({'errors': pform.errors})
+	else:
+		return wrongMethodJson(request)
+
 
 def send_error(request, error, url):
 	templ = loader.get_template('error.html')

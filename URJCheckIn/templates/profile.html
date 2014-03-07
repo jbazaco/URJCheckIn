@@ -113,12 +113,13 @@
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
-					<form name="password_form" class="form-horizontal" id="password_form" 
+					<form name="password_form" class="form-horizontal" id="password_form"
+							 onsubmit="changePassword(); return false;"
 							 action="/password_change/" method="POST">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Cambiar contrase&ntilde;a</legend>
-							<div class="form-group">
+							<div id="group_old_password" class="form-group">
 								<label class="col-sm-3 control-label"
 								 for="old_password">
 									Contrase&ntilde;a antigua:
@@ -128,7 +129,7 @@
 								</div>
 							</div>
 						
-							<div class="form-group">
+							<div id="group_new_password1" class="form-group">
 								<label class="col-sm-3 control-label"
 								 for="id_new_password1">
 									Contrase&ntilde;a nueva:
@@ -138,7 +139,7 @@
 								</div>
 							</div>
 						
-							<div class="form-group">
+							<div id="group_new_password2" class="form-group">
 								<label class="col-sm-3 control-label" for="new_password2">Repetir contrase&ntilde;a:</label>
 								<div class="col-sm-9">
 									<input id="new_password2" type="password" maxlength="4096" name="new_password2">
@@ -146,7 +147,7 @@
 							</div>
 						</fieldset>
 						<!--TODO enviar password para cambiar-->
-						<button type="submit" name="checkin_submit" id="save_changes" 
+						<button type="submit" name="checkin_submit" id="password_button" 
 								class="btn btn-success btn-block">
 							<span class="glyphicon glyphicon-save"></span> Cambiar contrase&ntilde;a
 						</button>
@@ -164,7 +165,6 @@
 	<script src='/jscript/edit_profile.js' type='text/javascript'script>
 	-->
 	<br/>
-	<img src="/img/loading_32.gif" id="saving_profile" alt="cargando" height="22" width="22" style="display:none">
 
 	<!-- si hay javascript esconde la edicion de perfil, que se podra mostrar
 		pulsando el boton, en caso contrario se mostrara -->
