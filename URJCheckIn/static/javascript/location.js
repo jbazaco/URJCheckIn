@@ -9,6 +9,7 @@ function checkIn() {
 function sendLocation(position) {
 	$('#result_checkin').html("");
 	var codeword = $('#codeword');
+	$('#loading_page').css('display','inline');
 	if (codeword && codeword.val()) {
 		var info = {
 					'latitude':  position.coords.latitude,
@@ -24,6 +25,7 @@ function sendLocation(position) {
 				.fail(function() { alert( "Error al enviar el CheckIn" ); });*/
 		Dajaxice.app.process_checkin(checkinDone, {'form': info});
 	} else {
+		hideElements(['#loading_page']);
 		alert ("Debes insertar el código");
 	}
 }
@@ -37,6 +39,7 @@ function checkinDone(data) {
 		var msg = "Checkin realizado";
 		var alert_type = "success";
 	}
+	hideElements(['#loading_page']);
 	$('#alert_checkin').html('<div class="alert alert-' + alert_type + '"><button ' +
 			'type="button" class="close" aria-hidden="true" data-dismiss="alert" ' +
 			'aria-hidden="true">&times;</button><p>'+ msg + '</p></div>');
