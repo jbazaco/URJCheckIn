@@ -83,7 +83,7 @@ def get_subjects_ctx(request):
 	"""Devuelve el contexto para la plantilla subjects.html"""
 	try:
 		profile = UserProfile.objects.get(user=request.user)
-	except (UserProfile.DoesNotExist, User.DoesNotExist):			
+	except UserProfile.DoesNotExist:			
 		return {'error': 'No tienes un perfil creado.'}
 	subjects = profile.subjects.all()
 	return {'subjects':subjects.filter(is_seminar=False), 
@@ -93,7 +93,7 @@ def get_seminars_ctx(request):
 	"""Devuelve el contexto para la plantilla subjects.html"""
 	try:
 		profile = UserProfile.objects.get(user=request.user)
-	except (UserProfile.DoesNotExist, User.DoesNotExist):			
+	except UserProfile.DoesNotExist:			
 		return {'error': 'No tienes un perfil creado.'}
 	future_seminars = Subject.objects.filter(
 							is_seminar=True		
