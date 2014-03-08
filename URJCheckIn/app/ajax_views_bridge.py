@@ -8,6 +8,8 @@ from models import UserProfile, Lesson, Subject, CheckIn, LessonComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
 from forms import ProfileEditionForm, ReviewClassForm
+from dateutil import parser
+from django.core.exceptions import ValidationError
 
 def get_class_ctx(request, idclass):
 	"""Devuelve el contexto para la plantilla class.html"""
@@ -39,10 +41,15 @@ def get_subject_ctx(request, idsubj):
 	"""Devuelve el contexto para la plantilla class.html"""
 	try:
 		subject = Subject.objects.get(id=idsubj)
-		try:
-			profile = subject.userprofile_set.get(user=request.user)
-		except UserProfile.DoesNotExist:
-			return {'error': 'No est&aacutes matriculado en ' + subject}
+		if subject.is_seminar: #Puede ver los seminarios de su grado
+			if not UserProfile.objects.filter(user=request.user,
+						degrees__in = subject.degrees.all()):
+				return {'error': 'El seminario no pertenece a tu grado'}
+		else: #puede ver las asignaturas en las que esta matriculado
+			try:
+				profile = subject.userprofile_set.get(user=request.user)
+			except UserProfile.DoesNotExist:
+				return {'error': 'No est&aacutes matriculado en ' + str(subject)}
 		lessons = subject.lesson_set.all()
 		profesors = subject.userprofile_set.filter(is_student=False)
 	except Subject.DoesNotExist:
@@ -88,8 +95,16 @@ def get_seminars_ctx(request):
 		profile = UserProfile.objects.get(user=request.user)
 	except (UserProfile.DoesNotExist, User.DoesNotExist):			
 		return {'error': 'No tienes un perfil creado.'}
-	
-	return {}
+	future_seminars = Subject.objects.filter(
+							is_seminar=True		
+						).filter(
+							first_date__gt = timezone.now()
+						).filter(
+							degrees__in = profile.degrees.all()
+						).distinct().order_by('first_date')
+
+
+	return {'profile':profile, 'seminars': future_seminars}
 
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
@@ -105,6 +120,39 @@ def process_profile_post(form, user):
 	profile.description = data['description']
 	profile.save()
 	return {'user':{'id': user.id, 'age':data['age'], 'description':data['description']}}#coger datos del usuario tras guardar TODO cambiar esto y el js
+
+
+def process_seminars_post(form, user):
+	"""Procesa un POST para la creacion de un seminario"""
+	try:
+		profile = UserProfile.objects.get(user=user)
+		if profile.is_student:
+			return {'error': 'Los estudiantes no pueden crear seminarios'}
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	try:
+		first_date = parser.parse(form.__getitem__("first_date"))#TODO convertir
+		last_date = parser.parse(form.__getitem__("last_date"))
+		degrees = form.__getitem__("degrees")
+		name = form.__getitem__("name")
+	except MultiValueDictKeyError:
+		return {'error': 'Formulario incorrecto'}
+	except ValueError:
+		return {'error': 'El formato de fecha debe ser AAAA-MM-DD'}
+	new_subj = Subject(name=name, is_seminar=True, 
+					first_date=first_date, last_date=last_date)
+	try:
+		new_subj.clean()#Save no lo llama, asi que hay que llamarlo
+	except ValidationError, e:
+		#TODO mostrar error sin el ['u'
+		return {'error': str(e)}
+	new_subj.save()
+	for degree in degrees:
+		print degree
+		new_subj.degrees.add(degree)
+	profile.subjects.add(new_subj)
+	return {'idsubj': new_subj.id}
+
 
 def process_class_post(form, user, idclass):
 	"""Procesa un POST sobre una clase, pudiendo ser de diferentes tipos"""

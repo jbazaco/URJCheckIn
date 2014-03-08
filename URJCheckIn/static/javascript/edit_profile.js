@@ -53,13 +53,13 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 /* Envia un POST al servidor para que actualice el perfil del usuario con la 
 	informacion del formulario */
 function sendChanges(id) {
-		$('.profile_alert').remove();
-		disableButtons(['button']);
-		$('#loading_page').css('display','inline');
-		/*$.post("http://" + document.location.host + "/profile/view/" + id, 
-								$('#profile_form').serialize(), infoSaved)
-				.fail(errorSaving);*/
-		Dajaxice.app.update_profile(infoSaved, {'iduser': id, 'form':$('#profile_form').serializeObject()});
+	$('.profile_alert').remove();
+	disableButtons(['button']);
+	$('#loading_page').css('display','inline');
+	/*$.post("http://" + document.location.host + "/profile/view/" + id, 
+							$('#profile_form').serialize(), infoSaved)
+			.fail(errorSaving);*/
+	Dajaxice.app.update_profile(infoSaved, {'iduser': id, 'form':$('#profile_form').serializeObject()});
 }
 
 /* Quita el formulario y vuelve a mostrar el perfil */
@@ -90,7 +90,6 @@ function changePassword() {
 function passwordChanged(data) {
 	var alert_class = 'password_alert';
 	if(data.errors) {
-		//TODO Poner alerts donde corresponda
 		for (error in data.errors)
 			alertBefore(data.errors[error], 
 				'#group_'+error, alert_class, 'danger');

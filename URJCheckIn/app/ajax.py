@@ -14,7 +14,7 @@ from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Le
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post
 
 @dajaxice_register(method='GET')
 @login_required
@@ -132,6 +132,15 @@ def seminars(request):
 			return send_error(request, ctx['error'], '/seminars')
 		html = loader.get_template('seminars.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/seminars'})
+	else:
+		return wrongMethodJson(request)
+
+@dajaxice_register(method='POST')#quitar POSTs si son por defecto
+@login_required
+def create_seminar(request, form):
+	"""procesa la creacion de un seminario y devuelve la id del seminario creado"""
+	if request.method == "POST":
+		return simplejson.dumps(process_seminars_post(form, request.user))
 	else:
 		return wrongMethodJson(request)
 

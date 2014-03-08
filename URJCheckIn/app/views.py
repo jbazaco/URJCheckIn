@@ -1,5 +1,5 @@
 # Create your views here.
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.template import Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -138,7 +138,19 @@ def subjects(request):
 @login_required
 def seminars(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
-	if request.method != 'GET':
+	if request.method == "POST":
+		resp = process_seminars_post(request.POST, request.user)
+		if ('idsubj' in resp):
+			idsubj = resp['idsubj']
+		else:
+			if ('error' in resp):
+				error =  resp['error']
+			else:
+				error = "Se ha producido un error interno al crear el semianio"
+			return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': error}, context_instance=RequestContext(request))
+		return HttpResponseRedirect('/subjects/' + str(idsubj))
+	elif request.method != "GET":
 		return method_not_allowed(request)
 
 	ctx = get_seminars_ctx(request)
@@ -147,7 +159,6 @@ def seminars(request):
 					'message': ctx['error']}, context_instance=RequestContext(request))
 	ctx['htmlname'] = 'seminars.html'#Elemento necesario para renderizar main.html
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
-
 
 @login_required
 def subject(request, idsubj):

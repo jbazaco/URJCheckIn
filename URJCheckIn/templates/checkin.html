@@ -20,7 +20,7 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="subject_select">Asignatura:</label>
 						<div class="col-sm-10">
-							<select id="subject_select" class="btn btn-default" required>
+							<select id="subject_select" name="subject" class="btn btn-default" required>
 								{% for subject in subjects %}
 									<option value="{{subject.id}}">{{subject}}</option>
 								{% endfor %}

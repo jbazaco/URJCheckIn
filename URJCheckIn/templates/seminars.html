@@ -1,0 +1,83 @@
+<h2 id="maintitle">
+	Pr&oacute;ximos seminarios <br/>
+	<small>
+	{% if profile.is_student %}
+		Inscr&iacute;bete en alg&uacute;n seminario
+	{% else %}
+		Organiza alg&uacute;n seminario
+	{% endif %}
+	</small>
+</h2>
+
+{% if not profile.is_student %}
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="well">
+			<form name="create_seminar" class="form-horizontal" id="create_seminar" onsubmit="createSeminar(); return false;" action="" method="POST">
+				{% csrf_token %}
+				<fieldset>
+					<legend>Nuevo Seminario</legend>
+<div class="form-group">
+						<label class="col-sm-2 control-label" for="degree_select">Nombre:</label>
+						<div class="col-sm-10">
+							<input id="name" type="text" name="name" maxlength="100" size="15px" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="degree_select">Grados:</label>
+						<div class="col-sm-10">
+							<select id="degree_select" name="degrees" class="btn btn-default" multiple required>
+								{% for degree in profile.degrees.all %}
+									<option value="{{degree.id}}">{{degree.name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+		
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="first_date">Inicio: </label>
+						<div class="col-sm-10">
+							<input id="first_date" type="date" name="first_date" maxlength="20" size="15px" required>
+							<!-- TODO problema con internet explorer y firefox-->
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="last_date">Fin: </label>
+						<div class="col-sm-10">
+							<input id="last_date" type="date" name="last_date" maxlength="20" size="15px" required>
+							<!-- TODO problema con internet explorer y firefox-->
+						</div>
+					</div>
+					<button type="submit" class="btn btn-success btn-block" name="seminar_submit" >
+						<span class="glyphicon glyphicon-save"></span> Crear
+					</button>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<div id="seminars">
+			<div class="panel panel-warning">
+				<div class="panel-heading">
+					<h3 class="panel-title">Pr&oacute;ximos seminarios</h3>
+				</div>
+				<ul class="seminars_list list-group">
+					{% for seminar in seminars %}
+						<a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{seminar.id}}}); return false;" href="/subjects/{{seminar.id}}" class="list-group-item">
+							{{seminar.name}}<br/>
+							<em>{{seminar.first_date|date:'d-m-Y'}}/{{seminar.last_date|date:'d-m-Y'}}</em>
+						</a>
+					{% empty %}
+						<li class="list-group-item">
+							No hay seminarios organizados
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
