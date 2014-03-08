@@ -138,18 +138,17 @@ def subjects(request):
 @login_required
 def seminars(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
+	resp = False
 	if request.method == "POST":
 		resp = process_seminars_post(request.POST, request.user)
 		if ('idsubj' in resp):
 			idsubj = resp['idsubj']
+			return HttpResponseRedirect('/subjects/' + str(idsubj))
 		else:
-			if ('error' in resp):
-				error =  resp['error']
+			if ('errors' in resp):
+				error = resp['errors']
 			else:
-				error = "Se ha producido un error interno al crear el semianio"
-			return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': error}, context_instance=RequestContext(request))
-		return HttpResponseRedirect('/subjects/' + str(idsubj))
+				resp['errors'] = ["Se ha producido un error interno al crear el semianio"]
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
@@ -158,6 +157,10 @@ def seminars(request):
 		return render_to_response('main.html', {'htmlname': 'error.html',
 					'message': ctx['error']}, context_instance=RequestContext(request))
 	ctx['htmlname'] = 'seminars.html'#Elemento necesario para renderizar main.html
+	#resp es distinto de false si se recibio un POST erroneo y por tanto 
+	#resp['errors'] contiene los errores
+	if resp:
+		ctx['errors'] = resp['errors']
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 @login_required

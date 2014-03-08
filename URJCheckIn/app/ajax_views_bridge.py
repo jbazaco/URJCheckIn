@@ -7,7 +7,7 @@
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, ReviewClassForm
+from forms import ProfileEditionForm, ReviewClassForm, CreateSeminarForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 
@@ -42,6 +42,7 @@ def get_subject_ctx(request, idsubj):
 	try:
 		subject = Subject.objects.get(id=idsubj)
 		if subject.is_seminar: #Puede ver los seminarios de su grado
+			#TODO dejarle ver si es el profesor del seminario, o si es profesor simplemente?
 			if not UserProfile.objects.filter(user=request.user,
 						degrees__in = subject.degrees.all()):
 				return {'error': 'El seminario no pertenece a tu grado'}
@@ -104,7 +105,7 @@ def get_seminars_ctx(request):
 						).distinct().order_by('first_date')
 
 
-	return {'profile':profile, 'seminars': future_seminars}
+	return {'profile':profile, 'seminars': future_seminars, 'form': CreateSeminarForm()}
 
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
@@ -127,28 +128,25 @@ def process_seminars_post(form, user):
 	try:
 		profile = UserProfile.objects.get(user=user)
 		if profile.is_student:
-			return {'error': 'Los estudiantes no pueden crear seminarios'}
+			return {'errors': ['Los estudiantes no pueden crear seminarios']}
 	except UserProfile.DoesNotExist:
-		return {'error': 'No tienes un perfil creado.'}
-	try:
-		first_date = parser.parse(form.__getitem__("first_date"))#TODO convertir
-		last_date = parser.parse(form.__getitem__("last_date"))
-		degrees = form.__getitem__("degrees")
-		name = form.__getitem__("name")
-	except MultiValueDictKeyError:
-		return {'error': 'Formulario incorrecto'}
-	except ValueError:
-		return {'error': 'El formato de fecha debe ser AAAA-MM-DD'}
-	new_subj = Subject(name=name, is_seminar=True, 
-					first_date=first_date, last_date=last_date)
+		return {'errors': ['No tienes un perfil creado.']}
+		
+	#first_date = parser.parse(form.__getitem__("first_date"))
+	csform = CreateSeminarForm(form)
+	if not csform.is_valid():
+		return {'errors': csform.errors}
+	data = csform.cleaned_data
+	new_subj = Subject(name=data['name'], is_seminar=True, 
+					first_date=data['first_date'], last_date=data['last_date'],
+					max_students=data['max_students'], description=data['description'])
 	try:
 		new_subj.clean()#Save no lo llama, asi que hay que llamarlo
 	except ValidationError, e:
 		#TODO mostrar error sin el ['u'
-		return {'error': str(e)}
+		return {'errors': [str(e)]}
 	new_subj.save()
-	for degree in degrees:
-		print degree
+	for degree in data['degrees']:
 		new_subj.degrees.add(degree)
 	profile.subjects.add(new_subj)
 	return {'idsubj': new_subj.id}

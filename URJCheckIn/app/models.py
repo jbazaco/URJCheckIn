@@ -29,10 +29,12 @@ class Degree(models.Model):
 class Subject(models.Model):
 	name = models.CharField(max_length=100, verbose_name='nombre')
 	degrees = models.ManyToManyField(Degree, verbose_name='grados')
-	#TODO hacer una funcion dentro de subject que calcule el numero de estudiantes
 	first_date = models.DateField(verbose_name='fecha de inicio')
 	last_date = models.DateField(verbose_name='fecha de finalizacion')
 	is_seminar = models.BooleanField(verbose_name='es seminario', default=False)
+	#util para seminarios, se puede dejar a 0 para clases
+	max_students = models.PositiveIntegerField(verbose_name='plazas', default=0)
+	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
 
 	class Meta:
 		verbose_name = 'asignatura'

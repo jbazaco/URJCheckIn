@@ -1,4 +1,5 @@
 from django import forms
+from models import Degree
 
 class ReviewClassForm(forms.Form):
 	mark = forms.IntegerField(min_value=0, max_value=5, widget=forms.TextInput(attrs={
@@ -24,9 +25,17 @@ class AddClassForm(forms.Form):
 	
 #Formulario para crear un seminario
 class CreateSeminarForm(forms.Form):
-	name = forms.CharField(max_length=30)
-	#degree = seleccionable (posibilidad de poner varios)
-	#mas campos
+	name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
+			'required':'required'}))
+	degrees = forms.ModelMultipleChoiceField(queryset=Degree.objects.all())
+	first_date = forms.DateField(widget=forms.TextInput(attrs={
+			'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'}))
+	last_date = forms.DateField(widget=forms.TextInput(attrs={
+			'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'}))
+	max_students = forms.IntegerField(min_value=0, widget=forms.TextInput(attrs={
+			'required':'required','type':'number', 'min':0, 'step':'1'}))
+	description = description = forms.CharField(max_length=200, widget=forms.Textarea(attrs={
+			'maxlength':'200', 'class': 'form-control', 'rows': '3', 'required':'required'}))
 
 #usar donde sea conveniente modelform TODO
 	

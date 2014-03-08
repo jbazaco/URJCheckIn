@@ -18,37 +18,60 @@
 				<fieldset>
 					<legend>Nuevo Seminario</legend>
 <div class="form-group">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="name_seminar">Nombre:</label>
+					{% if errors %}<!--Por si se hizo un POST erroneo sin ajax-->
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{errors}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_name" class="form-group">
+						<label class="col-sm-2 control-label" for="id_name">Nombre:</label>
 						<div class="col-sm-10">
-							<input id="name_seminar" type="text" name="name" maxlength="100" size="15px" required>
+							{{form.name}}
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="degree_select">Grados:</label>
+					<div id="group_degrees" class="form-group">
+						<label class="col-sm-2 control-label" for="id_degrees">Grados:</label>
 						<div class="col-sm-10">
-							<select id="degree_select" name="degrees" class="btn btn-default" multiple required>
-								{% for degree in profile.degrees.all %}
-									<option value="{{degree.id}}">{{degree.name}}</option>
-								{% endfor %}
-							</select>
+							{{form.degrees}}
 						</div>
 					</div>
 		
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="first_date">Inicio: </label>
+					<div id="group_first_date" class="form-group">
+						<label class="col-sm-2 control-label" for="id_first_date">Inicio: </label>
 						<div class="col-sm-10">
-							<input id="first_date" type="date" name="first_date" maxlength="20" size="15px" required>
+							{{form.first_date}}
 							<!-- TODO problema con internet explorer y firefox-->
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="last_date">Fin: </label>
+
+					<div id="group_last_date" class="form-group">
+						<label class="col-sm-2 control-label" for="id_last_date">Fin: </label>
 						<div class="col-sm-10">
-							<input id="last_date" type="date" name="last_date" maxlength="20" size="15px" required>
+							{{form.last_date}}
 							<!-- TODO problema con internet explorer y firefox-->
 						</div>
 					</div>
+
+					<div id="group_max_students" class="form-group">
+						<label class="col-sm-2 control-label" for="id_max_students">Plazas:</label>
+						<div class="col-sm-10">
+							{{form.max_students}}
+						</div>
+					</div>
+
+					<div id="group_description" class="form-group">
+						<label class="col-sm-2 control-label" for="id_description">
+							Descripci&oacute;n:
+						</label>
+						<div class="col-sm-9">
+							{{form.description}}
+						</div>
+					</div>
+
 					<button type="submit" class="btn btn-success btn-block" name="seminar_submit" >
 						<span class="glyphicon glyphicon-save"></span> Crear
 					</button>
