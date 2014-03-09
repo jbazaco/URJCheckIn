@@ -10,6 +10,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from forms import ProfileEditionForm, ReviewClassForm, CreateSeminarForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
+import datetime
 
 def get_class_ctx(request, idclass):
 	"""Devuelve el contexto para la plantilla class.html"""
@@ -38,28 +39,36 @@ def get_class_ctx(request, idclass):
 						'lesson_state':lesson_state, 'profesors':profesors}
 
 def get_subject_ctx(request, idsubj):
-	"""Devuelve el contexto para la plantilla class.html"""
+	"""Devuelve el contexto para la plantilla subject.html"""
 	try:
+		profile = UserProfile.objects.get(user=request.user)
 		subject = Subject.objects.get(id=idsubj)
-		if subject.is_seminar: #Puede ver los seminarios de su grado
-			#TODO dejarle ver si es el profesor del seminario, o si es profesor simplemente?
-			if not UserProfile.objects.filter(user=request.user,
-						degrees__in = subject.degrees.all()):
-				return {'error': 'El seminario no pertenece a tu grado'}
-		else: #puede ver las asignaturas en las que esta matriculado
-			try:
-				profile = subject.userprofile_set.get(user=request.user)
-			except UserProfile.DoesNotExist:
-				return {'error': 'No est&aacutes matriculado en ' + str(subject)}
-		lessons = subject.lesson_set.all()
-		profesors = subject.userprofile_set.filter(is_student=False)
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
 	except Subject.DoesNotExist:
 		return {'error': '#404 La asignatura a la que intentas acceder no existe.'}
+
+
+	if subject in profile.subjects.all():
+		signed = True
+	else:
+		signed = False
+		#Solo pueden ver las asignaturas en las que estan matriculados
+		if not subject.is_seminar:
+			return {'error': 'No est&aacutes matriculado en ' + str(subject)}
+		
+	lessons = subject.lesson_set.all()
+	profesors = subject.userprofile_set.filter(is_student=False)
+	now = timezone.now()
+	today = datetime.date(now.year, now.month, now.day)
+	started = subject.first_date < today#Si ha empezado True
+	#TODO devolver solo 10 clases de cada
 	return {'classes_f': lessons.filter(start_time__gte=timezone.now()),
 			'classes_p': lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
 			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
-			'profesors': profesors, 'subject': subject}
+			'profesors': profesors, 'subject': subject, 'profile':profile,
+			'signed': signed, 'started': started}
 
 def get_checkin_ctx(request):
 	"""Devuelve el contexto para la plantilla class.html"""
@@ -139,7 +148,8 @@ def process_seminars_post(form, user):
 	data = csform.cleaned_data
 	new_subj = Subject(name=data['name'], is_seminar=True, 
 					first_date=data['first_date'], last_date=data['last_date'],
-					max_students=data['max_students'], description=data['description'])
+					max_students=data['max_students'], description=data['description'],
+					creator=user)
 	try:
 		new_subj.clean()#Save no lo llama, asi que hay que llamarlo
 	except ValidationError, e:

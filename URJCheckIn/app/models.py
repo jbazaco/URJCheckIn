@@ -14,6 +14,7 @@ WEEK_DAYS = (
 	('Sat', 'Saturday'),
 	('Sun', 'Sunday')
 )
+FIRST_ADMIN_ID = 1
 
 class Degree(models.Model):
 	name = models.CharField(max_length=100, unique=True, verbose_name='nombre')
@@ -25,7 +26,6 @@ class Degree(models.Model):
 	def __unicode__(self):
 		return self.code
 
-
 class Subject(models.Model):
 	name = models.CharField(max_length=100, verbose_name='nombre')
 	degrees = models.ManyToManyField(Degree, verbose_name='grados')
@@ -35,6 +35,7 @@ class Subject(models.Model):
 	#util para seminarios, se puede dejar a 0 para clases
 	max_students = models.PositiveIntegerField(verbose_name='plazas', default=0)
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
+	creator = models.ForeignKey(User, verbose_name='creador', default=FIRST_ADMIN_ID)
 
 	class Meta:
 		verbose_name = 'asignatura'
@@ -92,6 +93,7 @@ class Lesson(models.Model):
 	end_time = models.DateTimeField(verbose_name='hora de finalizacion')
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	room =	models.ForeignKey(Room, verbose_name='aula')#TODO on_delete funcion para buscar otra aula
+	creator = models.ForeignKey(User, verbose_name='creador', default=FIRST_ADMIN_ID)
 	#No se si poner profesor o todos los de la asignatura
 	
 	class Meta:

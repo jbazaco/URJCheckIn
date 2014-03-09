@@ -36,6 +36,57 @@
 					{%endfor%}
 				</ul>
 			</dd>
+			{% if subject.is_seminar %}
+				<dt>Plazas ocupadas: </dt> <dd>{{subject.n_students}}/{{subject.max_students}}</dd>
+				<dt>Descripci&oacute;n: </dt> <dd>{{subject.description}}</dd>
+
+				<!--El creador del seminario puede modificarlo-->
+				{% if profile.user == subject.creator %}
+					<!--TODO-->
+					eliminar seminario
+					editar fecha inicio/fin
+				{% endif %}
+				<!--Si aun no ha empezado los alumnos pueden apuntarse/desapuntarse si hay plaza
+					y los profesores pueden apuntarse como ponentes-->
+				{% if not started %}
+					{% if profile.is_student %}
+						{% if signed %}
+							<div class="row">
+								<form name="sign_seminar" action="" method="POST"
+										 onsubmit="changeStateSeminar({{subject.id}}); return false;">
+									{% csrf_token %}
+									<button name="sign_up_seminar" class="btn btn-danger btn-block" 
+										onclick="signUpSeminar('{{profile.user.id}}')">
+										<span class="glyphicon glyphicon-remove-circle"></span> Desapuntarme
+									</button>
+								</form>
+							</div>
+						{% elif subject.n_students < subject.max_students %}			
+							<div class="row">
+								<form name="sign_seminar" action="" method="POST"
+									 onsubmit="changeStateSeminar({{subject.id}}); return false;">
+									{% csrf_token %}
+									<button name="sign_seminar" class="btn btn-success btn-block" 
+										onclick="signUpSeminar('{{profile.user.id}}')">
+										<span class="glyphicon glyphicon-ok-circle"></span> Apuntarme
+									</button>
+								</form>
+							</div>
+						{% endif %}
+					{% elif profile.user != subject.creator and not signed %}
+						<div class="row">
+							<form name="sign_seminar" action="" method="POST"
+								 onsubmit="changeStateSeminar({{subject.id}}); return false;">
+								{% csrf_token %}
+								<button name="sign_seminar" class="btn btn-success btn-block" 
+									onclick="signUpSeminar('{{profile.user.id}}')">
+									<span class="glyphicon glyphicon-ok-circle"></span> Hacerme organizador
+								</button>
+							</form>
+						</div>
+					{% endif %}
+				{% endif %}
+			{% endif %}
 		</div>
 	</dl>
 </div>
