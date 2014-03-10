@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -166,7 +166,12 @@ def seminars(request):
 @login_required
 def subject(request, idsubj):
 	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
-	if request.method != 'GET':
+	if request.method == 'POST':
+		resp = process_subject_post(idsubj, request.user)
+		if 'error' in resp:
+			return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': resp['error']}, context_instance=RequestContext(request))
+	elif request.method != 'GET':
 		return method_not_allowed(request)
 	
 	ctx = get_subject_ctx(request, idsubj)

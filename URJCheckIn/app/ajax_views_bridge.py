@@ -131,6 +131,34 @@ def process_profile_post(form, user):
 	profile.save()
 	return {'user':{'id': user.id, 'age':data['age'], 'description':data['description']}}#coger datos del usuario tras guardar TODO cambiar esto y el js
 
+def process_subject_post(idsubj, user):
+	"""Pone un seminario en los subjects de un usuario o se lo quita si ya lo tiene"""
+	try:
+		profile = UserProfile.objects.get(user=user)
+		subject = Subject.objects.get(id=idsubj, is_seminar=True)
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	except Subject.DoesNotExist:
+		return {'error': 'No existe ning&uacute;n seminario con el id ' + str(idsubj)}
+
+	now = timezone.now()
+	today = datetime.date(now.year, now.month, now.day)
+	if subject.first_date < today:
+		return {'error': 'No puedes modificar tu registro en un seminario que ya ha empezado'}
+
+	if subject in profile.subjects.all():
+		profile.subjects.remove(subject)
+		signed = False
+	else:
+		if profile.is_student:
+			if subject.max_students >= subject.n_students:
+				return {'error': 'No hay plazas disponibles'}
+		profile.subjects.add(subject)
+		signed = True
+	return {'signed': signed, 'is_student':profile.is_student, 
+			'ok': True, 'iduser': user.id, 
+			'name': user.first_name + " " + user.last_name}
+
 
 def process_seminars_post(form, user):
 	"""Procesa un POST para la creacion de un seminario"""

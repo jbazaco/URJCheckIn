@@ -3,11 +3,14 @@
 	<small>Accede a la informaci&oacute;n de las clases</small>
 </h2>
 
+<!-- Descripcion de la asignatura o seminario -->
 <div id="subject_info" class="row">
 	<dl class="dl-horizontal col-xs-12 fields">
 		<div class="span2 well">
 			<dt>Nombre: </dt> <dd>{{subject.name}} </dd>
-			<dt>N&uacute;mero de alumnos: </dt> <dd>{{subject.n_students}} </dd>
+			{% if not subject.is_seminar %}
+				<dt>N&uacute;mero de alumnos: </dt> <dd>{{subject.n_students}} </dd>
+			{% endif %}
 			<dt>Grado{{subject.degrees.all|length|pluralize}}: </dt>
 			<dd>
 				<ul id="degrees_list">
@@ -16,7 +19,7 @@
 							{{degree.name}}
 						</li>
 					{% empty %}
-						La asignatura no es impartida por ning&uacute;n profesor.
+						La asignatura no est&aacute; vinculada con ning&uacute;n grado.
 					{%endfor%}
 				</ul>
 			</dd>
@@ -24,7 +27,7 @@
 			<dd>
 				<ul id="profesor_list">
 					{%for prof in profesors%}
-						<li>
+						<li id="professor_{{prof.user.id}}">
 							<a onClick="ask_ajax_page('profile', loadAjaxPage, 
 							{'iduser': '{{prof.user.id}}'}); return false;" 
 							href="/profile/view/{{prof.user.id}}">
@@ -37,26 +40,31 @@
 				</ul>
 			</dd>
 			{% if subject.is_seminar %}
-				<dt>Plazas ocupadas: </dt> <dd>{{subject.n_students}}/{{subject.max_students}}</dd>
+				<dt>Plazas ocupadas: </dt> 
+				<dd>
+					<span id="n_students">{{subject.n_students}}</span>/{{subject.max_students}}
+				</dd>
 				<dt>Descripci&oacute;n: </dt> <dd>{{subject.description}}</dd>
 
-				<!--El creador del seminario puede modificarlo-->
 				{% if profile.user == subject.creator %}
+				<!-- El creador del seminario puede modificarlo -->
 					<!--TODO-->
 					eliminar seminario
 					editar fecha inicio/fin
 				{% endif %}
-				<!--Si aun no ha empezado los alumnos pueden apuntarse/desapuntarse si hay plaza
-					y los profesores pueden apuntarse como ponentes-->
+				<div id="alert_change_sign">
+				</div>
 				{% if not started %}
+				<!-- Si aun no ha empezado los alumnos pueden apuntarse/desapuntarse si hay plaza
+					y los profesores pueden apuntarse como ponentes -->
+				<!-- Si se cambian los botones hay que cambiar el javascript subject.js -->
 					{% if profile.is_student %}
 						{% if signed %}
 							<div class="row">
 								<form name="sign_seminar" action="" method="POST"
-										 onsubmit="changeStateSeminar({{subject.id}}); return false;">
+										 onsubmit="changeSignSeminar({{subject.id}}); return false;">
 									{% csrf_token %}
-									<button name="sign_up_seminar" class="btn btn-danger btn-block" 
-										onclick="signUpSeminar('{{profile.user.id}}')">
+									<button id="sign_button" class="btn btn-danger btn-block">
 										<span class="glyphicon glyphicon-remove-circle"></span> Desapuntarme
 									</button>
 								</form>
@@ -64,24 +72,28 @@
 						{% elif subject.n_students < subject.max_students %}			
 							<div class="row">
 								<form name="sign_seminar" action="" method="POST"
-									 onsubmit="changeStateSeminar({{subject.id}}); return false;">
+									 onsubmit="changeSignSeminar({{subject.id}}); return false;">
 									{% csrf_token %}
-									<button name="sign_seminar" class="btn btn-success btn-block" 
-										onclick="signUpSeminar('{{profile.user.id}}')">
+									<button id="sign_button" class="btn btn-success btn-block">
 										<span class="glyphicon glyphicon-ok-circle"></span> Apuntarme
 									</button>
 								</form>
 							</div>
 						{% endif %}
-					{% elif profile.user != subject.creator and not signed %}
+					{% else %}
 						<div class="row">
 							<form name="sign_seminar" action="" method="POST"
-								 onsubmit="changeStateSeminar({{subject.id}}); return false;">
+								 onsubmit="changeSignSeminar({{subject.id}}); return false;">
 								{% csrf_token %}
-								<button name="sign_seminar" class="btn btn-success btn-block" 
-									onclick="signUpSeminar('{{profile.user.id}}')">
-									<span class="glyphicon glyphicon-ok-circle"></span> Hacerme organizador
-								</button>
+								{% if signed %}
+									<button id="sign_button" class="btn btn-danger btn-block">
+										<span class="glyphicon glyphicon-remove-circle"></span> Dejar de ser organizador
+									</button>
+								{% else %}
+									<button id="sign_button" class="btn btn-success btn-block">
+										<span class="glyphicon glyphicon-ok-circle"></span> Hacerme organizador
+									</button>
+								{% endif %}
 							</form>
 						</div>
 					{% endif %}
@@ -91,8 +103,10 @@
 	</dl>
 </div>
 
+<!-- Clases de la asignatura o seminario -->
 <div id="classes">
 	{%if classes_n%}
+	<!-- Clases realizandose en este momento -->
 	<div class="row">
 		<div class="col-xs-12">
 			<div class="panel panel-danger">
@@ -112,6 +126,7 @@
 	{%endif%}
 
 	<div class="row">
+		<!-- Clases que aun no se han realizado -->
 		<div class="col-sm-6">
 			<div class="panel panel-info">
 				<div class="panel-heading">
@@ -135,7 +150,7 @@
 				<!--TODO funcionalidad boton para cargar mas-->
 			</div>
 		</div>
-
+		<!-- Clases que ya se han realizado -->
 		<div class="col-sm-6">
 			<div class="panel panel-success">
 				<div class="panel-heading">
