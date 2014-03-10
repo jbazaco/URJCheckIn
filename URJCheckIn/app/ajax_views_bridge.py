@@ -208,12 +208,6 @@ def delete_class(form, user, idclass):
 	print "delete!"
 	return {'error': 'funcion sin hacer'}
 
-#TODO
-def uncheck_class(form, user, idclass):
-	"""El usuario que lo solicita deja de estar suscrito a esa clase(solo para seminarios)"""
-	print "uncheck!"
-	return {'error': 'funcion sin hacer'}
-
 def comment_class(form, user, idclass):
 	"""Guarda un comentario de una clase"""
 	try:
@@ -235,7 +229,6 @@ def comment_class(form, user, idclass):
 	return {'ok': True}
 
 action_class = {'delete': delete_class,
-				'uncheck': uncheck_class,
 				'comment': comment_class,
 				#'check': check_class,
 }
