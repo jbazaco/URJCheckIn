@@ -35,8 +35,12 @@ def get_class_ctx(request, idclass):
 		#En caso de que se asigne un profesor a una clase en vez de todos se obtendria de otra forma
 	except Lesson.DoesNotExist:
 		return {'error': '#404 La clase a la que intentas acceder no existe.'}
-	return {'lesson':lesson, 'comments':comments, 'profile':profile, 
+	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 
 						'lesson_state':lesson_state, 'profesors':profesors}
+	if  not profile.is_student and lesson_state != "sin realizar":
+		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
+		ctx['opinions'] = opinions
+	return ctx
 
 def get_subject_ctx(request, idsubj):
 	"""Devuelve el contexto para la plantilla subject.html"""

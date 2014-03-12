@@ -96,8 +96,8 @@
 {%if not profile.is_student%}
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
-			<div class="well">
-				{%ifequal lesson_state "sin realizar"%}
+			{%ifequal lesson_state "sin realizar"%}
+				<div class="well">
 					<form name="change_class" class="form-horizontal" id="change_date">
 						<fieldset>
 							<legend>Editar clase</legend>
@@ -128,8 +128,31 @@
 						</fieldset>
 					</form>
 					<!--TODO si la ha creado el profesor la puede borrar tambien-->
-				{%endifequal%}
-			</div>
+				</div>
+			{% else %}
+				<div class="panel panel-default comments">
+					<div class="panel-heading">
+						<span class="glyphicon glyphicon-comment"></span> Opiniones de los alumnos
+					</div>
+					<ul class="list-group">
+						{% for opinion in opinions %}
+							<li class="list-group-item">
+								<div class="row">
+									<div class="col-xs-10 col-md-11">
+										<div class="comment-student">
+											{{opinion.mark}}
+											<span class="glyphicon glyphicon-star"></span>
+											{{opinion.comment}}
+										</div>
+									</div>
+								</div>
+							</li>
+						{% empty %}
+							<li class="list-group-item">No asisti&oacute; ning&uacute;n alumno</li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endifequal %}
 		</div>
 	</div>
 {%endif%}
