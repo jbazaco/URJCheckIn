@@ -74,6 +74,36 @@ def get_subject_ctx(request, idsubj):
 			'profesors': profesors, 'subject': subject, 'profile':profile,
 			'signed': signed, 'started': started}
 
+def get_subject_attendance_ctx(request, idsubj):
+	try:
+		profile = request.user.userprofile
+		if profile.is_student:
+			return {'error': 'Solo los profesores tienen acceso.'}
+		subject = Subject.objects.get(id=idsubj)
+		if not subject in profile.subjects.all():
+			return {'error': 'No tienes acceso a esta informaci&oacute;n.'}
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	except Subject.DoesNotExist:
+		return {'error': 'La asignatura con id ' + str(idsubj) + ' no existe.'}
+	
+	students = subject.userprofile_set.filter(is_student=True)
+	lessons = subject.lesson_set.filter(end_time__lte = timezone.now())
+	n_lessons = lessons.count()
+	checkins = CheckIn.objects.filter(lesson__in = lessons).distinct()#TODO quitar distinct al no ser manytomany?
+	students_info = []
+	for student in students:
+		n_checkins = checkins.filter(user=student.user).count()
+		students_info.append({
+					'id': student.id,
+					'name': student.user.first_name + ' ' + student.user.last_name,
+					'percent': round(100.0 * n_checkins / n_lessons,2)
+		})
+		
+	return {'students': students_info, 'subject': subject}
+	
+
+
 def get_checkin_ctx(request):
 	"""Devuelve el contexto para la plantilla class.html"""
 	try:

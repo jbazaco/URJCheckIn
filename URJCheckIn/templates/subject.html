@@ -103,6 +103,17 @@
 	</dl>
 </div>
 
+{% if not profile.is_student %}
+	<div class="row">
+		<div class="col-xs-12">
+			<a onClick="ask_ajax_page('subject_attendance', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="{{subject.id}}/attendance" class="btn btn-info btn-block">
+				<span class="glyphicon glyphicon-user"></span> Comprobar asistencia
+			</a>
+		</div>
+	</div>
+	<br/>
+{% endif %}
+
 <!-- Clases de la asignatura o seminario -->
 <div id="classes">
 	{%if classes_n%}

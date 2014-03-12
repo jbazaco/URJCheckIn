@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, ForumComment, Lesson, CheckIn
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -180,4 +180,19 @@ def subject(request, idsubj):
 					'message': ctx['error']}, context_instance=RequestContext(request))
 	ctx['htmlname'] = 'subject.html'#Elemento necesario para renderizar main.html
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
+
+@login_required
+def subject_attendance(request, idsubj):
+	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
+	if request.method != 'GET':
+		return method_not_allowed(request)
+	
+	ctx = get_subject_attendance_ctx(request, idsubj)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'subject_attendance.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
 

@@ -50,6 +50,8 @@ window.onpopstate = function() {
 			Dajaxice.app.subjects(insertHtml);
 		else if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
 			Dajaxice.app.subject(insertHtml, {'idsubj': pathsplit[2]});
+		else if (pathsplit.length === 4 /*TODO && pathsplit[2] es un numero*/)
+			Dajaxice.app.subject_attendance(insertHtml, {'idsubj': pathsplit[2]});
 		else
 			Dajaxice.app.not_found(insertHtml);
 		break;
