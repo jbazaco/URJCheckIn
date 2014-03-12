@@ -1,0 +1,21 @@
+{% for comment in comments %}
+	<li class="list-group-item">
+		<div class="row">
+			<div class="col-xs-2 col-md-1">
+				<img src="http://placehold.it/80" class="img-rounded img-responsive" alt="" />
+			</div>
+				<div class="col-xs-10 col-md-11">
+				<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{comment.user.id}}'}); return false;" href="/profile/view/{{comment.user.id}}">
+					{{comment.user.first_name}} {{comment.user.last_name}}
+				</a>
+				<div class="mic-info">
+			  		<span class="glyphicon glyphicon-calendar"></span>
+					{{comment.date}}
+				</div>
+				<div class="comment-text">
+					{{comment.comment}}
+				</div>
+			</div>
+		</div>
+	</li>
+{% endfor %}

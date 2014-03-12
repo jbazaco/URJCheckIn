@@ -14,7 +14,7 @@
 <div class="row">
 	<div class="col-md-10 col-md-offset-1">
 		<div id="comment_box" class="panel panel-default">
-			<form name="comment_form" id="comment_form" onsubmit="sendComment(); return false;" action="" method="POST">
+			<form name="comment_form" id="comment_form" onsubmit="sendComment(); return false;" action="/forum" method="POST">
 				{% csrf_token %}
 				<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
 				<div class="row">				
@@ -33,11 +33,31 @@
 	<div class="col-md-10 col-md-offset-1">
 		<div class="panel panel-default comments">
 			<div class="panel-heading">
-				<span class="glyphicon glyphicon-comment"></span> Nuevos comentarios
+				<span class="glyphicon glyphicon-comment"></span> Comentarios del foro
 				<a href="">Mostrar <span class="label label-info"> 0</span></a><!--TODO poner el numero de los que llegan-->
 			</div>
 			<div class="panel-body">
-				<ul class="list-group">
+				<a id="ask_newer" class="btn btn-primary btn-sm btn-block" role="button"
+					{% if comments.has_previous %}
+						href="?page={{comments.previous_page_number}}"
+					{% else %}
+						href="?page=1" 
+					{% endif %}
+					{% with comments|first as first_comment %}
+						{% if first_comment %}}
+							onClick="askComments({{first_comment.id}}, true);return false;">
+						{% else %}
+							onClick="askComments(1, true);return false;">
+							<!-- Situacion inicial, el problema es que solo cargara a partir
+								del segundo mensaje, pero es un caso raro y mejor asi que
+								solucionarlo, ya que es un caso muy poco frecuente y no es un
+								fallo grave -->
+						{% endif %}
+					{% endwith %}
+					<span class="glyphicon glyphicon-refresh"></span> Nuevos mensajes
+				</a>
+				<br/>
+				<ul id="forum_comment_list" class="list-group">
 					{% for comment in comments %}
 						<li class="list-group-item">
 							<div class="row">
@@ -58,9 +78,25 @@
 								</div>
 							</div>
 						</li>
+					{% empty %}
+						<li class="list-group-item">
+							No hay mensajes
+						</li>
 					{% endfor %}
 				</ul>
-				<a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> Mensajes anteriores</a>
+				{% if comments.has_next %}
+					<a id="ask_older" href="?page={{comments.next_page_number}}" 
+						class="btn btn-primary btn-sm btn-block" role="button"
+						{% with comments|last as last_comment %}
+							onClick="askComments({{last_comment.id}}, false);return false;">
+						{% endwith %}
+						<span class="glyphicon glyphicon-refresh"></span> Mensajes anteriores
+					</a>
+				{% else %}
+					<div class="btn btn-primary btn-sm btn-block disabled">
+						No hay mensajes anteriores
+					</div>
+				{% endif %}
 			</div>
 	</div>
 </div>

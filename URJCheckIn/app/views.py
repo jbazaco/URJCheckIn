@@ -7,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from forms import ReviewClassForm, ProfileEditionForm
-from models import UserProfile, ForumComment, Lesson, CheckIn
+from models import UserProfile, Lesson, CheckIn, ForumComment
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -115,11 +115,10 @@ def forum(request):
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
-	#TODO paginator si no hay javascript?
-	comments = ForumComment.objects.filter().order_by('-date')[:10]
-	return render_to_response('main.html', {'htmlname': 'forum.html',
-				'comments':comments},
-				context_instance=RequestContext(request))
+	ctx = get_forum_ctx(request)
+	ctx['htmlname'] = 'forum.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
 
 @login_required
 def subjects(request):

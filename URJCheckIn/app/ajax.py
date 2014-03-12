@@ -14,7 +14,7 @@ from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Le
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
 
 @dajaxice_register(method='GET')
 @login_required
@@ -199,10 +199,8 @@ def class_info(request, idclass):
 def forum(request):
 	"""Devuelve el contenido de la pagina del foro"""
 	if request.method == "GET":
-		comments = ForumComment.objects.filter().order_by('-date')[:10]
-		templ = loader.get_template('forum.html')
-		cont = RequestContext(request, {'comments': comments})
-		html = templ.render(cont)
+		ctx = get_forum_ctx(request)
+		html = loader.get_template('forum.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/forum'})
 	else:
 		return wrongMethodJson(request)
@@ -214,8 +212,11 @@ def publish_forum(request, comment):
 	""" procesa un check in"""
 	if request.method == "POST":
 		comment = comment[:150]
-		ForumComment(comment=comment, user=request.user).save()
-		return simplejson.dumps({'ok': True})
+		new_comment = ForumComment(comment=comment, user=request.user)
+		new_comment.save()
+		html = loader.get_template('pieces/forum_comments.html').render(RequestContext(
+												request, {'comments': [new_comment]}))
+		return simplejson.dumps({'ok': True, 'comment': html, 'idcomment': new_comment.id})
 	else:
 		return wrongMethodJson(request)
 
@@ -255,7 +256,51 @@ def password_change(request, form):
 
 
 def send_error(request, error, url):
+	"""Devuelve una pagina indicando el error que se le pasa"""
 	templ = loader.get_template('error.html')
 	cont = RequestContext(request, {'message':error})
 	html = templ.render(cont)
 	return simplejson.dumps({'#mainbody':html, 'url':url})
+
+
+########################################################
+# Funciones para solicitar mas elementos de algun tipo #
+########################################################
+
+@dajaxice_register(method='GET')
+@login_required
+def more_forum_comments(request, current, newer):
+	"""Si newer = True devuelve un fragmento html con 10 comentarios mas nuevos que num ordenados
+		de mas nuevo a mas antiguo. Si newer = False los anteriores.
+		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)"""
+	try:
+		comment = ForumComment.objects.get(id=current)
+	except ForumComment.DoesNotExist:
+		return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
+	if newer:
+		comments = ForumComment.objects.filter(
+										date__gte=comment.date
+									).exclude(
+										id=current
+									).order_by('-date')
+		#Se tiene que hacer asi porque si se hace el slice primero y luego se
+		# llama a reverse()
+		n_comments = comments.count()
+		if n_comments > 10:
+			comments = comments[n_comments-10:]
+	else:
+		comments = ForumComment.objects.filter(
+										date__lte=comment.date
+									).exclude(
+										id=current
+									).order_by('-date')[0:10]
+	if comments:
+		if newer:
+			idcomment = comments[0].id
+		else:
+			idcomment = comments[comments.count()-1].id
+	else:
+		idcomment = 0
+	html = loader.get_template('pieces/forum_comments.html').render(RequestContext(
+												request, {'comments':comments}))
+	return  simplejson.dumps({'comments':html, 'newer':newer, 'idcomment':idcomment})

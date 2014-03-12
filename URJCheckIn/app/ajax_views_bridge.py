@@ -4,13 +4,32 @@
 	Las funciones con el nombre get_XXXX_ctx y devuelven en un diccionario 
 	el contexto para renderizar la plantilla XXXX.html o un diccionario {'error':'XXXX'}
 	si se produce un error, siendo 'XXXX' un string describiendo el error"""
-from models import UserProfile, Lesson, Subject, CheckIn, LessonComment
+from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
 from forms import ProfileEditionForm, ReviewClassForm, CreateSeminarForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+def my_paginator(request, collection, n_elem):
+	paginator = Paginator(collection, n_elem)
+	page = request.GET.get('page')
+	try:
+		results = paginator.page(page)
+	except PageNotAnInteger:
+		#Si no es un entero devuelve la primera
+		results = paginator.page(1)
+	except EmptyPage:
+		#Si no hay tantas paginas devuelve la ultima
+		results = paginator.page(paginator.num_pages)
+	return results
+
+def get_forum_ctx(request):
+	"""Devuelve el contexto para la plantilla forum.html"""
+	comments =  ForumComment.objects.all().order_by('-date')
+	return {'comments': my_paginator(request, comments, 10) }
 
 def get_class_ctx(request, idclass):
 	"""Devuelve el contexto para la plantilla class.html"""
