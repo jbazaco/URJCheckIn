@@ -75,6 +75,7 @@ def get_subject_ctx(request, idsubj):
 			'signed': signed, 'started': started}
 
 def get_subject_attendance_ctx(request, idsubj):
+	"""Devuelve el contexto para la plantilla subject_attendance.html"""
 	try:
 		profile = request.user.userprofile
 		if profile.is_student:
@@ -90,7 +91,7 @@ def get_subject_attendance_ctx(request, idsubj):
 	students = subject.userprofile_set.filter(is_student=True)
 	lessons = subject.lesson_set.filter(end_time__lte = timezone.now())
 	n_lessons = lessons.count()
-	checkins = CheckIn.objects.filter(lesson__in = lessons).distinct()#TODO quitar distinct al no ser manytomany?
+	checkins = CheckIn.objects.filter(lesson__in = lessons)
 	students_info = []
 	for student in students:
 		n_checkins = checkins.filter(user=student.user).count()
