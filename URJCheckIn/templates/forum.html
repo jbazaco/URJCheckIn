@@ -47,11 +47,7 @@
 						{% if first_comment %}}
 							onClick="askComments({{first_comment.id}}, 0, true);return false;">
 						{% else %}
-							onClick="askComments(1, 0, true);return false;">
-							<!-- Situacion inicial, el problema es que solo cargara a partir
-								del segundo mensaje, pero es un caso raro y mejor asi que
-								solucionarlo, ya que es un caso muy poco frecuente y no es un
-								fallo grave -->
+							onClick="askComments(0, 0, true);return false;">
 						{% endif %}
 					{% endwith %}
 					<span class="glyphicon glyphicon-refresh"></span> Nuevos mensajes

@@ -3,6 +3,7 @@ from dajaxice.decorators import dajaxice_register
 from django.template import loader, RequestContext
 from forms import ReviewClassForm, ProfileEditionForm
 from django.utils import timezone
+from datetime import timedelta
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 
@@ -278,13 +279,18 @@ def more_comments(request, current, newer, idlesson):
 		de mas nuevo a mas antiguo. Si newer = False los anteriores.
 		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)
 		Si idlesson es menor que 1 los coge del foro y si no de la lesson con id idlesson"""
-	try:
-		if idlesson > 0:
-			comment = LessonComment.objects.get(id=current)
-		else:
-			comment = ForumComment.objects.get(id=current)
-	except ForumComment.DoesNotExist:
-		return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
+	if current > 0:
+		try:
+			if idlesson > 0:
+				comment = LessonComment.objects.get(id=current)
+			else:
+				comment = ForumComment.objects.get(id=current)
+		except ForumComment.DoesNotExist:
+			return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
+		current_date = comment.date
+	else: #Para el caso en el que no hubiese ningun mensaje en la pagina
+		current_date = timezone.now() - timedelta(days=1)
+		
 
 	if idlesson > 0:
 		try:
@@ -299,22 +305,14 @@ def more_comments(request, current, newer, idlesson):
 		all_comments = ForumComment.objects.all()
 
 	if newer:
-		comments = all_comments.filter(
-									date__gte=comment.date
-								).exclude(
-									id=current
-								).order_by('-date')
-		#Se tiene que hacer asi porque si se hace el slice primero y luego se
-		# llama a reverse()
+		comments = all_comments.filter(date__gt=current_date).order_by('-date')
+		#Se tiene que hacer asi porque si se hace el slice primero con order_by('date')
+		# y luego se llama a reverse() se seleccionan los 10 elementos opuestos
 		n_comments = comments.count()
 		if n_comments > 10:
 			comments = comments[n_comments-10:]
 	else:
-		comments = all_comments.filter(
-									date__lte=comment.date
-								).exclude(
-									id=current
-								).order_by('-date')[0:10]
+		comments = all_comments.filter(date__lt=current_date).order_by('-date')[0:10]
 	if comments:
 		if newer:
 			idcomment = comments[0].id

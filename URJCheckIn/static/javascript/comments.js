@@ -7,25 +7,12 @@ function sendClassComment(idclass) {
 	var content = $('#comment_field').val()
 	if(content) {
 		disableButtons(['#comment_button']);
-		Dajaxice.app.process_class(commentClassSaved, 
+		Dajaxice.app.process_class(commentSaved, 
 						{'form':$('#comment_form').serializeObject(),
 						'idclass':idclass});
 	} else {
 		alert('No puedes enviar comentarios vacios');
 	}
-}
-
-/* Escribe el mensaje arriba */
-function commentClassSaved(data) {
-	if (data.error) {
-		alert(data.error);
-	} else if (data.ok) {
-		$('#comment_field').val('');
-		data['newer'] = true;
-		data['comments'] = data.comment;
-		commentsReceived(data);
-	}
-	enableButtons(['#comment_button']);
 }
 
 
@@ -49,7 +36,7 @@ function commentSaved(data) {
 		$('#comment_field').val('');
 		data['newer'] = true;
 		data['comments'] = data.comment;
-		data['idlesson'] = 0;
+		if (!data.idlesson) data['idlesson'] = 0;
 		commentsReceived(data);
 	}
 	enableButtons(['#comment_button']);

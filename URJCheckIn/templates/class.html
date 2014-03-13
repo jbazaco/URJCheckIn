@@ -74,10 +74,7 @@
 							onClick="askComments({{first_comment.id}}, {{lesson.id}}, true); 
 									return false;">
 						{% else %}
-							onClick="askComments(1, {{lesson.id}}, true);return false;">
-							<!-- TODO Situacion inicial, habria que buscar una solucion al ser un
-								caso bastante frecuente y problematico, cuando se aplique tambien
-								lo tengo que aplicar a /forum -->
+							onClick="askComments(0, {{lesson.id}}, true);return false;">
 						{% endif %}
 					{% endwith %}
 					<span class="glyphicon glyphicon-refresh"></span> Nuevos mensajes
