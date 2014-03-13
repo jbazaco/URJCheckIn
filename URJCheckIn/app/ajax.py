@@ -10,7 +10,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 
-from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson
+from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson, LessonComment
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
@@ -47,7 +47,7 @@ def update_profile(request, iduser, form):
 @login_required
 def process_class(request, form, idclass):#TODO mirar el campo class del form
 	if request.method == "POST":
-		resp = process_class_post(form, request.user, idclass)
+		resp = process_class_post(request, form, idclass)
 		return simplejson.dumps(resp)
 	else:
 		return wrongMethodJson(request)
@@ -106,8 +106,6 @@ def process_checkin(request, form):
 	else:
 		return wrongMethodJson(request)
 
-def wrongMethodJson(request):
-	return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
 
 @dajaxice_register(method='GET')
 @login_required
@@ -193,7 +191,7 @@ def class_info(request, idclass):
 	else:
 		return wrongMethodJson(request)
 
-#TODO una funcion que mande nuevos comentarios si hay nuevos y se sigue en la pagina
+
 @dajaxice_register(method='GET')
 @login_required
 def forum(request):
@@ -214,7 +212,7 @@ def publish_forum(request, comment):
 		comment = comment[:150]
 		new_comment = ForumComment(comment=comment, user=request.user)
 		new_comment.save()
-		html = loader.get_template('pieces/forum_comments.html').render(RequestContext(
+		html = loader.get_template('pieces/comments.html').render(RequestContext(
 												request, {'comments': [new_comment]}))
 		return simplejson.dumps({'ok': True, 'comment': html, 'idcomment': new_comment.id})
 	else:
@@ -263,37 +261,60 @@ def send_error(request, error, url):
 	return simplejson.dumps({'#mainbody':html, 'url':url})
 
 
+def wrongMethodJson(request):
+	"""Devuelve una pagina de error con un mensaje que indica que se ha utilizado
+		un metodo equivocado"""
+	return simplejson.dumps({'error':'Metodo ' + request.method + ' no soportado'})
+
+
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #
 ########################################################
 
 @dajaxice_register(method='GET')
 @login_required
-def more_forum_comments(request, current, newer):
+def more_comments(request, current, newer, idlesson):
 	"""Si newer = True devuelve un fragmento html con 10 comentarios mas nuevos que num ordenados
 		de mas nuevo a mas antiguo. Si newer = False los anteriores.
-		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)"""
+		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)
+		Si idlesson es menor que 1 los coge del foro y si no de la lesson con id idlesson"""
 	try:
-		comment = ForumComment.objects.get(id=current)
+		if idlesson > 0:
+			comment = LessonComment.objects.get(id=current)
+		else:
+			comment = ForumComment.objects.get(id=current)
 	except ForumComment.DoesNotExist:
 		return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
+
+	if idlesson > 0:
+		try:
+			lesson = Lesson.objects.get(id=idlesson)
+			profile = request.user.userprofile
+			if not lesson.subject in profile.subjects.all():#TODO PROBAR
+				return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
+		except (ForumComment.DoesNotExist, Lesson.DoesNotExist, UserProfile.DoesNotExist):
+			return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
+		all_comments = LessonComment.objects.filter(lesson=lesson)
+	else:
+		all_comments = ForumComment.objects.all()
+
 	if newer:
-		comments = ForumComment.objects.filter(
-										date__gte=comment.date
-									).exclude(
-										id=current
-									).order_by('-date')
+		comments = all_comments.filter(
+									date__gte=comment.date
+								).exclude(
+									id=current
+								).order_by('-date')
 		#Se tiene que hacer asi porque si se hace el slice primero y luego se
 		# llama a reverse()
 		n_comments = comments.count()
 		if n_comments > 10:
 			comments = comments[n_comments-10:]
 	else:
-		comments = ForumComment.objects.filter(
-										date__lte=comment.date
-									).exclude(
-										id=current
-									).order_by('-date')[0:10]
+		comments = all_comments.filter(
+									date__lte=comment.date
+								).exclude(
+									id=current
+								).order_by('-date')[0:10]
 	if comments:
 		if newer:
 			idcomment = comments[0].id
@@ -301,6 +322,8 @@ def more_forum_comments(request, current, newer):
 			idcomment = comments[comments.count()-1].id
 	else:
 		idcomment = 0
-	html = loader.get_template('pieces/forum_comments.html').render(RequestContext(
+	html = loader.get_template('pieces/comments.html').render(RequestContext(
 												request, {'comments':comments}))
-	return  simplejson.dumps({'comments':html, 'newer':newer, 'idcomment':idcomment})
+	return  simplejson.dumps({'comments':html, 'newer':newer, 
+							'idcomment':idcomment, 'idlesson':idlesson})
+

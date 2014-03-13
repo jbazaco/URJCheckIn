@@ -81,10 +81,12 @@ def profile_img(request, user):
 def process_class(request, idclass):
 	"""Procesa las peticiones sobre una clase o seminario"""
 	if request.method == "POST":
-		resp = process_class_post(request.POST, request.user, idclass)
+		resp = process_class_post(request, request.POST, idclass)
 		if ('error' in resp):
 			return render_to_response('main.html', {'htmlname': 'error.html',
 					'message': resp['error']}, context_instance=RequestContext(request))
+	elif request.method != "GET":
+		return method_not_allowed(request)
 	
 	ctx = get_class_ctx(request, idclass)
 	if ('error' in ctx):

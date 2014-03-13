@@ -49,7 +49,8 @@
 				{%if not profile.is_student%}<!--no se todavia si solo comenta el profesor o todos-->
 					<li class="list-group-item">
 						<!--TODO procesar el envio de mensajes-->	
-						<form name="comment_form" id="comment_form" action="" method="POST" 
+						<form name="comment_form" id="comment_form" action="/class/{{lesson.id}}"
+							 method="POST" 
 							onsubmit="sendClassComment({{lesson.id}}); return false;">
 							{% csrf_token %}
 							<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
@@ -62,32 +63,67 @@
 						</form>
 					</li>
 				{%endif%}
-				{% for comment in comments %}
-					<li class="list-group-item">
-						<div class="row">
-							<div class="col-xs-2 col-md-1">
-								<img src="http://placehold.it/80" class="img-rounded img-responsive" alt="" />
-							</div>
-							<div class="col-xs-10 col-md-11">
-								<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{comment.user.id}}'}); return false;" href="/profile/view/{{comment.user.id}}">
-									{{comment.user.first_name}} {{comment.user.last_name}}
-								</a>
-								<div class="mic-info">
-							  		<span class="glyphicon glyphicon-calendar"></span>
-									{{comment.date}}
+				<a id="ask_newer" class="btn btn-primary btn-sm btn-block" role="button"
+					{% if comments.has_previous %}
+						href="?page={{comments.previous_page_number}}"
+					{% else %}
+						href="?page=1" 
+					{% endif %}
+					{% with comments|first as first_comment %}
+						{% if first_comment %}}
+							onClick="askComments({{first_comment.id}}, {{lesson.id}}, true); 
+									return false;">
+						{% else %}
+							onClick="askComments(1, {{lesson.id}}, true);return false;">
+							<!-- TODO Situacion inicial, habria que buscar una solucion al ser un
+								caso bastante frecuente y problematico, cuando se aplique tambien
+								lo tengo que aplicar a /forum -->
+						{% endif %}
+					{% endwith %}
+					<span class="glyphicon glyphicon-refresh"></span> Nuevos mensajes
+				</a>
+				<div id="comment_list">
+					{% for comment in comments %}
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-xs-2 col-md-1">
+									<img src="http://placehold.it/80" class="img-rounded img-responsive" alt="" />
 								</div>
-								<div class="comment-text">
-									{{comment.comment}}
+								<div class="col-xs-10 col-md-11">
+									<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{comment.user.id}}'}); return false;" href="/profile/view/{{comment.user.id}}">
+										{{comment.user.first_name}} {{comment.user.last_name}}
+									</a>
+									<div class="mic-info">
+								  		<span class="glyphicon glyphicon-calendar"></span>
+										{{comment.date}}
+									</div>
+									<div class="comment-text">
+										{{comment.comment}}
+									</div>
 								</div>
 							</div>
-						</div>
-					</li>
-				{% empty %}
-					<li class="list-group-item">No hay comentarios</li>
-				{% endfor %}
+						</li>
+					{% empty %}
+						<li class="list-group-item">No hay comentarios</li>
+					{% endfor %}
+				</div>
 			</ul>
+
 			<div class="panel-footer">
-				<a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> Mensajes anteriores</a>
+				{% if comments.has_next %}
+					<a id="ask_older" href="?page={{comments.next_page_number}}" 
+						class="btn btn-primary btn-sm btn-block" role="button"
+						{% with comments|last as last_comment %}
+							onClick="askComments({{last_comment.id}}, {{lesson.id}}, false); 
+									return false;">
+						{% endwith %}
+						<span class="glyphicon glyphicon-refresh"></span> Mensajes anteriores
+					</a>
+				{% else %}
+					<div class="btn btn-primary btn-sm btn-block disabled">
+						No hay mensajes anteriores
+					</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>

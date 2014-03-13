@@ -12,6 +12,7 @@ from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.template import loader, RequestContext
 
 def my_paginator(request, collection, n_elem):
 	paginator = Paginator(collection, n_elem)
@@ -49,7 +50,8 @@ def get_class_ctx(request, idclass):
 				lesson_state = 'no asististe'
 		else:
 			lesson_state = 'imperti&eacute;ndose en este momento'
-		comments = lesson.lessoncomment_set.all().order_by('-date')
+		all_comments = lesson.lessoncomment_set.all().order_by('-date')
+		comments = my_paginator(request, all_comments, 10)
 		profesors = lesson.subject.userprofile_set.filter(is_student=False)
 		#En caso de que se asigne un profesor a una clase en vez de todos se obtendria de otra forma
 	except Lesson.DoesNotExist:
@@ -244,25 +246,25 @@ def process_seminars_post(form, user):
 	return {'idsubj': new_subj.id}
 
 
-def process_class_post(form, user, idclass):
+def process_class_post(request, form, idclass):
 	"""Procesa un POST sobre una clase, pudiendo ser de diferentes tipos"""
 	try:
 		action = form.__getitem__("action")
 		if action in action_class:
-			return action_class[action](form, user, idclass)
+			return action_class[action](request, form, idclass)
 	except MultiValueDictKeyError:
 		pass
 	return {'error': 'Formulario incorrecto'}
 
 """Funciones para procesar las clases"""
 #TODO
-def delete_class(form, user, idclass):
+def delete_class(request, form, user, idclass):
 	"""Elimina una clase si lo solicita el usuario que la creo"""
 	#Comprobar que esta la clase y que se puede borrar, si no informar del error
 	print "delete!"
 	return {'error': 'funcion sin hacer'}
 
-def comment_class(form, user, idclass):
+def comment_class(request, form, idclass):
 	"""Guarda un comentario de una clase"""
 	try:
 		comment = form.__getitem__("comment")
@@ -275,12 +277,15 @@ def comment_class(form, user, idclass):
 	except Lesson.DoesNotExist:
 		return {'error': 'La clase en la que comentas no existe'}
 	try:
-		lesson.subject.userprofile_set.get(user=user)
+		lesson.subject.userprofile_set.get(user=request.user)
 	except UserProfile.DoesNotExist:
 		return {'error': 'No tienes permisos para comentar en esta clase'}
 
-	LessonComment(comment=comment, user=user, lesson=lesson).save()
-	return {'ok': True}
+	new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
+	new_comment.save()
+	html = loader.get_template('pieces/comments.html').render(RequestContext(
+												request, {'comments': [new_comment]}))
+	return {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
 
 action_class = {'delete': delete_class,
 				'comment': comment_class,

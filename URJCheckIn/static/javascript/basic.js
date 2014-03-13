@@ -37,3 +37,4 @@ function alertBefore(errors, elem_id, class_id, alert_type) {
 	}
 }
 
+

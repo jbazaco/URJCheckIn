@@ -45,9 +45,9 @@
 					{% endif %}
 					{% with comments|first as first_comment %}
 						{% if first_comment %}}
-							onClick="askComments({{first_comment.id}}, true);return false;">
+							onClick="askComments({{first_comment.id}}, 0, true);return false;">
 						{% else %}
-							onClick="askComments(1, true);return false;">
+							onClick="askComments(1, 0, true);return false;">
 							<!-- Situacion inicial, el problema es que solo cargara a partir
 								del segundo mensaje, pero es un caso raro y mejor asi que
 								solucionarlo, ya que es un caso muy poco frecuente y no es un
@@ -57,7 +57,7 @@
 					<span class="glyphicon glyphicon-refresh"></span> Nuevos mensajes
 				</a>
 				<br/>
-				<ul id="forum_comment_list" class="list-group">
+				<ul id="comment_list" class="list-group">
 					{% for comment in comments %}
 						<li class="list-group-item">
 							<div class="row">
@@ -88,7 +88,7 @@
 					<a id="ask_older" href="?page={{comments.next_page_number}}" 
 						class="btn btn-primary btn-sm btn-block" role="button"
 						{% with comments|last as last_comment %}
-							onClick="askComments({{last_comment.id}}, false);return false;">
+							onClick="askComments({{last_comment.id}}, 0, false);return false;">
 						{% endwith %}
 						<span class="glyphicon glyphicon-refresh"></span> Mensajes anteriores
 					</a>
