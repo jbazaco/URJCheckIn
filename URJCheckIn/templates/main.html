@@ -87,7 +87,8 @@
 						<div class="pull-right">
 							<ul class="nav pull-right">
 								<li>
-									<a href="/logout?next=/" class="logout">
+									<a onClick="logout(); return false;"
+									 href="/logout?next=/" class="logout">
 										Bienvenido, {{request.user.username}}.
 										<span class="glyphicon glyphicon-off"></span>
 										Salir

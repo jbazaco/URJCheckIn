@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as auth_logout
 
 from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Lesson, LessonComment
 from django.contrib.auth.models import User
@@ -253,6 +254,12 @@ def password_change(request, form):
 	else:
 		return wrongMethodJson(request)
 
+@dajaxice_register(method='POST')
+def logout(request):
+	"""Cierra sesion y devuelve el body y la url de la pagina /login"""
+	auth_logout(request)
+	html = loader.get_template('registration/login_body.html').render(RequestContext(request, {}))
+	return simplejson.dumps({'body': html, 'url': '/login'})
 
 def send_error(request, error, url):
 	"""Devuelve una pagina indicando el error que se le pasa"""
@@ -358,6 +365,4 @@ def more_lessons(request, current, newer):
 		idlesson = 0
 	html = loader.get_template('pieces/lessons.html').render(RequestContext(
 									request, {'lessons':lessons, 'future':newer}))
-	return  simplejson.dumps({'lessons': html, 'newer': newer, 'idlesson': idlesson})
-
-
+	return simplejson.dumps({'lessons': html, 'newer': newer, 'idlesson': idlesson})

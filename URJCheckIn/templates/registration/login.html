@@ -14,57 +14,7 @@
 
 
 	<body>
-
-		<div class="container" id="logged_box">
-			<div class="row">
-				<div class="col-md-4 col-md-offset-4">
-					<div class="panel">
-						{% if request.user.is_authenticated %}
-							<h2 id="maintitle">Sesion iniciada<br/>
-								<small>Registrado como {{request.user.username}}</small>
-							</h2>
-							<a class="btn btn-danger btn-block" 
-								href="/logout?next={{request.path}}">
-								<span class="glyphicon glyphicon-off"></span>
-								Logout
-							</a>
-						{% else %}
-							<form name="login" action="{{request.path}}" method="POST"
-								class="form-horizontal" id="loggin_form">
-								<fieldset>
-									<legend class="text-center">Inicia Sesi&oacute;n:</legend>
-									{% csrf_token %}
-									<div class="form-group">
-										<label class="col-sm-5 control-label" for="id_username">
-											Usuario:
-										</label>
-										<div class="col-sm-7">
-											<input id="id_username" type="text" 
-												name="username" maxlength="30"/>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-5 control-label" for="id_password">
-											Contrase&ntilde;a:
-										</label>
-										<div class="col-sm-7">
-											<input type="password" name="password" 
-												id="id_password"/>
-										</div>
-<!la consola avisa de problemas de seguridad desde que utilizo dajaxixe, solo por este input><!ponerlo en otra pagina sin el esquema de main>
-									</div>
-									<button type="submit" class="btn btn-info btn-block"
-										 name="checkin_submit" >
-											<span class="glyphicon glyphicon-log-in"></span>
-											Iniciar sesi&oacute;n
-									</button>
-								</fieldset>
-							</form>
-						{% endif %}
-					</div>
-				</div>
-			</div>
-		</div>
+		{% include 'registration/login_body.html' %}
 	</body>
 
 

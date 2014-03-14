@@ -79,6 +79,11 @@ window.onpopstate = function() {
 	}
 };
 
+/* Cierra la sesion del usuario y carga la pagina de iniciar sesion */
+function logout() {
+	Dajaxice.app.logout(loadAjaxPage, {}); 
+}
+
 /*Para cerrar el menu desplegable en pantallas pequenas al pulsar
 	sobre un enlace*/
 $(document).ready(function() {
@@ -88,4 +93,3 @@ $(document).ready(function() {
 			$(".navbar-toggle").trigger( "click" );
 	});
 });
-
