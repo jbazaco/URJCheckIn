@@ -64,4 +64,37 @@ function newChangeSignButton(text, type, logo) {
 			'<span class="glyphicon glyphicon-' + logo + '"></span> ' +
 			text + '</button>';
 }
-	
+
+
+/* Pide mas clases a partir de idlesson, si newer es True pide las 
+	clases siguientes y si es False las pasadas */
+function askLessons(idlesson, newer) {
+	if (newer) 
+		disableButtons(['#ask_newer']);
+	else
+		disableButtons(['#ask_older']);
+	Dajaxice.app.more_lessons(lessonsReceived, {'current': idlesson, 'newer': newer});
+}
+
+/* Coloca las clases recibidas en su sitio */
+function lessonsReceived(data) {
+	if (data.newer) {
+		var button = $('#ask_newer')
+	} else {
+		var button = $('#ask_older')
+	}
+	if (data.idlesson == 0) {
+		button.replaceWith('<div class="btn btn-primary ' +
+							'btn-sm btn-block disabled">No hay m&aacute;s clases</div>');
+	} else {
+		if (data.newer) {
+			$('#future_lessons > a:last').after(data.lessons);
+		} else {
+			$('#past_lessons > a:last').after(data.lessons);
+		}
+		button.attr('onClick', 
+					'askLessons(' + data.idlesson + ',' + data.newer + ');return false;');
+	}
+	button.removeAttr("disabled"); 
+}
+

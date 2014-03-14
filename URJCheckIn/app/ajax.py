@@ -325,3 +325,39 @@ def more_comments(request, current, newer, idlesson):
 	return  simplejson.dumps({'comments':html, 'newer':newer, 
 							'idcomment':idcomment, 'idlesson':idlesson})
 
+@dajaxice_register(method='GET')
+@login_required
+def more_lessons(request, current, newer):
+	"""Si newer = True devuelve un fragmento html con 10 clases posteriores a la lesson con
+		id current ordenados de menor fecha a mayor fecha. Si newer = False las anteriores 
+		ordenadas de mayor fecha a menos fecha.
+		Ademas indica si son newer y el id de la ultima lesson que devuelve (si no hay 
+		devuelve 0)"""
+	try:
+		lesson = Lesson.objects.get(id=current)
+		subject = lesson.subject
+	except Lesson.DoesNotExist:
+		return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+	#no tiene acceso a asignaturas que no tiene
+	if not subject.is_seminar:
+		try:
+			profile = request.user.userprofile
+		except UserProfile.DoesNotExist:
+			return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+		if not subject in profile.subjects.all():
+			return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+
+	all_lessons = Lesson.objects.filter(subject=subject.id)
+	if newer:
+		lessons = all_lessons.filter(end_time__gt=lesson.end_time).order_by('end_time')[0:10]
+	else:
+		lessons = all_lessons.filter(start_time__lt=lesson.start_time).order_by('-start_time')[0:10]
+	if lessons:
+		idlesson = lessons[lessons.count()-1].id
+	else:
+		idlesson = 0
+	html = loader.get_template('pieces/lessons.html').render(RequestContext(
+									request, {'lessons':lessons, 'future':newer}))
+	return  simplejson.dumps({'lessons': html, 'newer': newer, 'idlesson': idlesson})
+
+

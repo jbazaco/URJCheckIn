@@ -87,9 +87,14 @@ def get_subject_ctx(request, idsubj):
 	now = timezone.now()
 	today = datetime.date(now.year, now.month, now.day)
 	started = subject.first_date < today#Si ha empezado True
-	#TODO devolver solo 10 clases de cada
-	return {'classes_f': lessons.filter(start_time__gte=timezone.now()),
-			'classes_p': lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
+	classes_f = my_paginator(request, 
+				lessons.filter(start_time__gte=timezone.now()).order_by('end_time'),
+				10)
+	classes_p = my_paginator(request,
+				lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
+				10)
+	return {'classes_f': classes_f,
+			'classes_p': classes_p,
 			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject, 'profile':profile,

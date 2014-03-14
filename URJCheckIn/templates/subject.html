@@ -143,7 +143,16 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Pr&oacute;ximas clases</h3>
 				</div>
-				<ul class="subjects_list list-group classes_list">
+				{% if classes_f.has_previous %}
+					<!-- Solo para cuando estemos en otra pagina, si hemos llegado alli 
+						no ha sido con javascript-->
+					<a class="btn btn-primary btn-sm btn-block" role="button"
+						href="?page={{classes_f.previous_page_number}}">
+						<span class="glyphicon glyphicon-refresh"></span>
+						Clases m&aacute;s cercanas
+					</a>
+				{% endif %}
+				<ul id="future_lessons" class="list-group classes_list">
 					{% for class in classes_f%}
 						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
@@ -154,11 +163,20 @@
 					{% endfor %}
 				</ul>
 				<div class="panel-footer">
-					<a href="#" class="btn btn-primary btn-sm btn-block" role="button">
-						<span class="glyphicon glyphicon-refresh"></span> Siguientes clases
-					</a>
+					{% if classes_f.has_next %}
+						<a id="ask_newer" href="?page={{classes_f.next_page_number}}" 
+							class="btn btn-primary btn-sm btn-block" role="button"
+							{% with classes_f|last as last_class %}
+								onClick="askLessons({{last_class.id}}, true); return false;">
+							{% endwith %}
+							<span class="glyphicon glyphicon-refresh"></span> Siguientes clases
+						</a>
+					{% else %}
+						<div class="btn btn-primary btn-sm btn-block disabled">
+							No hay m&aacute;s clases
+						</div>
+					{% endif %}
 				</div>
-				<!--TODO funcionalidad boton para cargar mas-->
 			</div>
 		</div>
 		<!-- Clases que ya se han realizado -->
@@ -167,7 +185,16 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">&Uacute;ltimas clases</h3>
 				</div>
-				<ul class="subjects_list list-group classes_list">
+				{% if classes_p.has_previous %}
+					<!-- Solo para cuando estemos en otra pagina, si hemos llegado alli 
+						no ha sido con javascript-->
+					<a class="btn btn-primary btn-sm btn-block" role="button"
+						href="?page={{classes_p.previous_page_number}}">
+						<span class="glyphicon glyphicon-refresh"></span>
+						Clases m&aacute;s recientes
+					</a>
+				{% endif %}
+				<ul id="past_lessons" class="list-group classes_list">
 					{% for class in classes_p %}
 						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
@@ -177,11 +204,21 @@
 					{% endfor %}
 				</ul>
 				<div class="panel-footer">
-					<a href="#" class="btn btn-primary btn-sm btn-block" role="button">
-						<span class="glyphicon glyphicon-refresh"></span> Clases anteriores
-					</a>
+					{% if classes_p.has_next %}
+						<a id="ask_older" href="?page={{classes_p.next_page_number}}" 
+							class="btn btn-primary btn-sm btn-block" role="button"
+							{% with classes_p|last as last_class %}
+								onClick="askLessons({{last_class.id}}, false); return false;">
+							{% endwith %}
+							<span class="glyphicon glyphicon-refresh"></span> Clases anteriores
+						</a>
+					{% else %}
+						<div class="btn btn-primary btn-sm btn-block disabled">
+							No hay m&aacute;s clases
+						</div>
+					{% endif %}
 				</div>
-				<!--TODO funcionalidad boton para cargar mas-->
+			</div>
 		</div>
 	</div>
 </div>
