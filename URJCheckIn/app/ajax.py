@@ -16,7 +16,7 @@ from models import UserProfile, ForumComment, Subject, ForumComment, CheckIn, Le
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_home_ctx
 
 @dajaxice_register(method='GET')
 @login_required
@@ -226,7 +226,10 @@ def publish_forum(request, comment):
 def home(request):
 	"""Devuelve la pagina para hacer check in"""
 	if request.method == "GET":
-		html = loader.get_template('home.html').render(RequestContext(request, {}))
+		ctx = get_home_ctx(request)
+		if ('error' in ctx):
+			return send_error(request, ctx['error'], "/")
+		html = loader.get_template('home.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/'})
 	else:
 		return wrongMethodJson(request)

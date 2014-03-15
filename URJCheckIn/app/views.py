@@ -10,7 +10,7 @@ from forms import ReviewClassForm, ProfileEditionForm
 from models import UserProfile, Lesson, CheckIn, ForumComment
 from django.contrib.auth.models import User
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_home_ctx
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -24,9 +24,12 @@ def home(request):#TODO tengo que hacer la pagina
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
-	
-	return render_to_response('main.html', {'htmlname': 'home.html'},
-		context_instance=RequestContext(request))
+	ctx = get_home_ctx(request)
+	if ('error' in ctx):
+		return render_to_response('main.html', {'htmlname': 'error.html',
+					'message': ctx['error']}, context_instance=RequestContext(request))
+	ctx['htmlname'] = 'home.html'#Elemento necesario para renderizar main.html
+	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 @login_required
 def checkin(request):

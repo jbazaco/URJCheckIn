@@ -9,6 +9,28 @@
 	text-align:center;
 }
 
+/*start HOME */
+.calendar > .panel-body, .calendar .dia {
+	padding:0;
+}
+
+.calendar .title {
+	font-size:150%;
+}
+
+.calendar .dia > div {
+	margin: 0;
+}
+
+.calendar .panel-heading, .dia {
+	text-align: center;
+}
+
+.calendar .events {
+	list-style:none;
+}
+/*end HOME */
+
 /*start MENU_BAR*/
 #menu_bar header {
 	width:100%;

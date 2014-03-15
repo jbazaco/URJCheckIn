@@ -4,5 +4,117 @@
 	<small>Bienvenido a la p&aacute;gina</small>
 </h2>
 
-P&aacute;gina principal, sin hacer
+<div class="panel panel-default calendar">
+	<div class="panel-heading">
+		<div class="title">Calendario</div>
+		<div class="date">
+			<span id="first_day_week">{{firstday|date:'d-m-Y'}}</span> /
+			<span id="last_day_week">{{lastday|date:'d-m-Y'}}</span>
+		</div>
+	</div>
+	<div class="panel-body">
+		<div class="col-sm-2 dia" id="monday">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Lunes</h3>
+				</div>
+				<ul class="list-group classes_list events">
+					{% for event in events.monday %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<strong>{{event.subject}}</strong><br/>
+							{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+						</a>
+					{% empty %}
+						<li>No hay eventos este d&iacute;a</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="col-sm-2 dia" id="tuesday">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Martes</h3>
+				</div>
+				<ul class="list-group classes_list events">
+					{% for event in events.tuesday %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<strong>{{event.subject}}</strong><br/>
+							{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+						</a>
+					{% empty %}
+						<li>No hay eventos este d&iacute;a</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="col-sm-2 dia" id="wednesday">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Mi&eacute;rcoles</h3>
+				</div>
+				<ul class="list-group classes_list events">
+					{% for event in events.wednesday %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<strong>{{event.subject}}</strong><br/>
+							{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+						</a>
+					{% empty %}
+						<li>No hay eventos este d&iacute;a</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="col-sm-2 dia" id="thursday">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Jueves</h3>
+				</div>
+				<ul class="list-group classes_list events">
+					{% for event in events.thursday %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<strong>{{event.subject}}</strong><br/>
+							{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+						</a>
+					{% empty %}
+						<li>No hay eventos este d&iacute;a</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="col-sm-2 dia" id="friday">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Viernes</h3>
+				</div>
+				<ul class="list-group classes_list events">
+					{% for event in events.friday %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<strong>{{event.subject}}</strong><br/>
+							{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+						</a>
+					{% empty %}
+						<li>No hay eventos este d&iacute;a</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="col-sm-2 dia" id="saturday">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">S&aacute;bado</h3>
+				</div>
+				<ul class="list-group classes_list events">
+					{% for event in events.saturday %}
+						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<strong>{{event.subject}}</strong><br/>
+							{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+						</a>
+					{% empty %}
+						<li>No hay eventos este d&iacute;a</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
 

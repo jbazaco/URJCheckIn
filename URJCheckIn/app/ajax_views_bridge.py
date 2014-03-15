@@ -27,6 +27,25 @@ def my_paginator(request, collection, n_elem):
 		results = paginator.page(paginator.num_pages)
 	return results
 
+WEEK_DAYS_BUT_SUNDAY = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+def get_home_ctx(request):
+	"""Devuelve el contexto para la plantilla home.html"""
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	today = datetime.date.today()
+	monday = today - datetime.timedelta(days=today.weekday())
+	events = {}
+	all_lessons = Lesson.objects.filter(subject__in=profile.subjects.all())
+	for day in WEEK_DAYS_BUT_SUNDAY:
+		date = monday + datetime.timedelta(days=WEEK_DAYS_BUT_SUNDAY.index(day))
+		events[day] = all_lessons.filter(start_time__range =
+							(datetime.datetime.combine(date, datetime.time.min),
+							 datetime.datetime.combine(date, datetime.time.max))
+						).order_by('start_time')
+	return {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=7) }
+
 def get_forum_ctx(request):
 	"""Devuelve el contexto para la plantilla forum.html"""
 	comments =  ForumComment.objects.all().order_by('-date')
