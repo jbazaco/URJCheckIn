@@ -85,7 +85,7 @@ window.setTimeout(function(){
 			break;
 		}
     };
-}, 100);
+}, 1000);
 
 /* Cierra la sesion del usuario y carga la pagina de iniciar sesion */
 function logout() {
