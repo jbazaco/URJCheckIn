@@ -142,12 +142,13 @@ def get_subject_attendance_ctx(request, idsubj):
 	checkins = CheckIn.objects.filter(lesson__in = lessons)
 	students_info = []
 	for student in students:
-		n_checkins = checkins.filter(user=student.user).count()
-		students_info.append({
-					'id': student.id,
-					'name': student.user.first_name + ' ' + student.user.last_name,
-					'percent': round(100.0 * n_checkins / n_lessons,2)
-		})
+		if n_lessons > 0:
+			n_checkins = checkins.filter(user=student.user).count()
+			percent = round(100.0 * n_checkins / n_lessons,2)
+		else:
+			percent = 0
+		students_info.append({'id': student.id, 'percent': percent,
+				'name': student.user.first_name + ' ' + student.user.last_name})
 		
 	return {'students': students_info, 'subject': subject}
 	
