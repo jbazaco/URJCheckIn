@@ -37,7 +37,9 @@ window.onpopstate = function() {
 			Dajaxice.app.not_found(insertHtml);
 		break;
 	case "":
-		Dajaxice.app.home(insertHtml);
+		//si no hay se tomara como la semana 0
+		week = window.location.search.slice("?page=".length);
+		Dajaxice.app.home(insertHtml, {'week': week});
 		break;
 	case "forum":
 		if (pathsplit.length === 2)

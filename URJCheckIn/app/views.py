@@ -24,7 +24,11 @@ def home(request):#TODO tengo que hacer la pagina
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
-	ctx = get_home_ctx(request)
+	try:
+		week = int(request.GET.get('page'))
+	except (TypeError, ValueError):
+		week = 0
+	ctx = get_home_ctx(request, week)
 	if ('error' in ctx):
 		return render_to_response('main.html', {'htmlname': 'error.html',
 					'message': ctx['error']}, context_instance=RequestContext(request))
