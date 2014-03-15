@@ -25,61 +25,67 @@ function ask_ajax_page(dfunct, callback, arg) {
 	Dajaxice.app[dfunct](callback, arg);
 }
 
-/*Para controlar el boton de atras y alante del navegador*/
-window.onpopstate = function() {
-	var path = window.location.pathname;
-	var pathsplit = path.split('/');
-	switch(pathsplit[1]){
-	case "checkin": //Fastidia el history
-		if (pathsplit.length === 2)
-			Dajaxice.app.checkin(insertHtml);
-		else
-			Dajaxice.app.not_found(insertHtml);
-		break;
-	case "":
-		//si no hay se tomara como la semana 0
-		week = window.location.search.slice("?page=".length);
-		Dajaxice.app.home(insertHtml, {'week': week});
-		break;
-	case "forum":
-		if (pathsplit.length === 2)
-			Dajaxice.app.forum(insertHtml);
-		else
-			Dajaxice.app.not_found(insertHtml);
-		break;
-	case "subjects":
-		if (pathsplit.length === 2)
-			Dajaxice.app.subjects(insertHtml);
-		else if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
-			Dajaxice.app.subject(insertHtml, {'idsubj': pathsplit[2]});
-		else if (pathsplit.length === 4 /*TODO && pathsplit[2] es un numero*/)
-			Dajaxice.app.subject_attendance(insertHtml, {'idsubj': pathsplit[2]});
-		else
-			Dajaxice.app.not_found(insertHtml);
-		break;
-	case "class":
-		if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
-			Dajaxice.app.class_info(insertHtml, {'idclass': pathsplit[2]})
-		else
-			Dajaxice.app.not_found(insertHtml);
-		break;
-	case "profile":
-		if(pathsplit.length === 4 && pathsplit[2] === "view" /*TODO && pathsplit[3] es un numero*/)
-			Dajaxice.app.profile(insertHtml, {'iduser': pathsplit[3]})
-		else
+
+
+/*Para controlar el boton de atras y alante del navegador
+	El timeout es para evitar que algunos navegadores como Chrome 
+	y Safari lancen el evento al cargar la pagina inicialmente*/
+window.setTimeout(function(){
+    window.onpopstate = function(){
+        var path = window.location.pathname;
+		var pathsplit = path.split('/');
+		switch(pathsplit[1]){
+		case "checkin": //Fastidia el history
+			if (pathsplit.length === 2)
+				Dajaxice.app.checkin(insertHtml);
+			else
+				Dajaxice.app.not_found(insertHtml);
+			break;
+		case "":
+			//si no hay se tomara como la semana 0
+			week = window.location.search.slice("?page=".length);
+			Dajaxice.app.home(insertHtml, {'week': week});
+			break;
+		case "forum":
+			if (pathsplit.length === 2)
+				Dajaxice.app.forum(insertHtml);
+			else
+				Dajaxice.app.not_found(insertHtml);
+			break;
+		case "subjects":
+			if (pathsplit.length === 2)
+				Dajaxice.app.subjects(insertHtml);
+			else if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
+				Dajaxice.app.subject(insertHtml, {'idsubj': pathsplit[2]});
+			else if (pathsplit.length === 4 /*TODO && pathsplit[2] es un numero*/)
+				Dajaxice.app.subject_attendance(insertHtml, {'idsubj': pathsplit[2]});
+			else
+				Dajaxice.app.not_found(insertHtml);
+			break;
+		case "class":
+			if (pathsplit.length === 3 /*TODO && pathsplit[2] es un numero*/)
+				Dajaxice.app.class_info(insertHtml, {'idclass': pathsplit[2]})
+			else
+				Dajaxice.app.not_found(insertHtml);
+			break;
+		case "profile":
+			if(pathsplit.length === 4 && pathsplit[2] === "view" /*TODO && pathsplit[3] es un numero*/)
+				Dajaxice.app.profile(insertHtml, {'iduser': pathsplit[3]})
+			else
+				Dajaxice.app.not_found(insertHtml, {'path': path});
+			break;
+		case "seminars":
+			if (pathsplit.length === 2)
+				Dajaxice.app.seminars(insertHtml);
+			else
+				Dajaxice.app.not_found(insertHtml);
+			break;
+		default:
 			Dajaxice.app.not_found(insertHtml, {'path': path});
-		break;
-	case "seminars":
-		if (pathsplit.length === 2)
-			Dajaxice.app.seminars(insertHtml);
-		else
-			Dajaxice.app.not_found(insertHtml);
-		break;
-	default:
-		Dajaxice.app.not_found(insertHtml, {'path': path});
-		break;
-	}
-};
+			break;
+		}
+    };
+}, 100);
 
 /* Cierra la sesion del usuario y carga la pagina de iniciar sesion */
 function logout() {
