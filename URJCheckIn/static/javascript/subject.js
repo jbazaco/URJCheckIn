@@ -27,6 +27,7 @@ function signedSeminarChanged(data) {
 			n_students.html(val_n_students);
 		} else {
 			if (data.signed) {
+				var idsubj = window.location.pathname.split('/')[2];
 				var professor_list = $('#profesor_list');
 				if (professor_list.html().indexOf('La asignatura no es impartida') != -1)
 					professor_list.html('');
@@ -37,6 +38,9 @@ function signedSeminarChanged(data) {
 							'</a></li>');
 				$('#sign_button').replaceWith(newChangeSignButton('Dejar de ser organizador', 
 														'danger', 'remove-circle'));
+				$('#check_attendance > div').html('<a onClick="ask_ajax_page(\'subject_attendance\',' +  							'loadAjaxPage, {\'idsubj\': ' + idsubj + '}); return false;"' +
+						'href="' + idsubj + '/attendance" class="btn btn-info btn-block">' + 
+						'<span class="glyphicon glyphicon-user"></span> Comprobar asistencia</a>');
 			} else {
 				$('#professor_'+data.iduser).remove();
 				$('#sign_button').replaceWith(newChangeSignButton('Hacerme organizador', 
@@ -44,6 +48,7 @@ function signedSeminarChanged(data) {
 				if ($('#profesor_list > li').size() <= 0)
 					$('#profesor_list').html('La asignatura no es impartida por ' +
 											'ning&uacute;n profesor.');
+				$('#check_attendance > div').html('');
 			}
 		}
 	} else {
