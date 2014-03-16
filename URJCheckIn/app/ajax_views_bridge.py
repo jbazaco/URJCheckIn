@@ -27,7 +27,7 @@ def my_paginator(request, collection, n_elem):
 		results = paginator.page(paginator.num_pages)
 	return results
 
-WEEK_DAYS_BUT_SUNDAY = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 def get_home_ctx(request, week):
 	"""Devuelve el contexto para la plantilla home.html para la semana week, siendo 0 la semana
 	actual y -N la N-esima anterior a la actual y N la N-esima posterior"""
@@ -37,15 +37,18 @@ def get_home_ctx(request, week):
 		return {'error': 'No tienes un perfil creado.'}
 	today = datetime.date.today()
 	monday = today + datetime.timedelta(days= -today.weekday() + 7*week)
-	events = {}
+	events = []
 	all_lessons = Lesson.objects.filter(subject__in=profile.subjects.all())
 	for day in WEEK_DAYS_BUT_SUNDAY:
 		date = monday + datetime.timedelta(days=WEEK_DAYS_BUT_SUNDAY.index(day))
-		events[day] = all_lessons.filter(
+		events.append({
+						'day': day,
+						'events': all_lessons.filter(
 								start_time__year = date.year,
 								start_time__month = date.month,
 								start_time__day = date.day
 							).order_by('start_time')
+					})
 	return {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=7),
 			'previous':week-1, 'next': week+1 }
 
