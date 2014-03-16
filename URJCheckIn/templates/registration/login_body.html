@@ -1,4 +1,14 @@
-<div class="container" id="logged_box">
+<div id="menu_bar" class="login_bar">
+	<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+	</header>
+</div>
+<div id="menu_bar_space">
+	<!--para dejar el espacio que ocupa la barra de menu-->
+</div>
+<h2 id="maintitle">
+	URJCheckIn
+</h2>
+<div class="container" id="logger_box">
 	<div class="row">
 		<div class="col-md-4 col-md-offset-4">
 			<div class="panel">
@@ -16,6 +26,11 @@
 						<fieldset>
 							<legend class="text-center">Inicia Sesi&oacute;n:</legend>
 							{% csrf_token %}
+							{% if form.errors %}
+								<div class="alert alert-danger text-center">
+									Usuario o contrase&ntilde;a inv&aacute;lidos
+								</div>
+							{% endif %}
 							<div class="form-group">
 								<label class="col-sm-5 control-label" for="id_username">
 									Usuario:
