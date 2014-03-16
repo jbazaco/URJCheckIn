@@ -150,7 +150,7 @@ def get_subject_attendance_ctx(request, idsubj):
 			percent = round(100.0 * n_checkins / n_lessons,2)
 		else:
 			percent = 0
-		students_info.append({'id': student.id, 'percent': percent,
+		students_info.append({'id': student.user.id, 'percent': percent,
 				'name': student.user.first_name + ' ' + student.user.last_name})
 		
 	return {'students': students_info, 'subject': subject}
