@@ -78,6 +78,7 @@ class UserProfile(models.Model):
 	is_student = models.BooleanField(default=True, verbose_name='es alumno')
 	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
+	#TODO DNI
 
 	class Meta:
 		verbose_name='perfil de usuario'
@@ -181,7 +182,7 @@ class ForumComment(models.Model):
 		return u"Comentario %i" % (self.id)
 
 
-class Timetable(models.Model):#TODO poner con minuscula la segunda t cuando haga cambios en la BD
+class Timetable(models.Model):
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	day = models.CharField(max_length=3, choices=WEEK_DAYS)
 	start_time =  models.TimeField(verbose_name='hora de inicio')

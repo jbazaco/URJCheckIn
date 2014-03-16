@@ -1,4 +1,3 @@
-<!--TODO Este fichero tiene muchos elementos con los atributos justos para empezar a ver como queda, hay que poner mas atributos a muchos elementos-->
 
 <h2 id="maintitle">{{lesson}}</h2>
 
@@ -48,7 +47,6 @@
 			<ul class="list-group">
 				{%if not profile.is_student%}<!--no se todavia si solo comenta el profesor o todos-->
 					<li class="list-group-item">
-						<!--TODO procesar el envio de mensajes-->	
 						<form name="comment_form" id="comment_form" action="/class/{{lesson.id}}"
 							 method="POST" 
 							onsubmit="sendClassComment({{lesson.id}}); return false;">

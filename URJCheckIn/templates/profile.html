@@ -144,7 +144,6 @@
 								</div>
 							</div>
 						</fieldset>
-						<!--TODO enviar password para cambiar-->
 						<button type="submit" name="checkin_submit" id="password_button" 
 								class="btn btn-success btn-block">
 							<span class="glyphicon glyphicon-save"></span> Cambiar contrase&ntilde;a
@@ -169,30 +168,5 @@
 	<script>
 		cancelEditProfile('{{profile.user.id}}');
 	</script>
-	<!--TODO poner en otra pagina mas adecuada, desapuntarse desde la pagina del seminario, borrar codigo js que sobra de edit_profile
-	
-<div id="extra_classes">
-		<!script src="/jscript/csrf_token.js" type="text/javascript"script><!posiblemente ya no sea necesario, quitar de todos los sitios donde este si no hace falta>
-		<!script src="/jscript/extra_class.js" type="text/javascript"script>
-		{% if profile.is_student %}
-			{% for class in classes %}
-				<br/><!TODO que se pueda realizar sin javascript>
-				<div id={{'"xc_'|add:class.id|add:'"'|safe}}>
-					{{class.name}}
-					<button onclick="uncheckClass('{{class.id}}')" name="desapuntarse">desapuntarse</button> 
-				</div>
-			{% endfor %}
-		{% else %}
-			{% for class in classes %}
-				<br/><!TODO que se pueda realizar sin javascript>
-				<div id={{'"xc_'|add:class.id|add:'"'|safe}}> 
-					{{class.name}}
-					<button onclick="deleteClass('{{class.id}}')" name="cancelar">cancelar</button> 
-				</div>
-			{% endfor %}
-		{% endif %}
-	</div>
-
--->
 {%endif%}
 

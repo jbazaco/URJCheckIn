@@ -47,7 +47,7 @@ def update_profile(request, iduser, form):
 
 @dajaxice_register(method='POST')
 @login_required
-def process_class(request, form, idclass):#TODO mirar el campo class del form
+def process_class(request, form, idclass):
 	if request.method == "POST":
 		resp = process_class_post(request, form, idclass)
 		return simplejson.dumps(resp)
@@ -310,7 +310,7 @@ def more_comments(request, current, newer, idlesson):
 		try:
 			lesson = Lesson.objects.get(id=idlesson)
 			profile = request.user.userprofile
-			if not lesson.subject in profile.subjects.all():#TODO PROBAR
+			if not lesson.subject in profile.subjects.all():
 				return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
 		except (ForumComment.DoesNotExist, Lesson.DoesNotExist, UserProfile.DoesNotExist):
 			return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})

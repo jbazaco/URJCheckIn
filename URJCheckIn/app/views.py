@@ -20,7 +20,7 @@ def not_found(request):
 
 
 @login_required
-def home(request):#TODO tengo que hacer la pagina
+def home(request):
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
