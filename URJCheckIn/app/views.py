@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
@@ -197,7 +197,7 @@ def profile(request, iduser):
 @csrf_protect
 @login_required
 def password_change(request, form):
-	"""Metodo de django.contrib.auth adaptado a ajax"""
+	""Metodo de django.contrib.auth adaptado a ajax""
 	if request.method == "POST":
 		pform = PasswordChangeForm(user=request.user, data=form)
 		if pform.is_valid():
@@ -271,11 +271,17 @@ def subjects(request):
 	if request.method != 'GET':
 		return method_not_allowed(request)
 
-	ctx = get_subjects_ctx(request)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'subjects.html'#Elemento necesario para renderizar main.html
+	try:
+		profile = UserProfile.objects.get(user=request.user)
+	except UserProfile.DoesNotExist:			
+		return send_error_page(request, 'No tienes un perfil creado.')
+	subjects = profile.subjects.all()
+	ctx = {'subjects':subjects.filter(is_seminar=False), 
+			'seminars':subjects.filter(is_seminar=True), 'htmlname': 'subjects.html'}
+	if request.is_ajax():
+		html = loader.get_template('subjects.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 	
 

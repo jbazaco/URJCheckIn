@@ -159,16 +159,6 @@ def get_checkin_ctx(request):
 			'profile':profile, 'subjects':subjects}
 
 
-def get_subjects_ctx(request):
-	"""Devuelve el contexto para la plantilla subjects.html"""
-	try:
-		profile = UserProfile.objects.get(user=request.user)
-	except UserProfile.DoesNotExist:			
-		return {'error': 'No tienes un perfil creado.'}
-	subjects = profile.subjects.all()
-	return {'subjects':subjects.filter(is_seminar=False), 
-			'seminars':subjects.filter(is_seminar=True)}
-
 def get_seminars_ctx(request):
 	"""Devuelve el contexto para la plantilla subjects.html"""
 	try:

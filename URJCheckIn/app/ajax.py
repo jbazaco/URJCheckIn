@@ -30,19 +30,6 @@ def process_class(request, form, idclass):
 
 @dajaxice_register(method='GET')
 @login_required
-def subjects(request):
-	"""Devuelve el contenido de la pagina de las asignaturas"""
-	if request.method == "GET":
-		ctx = get_subjects_ctx(request)
-		if ('error' in ctx):
-			return send_error(request, ctx['error'], '/subjects')
-		html = loader.get_template('subjects.html').render(RequestContext(request, ctx))
-		return simplejson.dumps({'#mainbody':html, 'url': '/subjects'})
-	else:
-		return wrongMethodJson(request)
-
-@dajaxice_register(method='GET')
-@login_required
 def seminars(request):
 	"""Devuelve el contenido de la pagina de los proximos seminarios"""
 	if request.method == "GET":
@@ -170,28 +157,6 @@ def home(request, week):
 	else:
 		return wrongMethodJson(request)
 
-@dajaxice_register(method='GET')
-@login_required
-def not_found(request, path):
-	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
-	html = loader.get_template('404.html').render(RequestContext(request, {}))
-	return simplejson.dumps({'#mainbody':html, 'url': path})
-
-@dajaxice_register(method='POST')
-@sensitive_post_parameters()
-@csrf_protect
-@login_required
-def password_change(request, form):
-	"""Metodo de django.contrib.auth adaptado a ajax"""
-	if request.method == "POST":
-		pform = PasswordChangeForm(user=request.user, data=form)
-		if pform.is_valid():
-			pform.save()
-			return simplejson.dumps({'ok': True})
-		else:
-			return simplejson.dumps({'errors': pform.errors})
-	else:
-		return wrongMethodJson(request)
 
 @dajaxice_register(method='POST')
 def logout(request):
