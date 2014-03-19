@@ -113,21 +113,6 @@ def class_info(request, idclass):
 		return wrongMethodJson(request)
 
 
-@dajaxice_register(method='POST')#quitar POSTs si son por defecto
-@login_required
-def publish_forum(request, comment):
-	""" procesa un check in"""
-	if request.method == "POST":
-		comment = comment[:150]
-		new_comment = ForumComment(comment=comment, user=request.user)
-		new_comment.save()
-		html = loader.get_template('pieces/comments.html').render(RequestContext(
-												request, {'comments': [new_comment]}))
-		return simplejson.dumps({'ok': True, 'comment': html, 'idcomment': new_comment.id})
-	else:
-		return wrongMethodJson(request)
-
-
 @dajaxice_register(method='GET')
 @login_required
 def home(request, week):
@@ -163,59 +148,6 @@ def wrongMethodJson(request):
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #
 ########################################################
-
-@dajaxice_register(method='GET')
-@login_required
-def more_comments(request, current, newer, idlesson):
-	"""Si newer = True devuelve un fragmento html con 10 comentarios mas nuevos que num ordenados
-		de mas nuevo a mas antiguo. Si newer = False los anteriores.
-		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)
-		Si idlesson es menor que 1 los coge del foro y si no de la lesson con id idlesson"""
-	if current > 0:
-		try:
-			if idlesson > 0:
-				comment = LessonComment.objects.get(id=current)
-			else:
-				comment = ForumComment.objects.get(id=current)
-		except ForumComment.DoesNotExist:
-			return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
-		current_date = comment.date
-	else: #Para el caso en el que no hubiese ningun mensaje en la pagina
-		current_date = timezone.now() - timedelta(days=1)
-		
-
-	if idlesson > 0:
-		try:
-			lesson = Lesson.objects.get(id=idlesson)
-			profile = request.user.userprofile
-			if not lesson.subject in profile.subjects.all():
-				return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
-		except (ForumComment.DoesNotExist, Lesson.DoesNotExist, UserProfile.DoesNotExist):
-			return  simplejson.dumps({'comments': [], 'idcomment': 0, 'newer': True})
-		all_comments = LessonComment.objects.filter(lesson=lesson)
-	else:
-		all_comments = ForumComment.objects.all()
-
-	if newer:
-		comments = all_comments.filter(date__gt=current_date).order_by('-date')
-		#Se tiene que hacer asi porque si se hace el slice primero con order_by('date')
-		# y luego se llama a reverse() se seleccionan los 10 elementos opuestos
-		n_comments = comments.count()
-		if n_comments > 10:
-			comments = comments[n_comments-10:]
-	else:
-		comments = all_comments.filter(date__lt=current_date).order_by('-date')[0:10]
-	if comments:
-		if newer:
-			idcomment = comments[0].id
-		else:
-			idcomment = comments[comments.count()-1].id
-	else:
-		idcomment = 0
-	html = loader.get_template('pieces/comments.html').render(RequestContext(
-												request, {'comments':comments}))
-	return  simplejson.dumps({'comments':html, 'newer':newer, 
-							'idcomment':idcomment, 'idlesson':idlesson})
 
 @dajaxice_register(method='GET')
 @login_required

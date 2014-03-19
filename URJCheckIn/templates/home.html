@@ -9,14 +9,14 @@
 		<div class="row">
 			<div class="previous_week col-xs-2">
 		  		<a href="?page={{previous}}" class="btn btn-default btn-block"
-				 onClick="ask_ajax_page('home', loadAjaxPage, {'week':'{{previous}}'}); return false;">
+				 onClick="ask_ajax_page('/?page={{previous}}', loadAjaxPage); return false;">
 					&laquo;
 				</a>
 			</div>
 			<div class="title col-xs-8">Calendario</div>
 			<div class="next_week col-xs-2">
 				<a href="?page={{next}}" class="btn btn-default btn-block"
-				 onClick="ask_ajax_page('home', loadAjaxPage, {'week':'{{next}}'}); return false;">
+				 onClick="ask_ajax_page('/?page={{next}}', loadAjaxPage); return false;">
 					&raquo;
 				</a>
 			</div>
