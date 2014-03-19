@@ -78,7 +78,7 @@ class UserProfile(models.Model):
 	is_student = models.BooleanField(default=True, verbose_name='es alumno')
 	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
-	#TODO DNI
+	dni = models.CharField(max_length=20, verbose_name='DNI (o similar)')
 
 	class Meta:
 		verbose_name='perfil de usuario'
@@ -160,6 +160,7 @@ class LessonComment(models.Model):
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
 	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
 	comment = models.TextField(max_length=250, verbose_name='comentario')
+	is_extra = models.BooleanField(verbose_name='clase extra', default=False)
 	
 	class Meta:
 		verbose_name='comentario en clase'

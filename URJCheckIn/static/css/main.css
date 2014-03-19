@@ -103,6 +103,10 @@ textarea {
 #classes {
 	text-align:center;
 }
+
+#professor_options > div {
+	margin-bottom: 3em;
+}
 /*end SUBJECT*/
 
 #loading_page img{

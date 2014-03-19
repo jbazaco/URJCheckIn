@@ -7,7 +7,7 @@
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, ReviewClassForm, CreateSeminarForm
+from forms import ProfileEditionForm, ReviewClassForm, SubjectForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -155,7 +155,22 @@ def get_subject_attendance_ctx(request, idsubj):
 		
 	return {'students': students_info, 'subject': subject}
 	
-
+def get_subject_edit_ctx(request, idsubj):
+	"""Devuelve el contexto para la plantilla subject_attendance.html"""
+	try:
+		profile = request.user.userprofile
+		if profile.is_student:
+			return {'error': 'Solo los profesores tienen acceso.'}
+		subject = Subject.objects.get(id=idsubj)
+		if not subject in profile.subjects.all():
+			return {'error': 'No tienes acceso a esta informaci&oacute;n.'}
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	except Subject.DoesNotExist:
+		return {'error': 'La asignatura con id ' + str(idsubj) + ' no existe.'}
+	
+	form = SubjectForm(instance=subject)
+	return {'subject': subject, 'form': form}
 
 def get_checkin_ctx(request):
 	"""Devuelve el contexto para la plantilla class.html"""
@@ -201,7 +216,7 @@ def get_seminars_ctx(request):
 						).distinct().order_by('first_date')
 
 
-	return {'profile':profile, 'seminars': future_seminars, 'form': CreateSeminarForm()}
+	return {'profile':profile, 'seminars': future_seminars, 'form': SubjectForm()}
 
 def process_profile_post(form, user):
 	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
@@ -248,7 +263,7 @@ def process_subject_post(idsubj, user):
 
 
 def process_seminars_post(form, user):
-	"""Procesa un POST para la creacion de un seminario"""
+	"""Procesa un POST para la creacion o modificacion de un seminario"""
 	try:
 		profile = UserProfile.objects.get(user=user)
 		if profile.is_student:
@@ -256,23 +271,12 @@ def process_seminars_post(form, user):
 	except UserProfile.DoesNotExist:
 		return {'errors': ['No tienes un perfil creado.']}
 		
-	#first_date = parser.parse(form.__getitem__("first_date"))
-	csform = CreateSeminarForm(form)
+	subj = Subject(is_seminar=True)
+	csform = SubjectForm(form, instance=subj)
 	if not csform.is_valid():
 		return {'errors': csform.errors}
-	data = csform.cleaned_data
-	new_subj = Subject(name=data['name'], is_seminar=True, 
-					first_date=data['first_date'], last_date=data['last_date'],
-					max_students=data['max_students'], description=data['description'],
-					creator=user)
-	try:
-		new_subj.clean()#Save no lo llama, asi que hay que llamarlo
-	except ValidationError, e:
-		#TODO mostrar error sin el ['u'
-		return {'errors': [str(e)]}
-	new_subj.save()
-	for degree in data['degrees']:
-		new_subj.degrees.add(degree)
+	new_subj = csform.save()
+	
 	profile.subjects.add(new_subj)
 	return {'idsubj': new_subj.id}
 
@@ -289,7 +293,7 @@ def process_class_post(request, form, idclass):
 
 """Funciones para procesar las clases"""
 #TODO
-def delete_class(request, form, user, idclass):
+def delete_class(request, form, idclass):
 	"""Elimina una clase si lo solicita el usuario que la creo"""
 	#Comprobar que esta la clase y que se puede borrar, si no informar del error
 	print "delete!"
@@ -320,7 +324,57 @@ def comment_class(request, form, idclass):
 
 action_class = {'delete': delete_class,
 				'comment': comment_class,
-				#'check': check_class,
 }
 
+
+def process_subject_edit_post(request, form, idsubj):
+	"""Procesa un POST sobre /subjects/id/edit, pudiendo ser de diferentes tipos"""
+	#TODO primero ver si tiene permisos
+	try:
+		profile = UserProfile.objects.get(user=request.user)
+		subject = Subject.objects.get(id=idsubj)
+	except UserProfile.DoesNotExist:
+		return {'error': 'No tienes un perfil creado.'}
+	except Subject.DoesNotExist:
+		return {'error': 'No existe ning&uacute;n seminario con el id ' + str(idsubj)}
+	if not subject in profile.subjects.all():
+		return {'error': 'Tienes que ser profesor de la asignatura para efectuar cambios.'}
+
+	try:
+		action = form.__getitem__("action")
+		if (action != "new_lesson" and request.user != subject.creator):
+			return {'error': 'Solo el creador puede modificar o eliminar las asignaturas/seminarios.'}
+		if action in action_edit_subject:
+			return action_edit_subject[action](request, form, subject)
+	except MultiValueDictKeyError:
+		pass
+	return {'error': 'Formulario incorrecto'}
+
+"""Funciones para editar las Subject y crear clases"""
+#TODO
+def delete_subject(request, form, subj):
+	"""Elimina una clase si lo solicita el usuario que la creo"""
+	subj.delete()
+	return {'ok': True}
+
+#TODO
+def edit_subject(request, form, subj):
+	"""Elimina una clase si lo solicita el usuario que la creo"""
+	sform = SubjectForm(form, instance=subj)
+	if not sform.is_valid():
+		return {'errors': sform.errors['__all__']}
+	sform.save()
+	return {'ok': True}
+
+#TODO
+def create_lesson(request, form, subj):
+	"""Elimina una clase si lo solicita el usuario que la creo"""
+	#Comprobar que esta la clase y que se puede borrar, si no informar del error
+	print "create lesson!"
+	return {'error': 'funcion sin hacer'}
+
+action_edit_subject = {'delete': delete_subject,
+					'edit': edit_subject,
+					'new_lesson': create_lesson,
+}
 

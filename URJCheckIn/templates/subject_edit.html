@@ -1,24 +1,15 @@
-<h2 id="maintitle">
-	Pr&oacute;ximos seminarios <br/>
-	<small>
-	{% if profile.is_student %}
-		Inscr&iacute;bete en alg&uacute;n seminario
-	{% else %}
-		Organiza alg&uacute;n seminario
-	{% endif %}
-	</small>
-</h2>
-
-{% if not profile.is_student %}
+{% if request.user == subject.creator %}
+	<!-- El creador del seminario puede modificarlo -->
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
-			<form name="create_seminar" class="form-horizontal" id="create_seminar" onsubmit="createSeminar(); return false;" action="" method="POST">
+			<form name="edit_subject" class="form-horizontal" id="edit_subject"
+			 onsubmit="editSubject('edit_seminar'); return false;" action="" method="POST">
 				{% csrf_token %}
 				<fieldset>
-					<legend>Nuevo Seminario</legend>
+					<legend>Editar {{subject}}</legend>
 					<div class="form-group">
-						{% if errors %}<!--Por si se hizo un POST erroneo sin ajax-->
+						{% if errors %}<!--TODO mirar por si se hizo un POST erroneo sin ajax-->
 							<div class="row">
 								<div class="col-sm-10 col-sm-offset-1">
 									<div class="alert alert-danger">
@@ -44,7 +35,6 @@
 							<label class="col-sm-2 control-label" for="id_first_date">Inicio: </label>
 							<div class="col-sm-10">
 								{{form.first_date}}
-								<!-- TODO problema con internet explorer y firefox-->
 							</div>
 						</div>
 
@@ -52,7 +42,6 @@
 							<label class="col-sm-2 control-label" for="id_last_date">Fin: </label>
 							<div class="col-sm-10">
 								{{form.last_date}}
-								<!-- TODO problema con internet explorer y firefox-->
 							</div>
 						</div>
 
@@ -71,37 +60,32 @@
 								{{form.description}}
 							</div>
 						</div>
-						<button type="submit" class="btn btn-success btn-block" name="seminar_submit" >
-							<span class="glyphicon glyphicon-save"></span> Crear
+						<input name="action" value="edit" hidden>
+
+						<button type="submit" class="btn btn-success btn-block" name="edit_submit" >
+							<span class="glyphicon glyphicon-save"></span> Guardar cambios
 						</button>
 					</div>
 				</fieldset>
+			</form>
+			<form name="delete_subject" class="form-horizontal" id="delete_subject"
+			 onsubmit="editSubject('delete_seminar'); return false;" action="" method="POST">
+				<div class="form-group">
+					{% csrf_token %}
+					<input name="action" value="delete" hidden>
+					<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
+						<span class="glyphicon glyphicon-remove"></span> Eliminar {{subject}}
+					</button>
+				</div>
 			</form>
 		</div>
 	</div>
 </div>
 {% endif %}
 
-<div class="row">
-	<div class="col-sm-6 col-sm-offset-3">
-		<div id="seminars">
-			<div class="panel panel-warning">
-				<div class="panel-heading">
-					<h3 class="panel-title">Pr&oacute;ximos seminarios</h3>
-				</div>
-				<ul class="seminars_list list-group">
-					{% for seminar in seminars %}
-						<a onClick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{seminar.id}}}); return false;" href="/subjects/{{seminar.id}}" class="list-group-item">
-							{{seminar.name}}<br/>
-							<em>{{seminar.first_date|date:'d-m-Y'}}/{{seminar.last_date|date:'d-m-Y'}}</em>
-						</a>
-					{% empty %}
-						<li class="list-group-item">
-							No hay seminarios organizados
-						</li>
-					{% endfor %}
-				</ul>
-			</div>
-		</div>
-	</div>
-</div>
+FORMULARIO DE LA CLASE
+
+<a id="back_to_subject" class="btn btn-danger btn-block" href="/subjects/{{subject.id}}"
+	 onclick="ask_ajax_page('subject', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;">
+	<span class="glyphicon glyphicon-chevron-left"></span> Volver a {{subject}}
+</a>
