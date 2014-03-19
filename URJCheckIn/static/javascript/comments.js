@@ -18,13 +18,8 @@ function sendClassComment(idclass) {
 
 /* Envia el comentario con un POST, bloquea el boton hasta recibir respuesta */
 function sendComment() {
-	var content = $('#comment_field').val()
-	if(content) {
-		disableButtons(['#comment_button']);
-		Dajaxice.app.publish_forum(commentSaved, {'comment': content});
-	} else {
-		alert('No puedes enviar comentarios vacios');
-	}
+	disableButtons(['#comment_button']);
+	$.post(window.location.href, $('#comment_form').serialize(), commentSaved);
 }
 
 
@@ -46,8 +41,9 @@ function commentSaved(data) {
 	Si idlesson es menor que 0 los pide del foro y si es mayor de la clase con id idlesson*/
 function askComments(idcomment, idlesson, newer) {
 	disableButtons(['#ask_newer', '#ask_older']);
-	Dajaxice.app.more_comments(commentsReceived, {'current': idcomment,
-												'idlesson': idlesson, 'newer': newer});
+	path = window.location.pathname + '?idlesson=' + idlesson + '&newer=' + newer +
+			'&idcomment=' + idcomment;
+	$.getJSON(path, commentsReceived);
 }
 
 /* Coloca los mensajes recibidos en su sitio (en las paginas /forum o /class/id */

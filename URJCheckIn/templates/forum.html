@@ -44,7 +44,7 @@
 						href="?page=1" 
 					{% endif %}
 					{% with comments|first as first_comment %}
-						{% if first_comment %}}
+						{% if first_comment %}
 							onClick="askComments({{first_comment.id}}, 0, true);return false;">
 						{% else %}
 							onClick="askComments(0, 0, true);return false;">

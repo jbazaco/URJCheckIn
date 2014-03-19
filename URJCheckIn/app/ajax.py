@@ -113,18 +113,6 @@ def class_info(request, idclass):
 		return wrongMethodJson(request)
 
 
-@dajaxice_register(method='GET')
-@login_required
-def forum(request):
-	"""Devuelve el contenido de la pagina del foro"""
-	if request.method == "GET":
-		ctx = get_forum_ctx(request)
-		html = loader.get_template('forum.html').render(RequestContext(request, ctx))
-		return simplejson.dumps({'#mainbody':html, 'url': '/forum'})
-	else:
-		return wrongMethodJson(request)
-
-
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
 @login_required
 def publish_forum(request, comment):

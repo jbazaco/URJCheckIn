@@ -32,8 +32,7 @@ function ask_ajax_page(url, callback, arg) {
 	y Safari lancen el evento al cargar la pagina inicialmente*/
 window.setTimeout(function(){
     window.onpopstate = function(){
-        var path = window.location.pathname;
-		ask_ajax_page(window.location.href, loadAjaxPage)
+		$.getJSON(window.location.href, insertHtml)
     };
 }, 1000);
 

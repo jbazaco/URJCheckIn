@@ -18,10 +18,22 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
+def my_paginator(request, collection, n_elem):
+	paginator = Paginator(collection, n_elem)
+	page = request.GET.get('page')
+	try:
+		results = paginator.page(page)
+	except PageNotAnInteger:
+		#Si no es un entero devuelve la primera
+		results = paginator.page(1)
+	except EmptyPage:
+		#Si no hay tantas paginas devuelve la ultima
+		results = paginator.page(paginator.num_pages)
+	return results
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
@@ -256,12 +268,29 @@ def forum(request):
 		except MultiValueDictKeyError:
 			return HttpResponseBadRequest()
 		comment = comment[:150] #si el comentario tiene mas de 150 caracteres se corta
-		ForumComment(comment=comment, user=request.user).save()
+		new_comment = ForumComment(comment=comment, user=request.user)
+		new_comment.save()
+		if request.is_ajax():
+			html = loader.get_template('pieces/comments.html').render(RequestContext(
+												request, {'comments': [new_comment]}))
+			resp = {'ok': True, 'comment': html, 'idcomment': new_comment.id}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
 	elif request.method != "GET":
 		return method_not_allowed(request)
-
-	ctx = get_forum_ctx(request)
-	ctx['htmlname'] = 'forum.html'#Elemento necesario para renderizar main.html
+	if request.is_ajax:
+		if request.GET.get('idlesson') and request.GET.get('newer') and request.GET.get('idcomment'):
+			try:
+				return more_comments(request, int(request.GET.get('idcomment')), 
+								request.GET.get('newer') == 'true',
+								 int(request.GET.get('idlesson')))
+			except ValueError:
+				pass
+	comments =  ForumComment.objects.all().order_by('-date')
+	ctx = {'comments': my_paginator(request, comments, 10), 'htmlname': 'forum.html'}
+	if request.is_ajax():
+		html = loader.get_template('forum.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
@@ -367,4 +396,62 @@ def subject_edit(request, idsubj):
 	ctx['htmlname'] = 'subject_edit.html'#Elemento necesario para renderizar main.html
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
+
+########################################################
+# Funciones para solicitar mas elementos de algun tipo #
+########################################################
+
+def more_comments(request, current, newer, idlesson):
+	"""Si newer = True devuelve un fragmento html con 10 comentarios mas nuevos que num ordenados
+		de mas nuevo a mas antiguo. Si newer = False los anteriores.
+		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)
+		Si idlesson es menor que 1 los coge del foro y si no de la lesson con id idlesson"""
+	if current > 0:
+		try:
+			if idlesson > 0:
+				comment = LessonComment.objects.get(id=current)
+			else:
+				comment = ForumComment.objects.get(id=current)
+		except (ForumComment.DoesNotExist, LessonComment.DoesNotExist):
+			resp = {'comments': [], 'idcomment': 0, 'newer': True}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+		current_date = comment.date
+	else: #Para el caso en el que no hubiese ningun mensaje en la pagina
+		current_date = timezone.now() - timedelta(days=1)
+		
+
+	if idlesson > 0:
+		try:
+			lesson = Lesson.objects.get(id=idlesson)
+			profile = request.user.userprofile
+			if not lesson.subject in profile.subjects.all():
+				resp = {'comments': [], 'idcomment': 0, 'newer': True}
+				return HttpResponse(json.dumps(resp), content_type="application/json")
+		except (ForumComment.DoesNotExist, Lesson.DoesNotExist, UserProfile.DoesNotExist):
+			resp = {'comments': [], 'idcomment': 0, 'newer': True}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+		all_comments = LessonComment.objects.filter(lesson=lesson)
+	else:
+		all_comments = ForumComment.objects.all()
+
+	if newer:
+		comments = all_comments.filter(date__gt=current_date).order_by('-date')
+		#Se tiene que hacer asi porque si se hace el slice primero con order_by('date')
+		# y luego se llama a reverse() se seleccionan los 10 elementos opuestos
+		n_comments = comments.count()
+		if n_comments > 10:
+			comments = comments[n_comments-10:]
+	else:
+		comments = all_comments.filter(date__lt=current_date).order_by('-date')[0:10]
+	if comments:
+		if newer:
+			idcomment = comments[0].id
+		else:
+			idcomment = comments[comments.count()-1].id
+	else:
+		idcomment = 0
+	html = loader.get_template('pieces/comments.html').render(RequestContext(
+												request, {'comments':comments}))
+	resp = {'comments':html, 'newer':newer, 'idcomment':idcomment, 'idlesson':idlesson}
+	return HttpResponse(json.dumps(resp), content_type="application/json")
 

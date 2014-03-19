@@ -27,11 +27,6 @@ def my_paginator(request, collection, n_elem):
 		results = paginator.page(paginator.num_pages)
 	return results
 
-def get_forum_ctx(request):
-	"""Devuelve el contexto para la plantilla forum.html"""
-	comments =  ForumComment.objects.all().order_by('-date')
-	return {'comments': my_paginator(request, comments, 10) }
-
 def get_class_ctx(request, idclass):
 	"""Devuelve el contexto para la plantilla class.html"""
 	try:
