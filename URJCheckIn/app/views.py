@@ -16,16 +16,23 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User
 import json
+from django.db import IntegrityError
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_home_ctx, get_subject_edit_ctx, process_subject_edit_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
+
+WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
+
 
 def not_found(request):
 	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
-	return render_to_response('main.html', {'htmlname': '404.html'},	#mostrar en el html las paginas mas "frecuentes"
-																	#checkin, inicio, perfil...
-		context_instance=RequestContext(request))
+	if request.is_ajax():
+		html = loader.get_template('404.html').render(RequestContext(request, {}))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
+	return render_to_response('main.html', {'htmlname': '404.html'},
+			context_instance=RequestContext(request))
 
-def send_error(request, error):
+def send_error_page(request, error):
 	"""Devuelve una pagina de error"""
 	if request.is_ajax():
 		html = loader.get_template('error.html').render(RequestContext(request, {'message':error}))
@@ -33,9 +40,6 @@ def send_error(request, error):
 		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', {'htmlname': 'error.html',
 				'message': error}, context_instance=RequestContext(request))
-	
-
-WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
 @login_required
 def home(request):
@@ -50,7 +54,7 @@ def home(request):
 	try:
 		profile = request.user.userprofile
 	except UserProfile.DoesNotExist:
-		return send_error(request, 'No tienes un perfil creado.')
+		return send_error_page(request, 'No tienes un perfil creado.')
 
 	today = datetime.date.today()
 	monday = today + datetime.timedelta(days= -today.weekday() + 7*week)
@@ -69,24 +73,83 @@ def home(request):
 	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=7),
 			'previous':week-1, 'next': week+1, 'htmlname': 'home.html'}
 	if request.is_ajax():
-		print request.get_full_path()
 		html = loader.get_template('home.html').render(RequestContext(request, ctx))
 		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")#TODO
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
+
+#TODO method_not_allowed ajax ###############################################################
+
+def process_checkin(request):
+	"""Procesa un formulario para hacer checkin y devuelve un diccionario con 'ok' = True 
+		si se realiza con exito o con 'error' = mensaje_de_error si hay errores"""
+	try:#TODO hacer form
+		form = request.POST
+		try:
+			idsubj = form.__getitem__("subject")
+		except ValueError:
+			return {'error': 'Informacion de la asignatura incorrecta.'}
+		try:
+			profile = UserProfile.objects.get(user=request.user)
+			subject = profile.subjects.get(id=idsubj)
+			lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
+												end_time__gte=timezone.now())
+		except UserProfile.DoesNotExist:
+			return {'error': 'No tienes un perfil creado.'}
+		except Subject.DoesNotExist:
+			return {'error': 'No estas matriculado en esa asignatura.'}
+		except Lesson.DoesNotExist:
+			return {'error': 'Ahora no hay ninguna clase de la asignatura ' + str(subject)}
+		except Lesson.MultipleObjectsReturned:
+			return {'error': 'Actualmente hay dos clases de ' + str(subject) + 
+								', por favor, contacte con un administrador'}
+		print form.__getitem__("longitude")
+		print form.__getitem__("latitude")
+		print form.__getitem__("accuracy")
+		print form.__getitem__("codeword")
+		try:
+			mark = form.__getitem__("id_mark")
+		except KeyError:
+			mark = 3
+		try:
+			comment = form.__getitem__("id_comment")
+		except KeyError:
+			comment = ""
+		checkin = CheckIn(user=request.user, lesson=lesson, mark=mark,comment=comment)
+	except KeyError:
+		return {'error': 'Formulario incorrecto.'}
+	try:
+		checkin.save()
+	except IntegrityError:
+		return {'error': 'Ya habias realizado el checkin para esta clase.'}
+	return {'ok': True}
 
 @login_required
 def checkin(request):
-	"""Devuelve la pagina para hacer check in, no procesa un checkin ya que la informacion enviada
-		en el POST se genera con javascript y si hay javascript se realiza el POST con ajax"""
-	if request.method != "GET":
+	"""Devuelve la pagina para hacer check in y procesa un checkin si recibe un POST"""
+	if request.method == "POST":
+		resp = process_checkin(request)
+		if request.is_ajax():
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+	elif request.method != "GET":
 		return method_not_allowed(request)
 
-	ctx = get_checkin_ctx(request)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'checkin.html'#Elemento necesario para renderizar main.html
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No tienes un perfil creado.')
+	
+	subjects = profile.subjects.all()
+	ctx = {'htmlname': 'checkin.html', 'form': ReviewClassForm(), 'profile':profile, 
+			'subjects':subjects}
+	if request.method == "POST":
+		if 'error' in resp:
+			ctx['error'] = resp['error']
+	if request.is_ajax():
+		html = loader.get_template('checkin.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 

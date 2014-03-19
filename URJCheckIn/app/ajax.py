@@ -18,20 +18,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_home_ctx, get_subject_edit_ctx
 
-@dajaxice_register(method='GET')
-@login_required
-def profile(request, iduser):
-	"""Devuelve el contenido de la pagina de perfil"""
-	if request.method == "GET":
-		ctx = get_profile_ctx(request, iduser)
-		if ('error' in ctx):
-			return send_error(request, ctx['error'], '/profile/view/'+iduser)
-		html = loader.get_template('profile.html').render(RequestContext(request, ctx))
-		return simplejson.dumps({'#mainbody':html, 'url': '/profile/view/'+iduser})
-	else:
-		return wrongMethodJson(request)
-
-
 @dajaxice_register(method='POST')
 @login_required
 def update_profile(request, iduser, form):
@@ -53,61 +39,6 @@ def process_class(request, form, idclass):
 		return simplejson.dumps(resp)
 	else:
 		return wrongMethodJson(request)
-
-@dajaxice_register(method='GET')
-@login_required
-def checkin(request):
-	"""Devuelve la pagina para hacer check in"""
-	if request.method == "GET":
-		ctx = get_checkin_ctx(request)
-		if ('error' in ctx):
-			return send_error(request, ctx['error'], "/checkin")
-		html = loader.get_template('checkin.html').render(RequestContext(request, ctx))
-		return simplejson.dumps({'#mainbody':html, 'url': '/checkin'})
-	else:
-		return wrongMethodJson(request)
-
-@dajaxice_register(method='POST')
-@login_required
-def process_checkin(request, form):
-	""" procesa un check in"""
-	if request.method == "POST":
-		try:
-			try:
-				idsubj = int(form["idsubj"])
-			except ValueError:
-				return simplejson.dumps({'error':'Informacion de la asignatura incorrecta.'})
-			try:
-				profile = UserProfile.objects.get(user=request.user)
-				subject = profile.subjects.get(id=idsubj)
-				lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
-													end_time__gte=timezone.now())
-			except UserProfile.DoesNotExist:
-				return simplejson.dumps({'error':'No tienes un perfil creado.'})
-			except Subject.DoesNotExist:
-				return simplejson.dumps({'error':'No estas matriculado en esa asignatura.'})
-			except Lesson.DoesNotExist:
-				return simplejson.dumps({'error':'Ahora no hay ninguna clase de la asignatura ' + 
-										str(subject)})
-			except Lesson.MultipleObjectsReturned:
-				return simplejson.dumps({'error':'Actualmente hay dos clases de ' + 
-						str(subject) + ', por favor, contacte con un administrador'})
-			print form["longitude"]
-			print form["latitude"]
-			print form["accuracy"]
-			print form["codeword"]
-			checkin = CheckIn(user=request.user, lesson=lesson, mark=form["id_mark"],
-								comment=form["id_comment"])
-		except KeyError:
-			return simplejson.dumps({'error': 'Formulario incorrecto.'})
-		try:
-			checkin.save()
-		except IntegrityError:
-			return simplejson.dumps({'error': 'Ya habias realizado el checkin para esta clase.'})
-		return simplejson.dumps({'ok': True})
-	else:
-		return wrongMethodJson(request)
-
 
 @dajaxice_register(method='GET')
 @login_required
@@ -280,13 +211,6 @@ def logout(request):
 	auth_logout(request)
 	html = loader.get_template('registration/login_body.html').render(RequestContext(request, {}))
 	return simplejson.dumps({'body': html, 'url': '/login'})
-
-def send_error(request, error, url):
-	"""Devuelve una pagina indicando el error que se le pasa"""
-	templ = loader.get_template('error.html')
-	cont = RequestContext(request, {'message':error})
-	html = templ.render(cont)
-	return simplejson.dumps({'#mainbody':html, 'url':url})
 
 
 def wrongMethodJson(request):

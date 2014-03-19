@@ -10,24 +10,10 @@ function sendLocation(position) {
 	$('#result_checkin').html("");
 	var codeword = $('#codeword');
 	$('#loading_page').css('display','inline');
-	if (codeword && codeword.val()) {
-		var info = {
-					'latitude':  position.coords.latitude,
-					'longitude': position.coords.longitude,
-					'accuracy': position.coords.accuracy,
-					'idsubj': $('#subject_select').val(),
-					'codeword': codeword.val(),
-					'id_mark': $('#id_mark').val() ? $('#id_mark').val():0,
-					'id_comment': $('#id_comment').val() ? $('#id_comment').val():""
-				};
-		/*$.post("http://" + document.location.host + "/checkin", info, 
-				function() { codeword.val("CheckIn realizado"); }) //TODO cambiar, poner en otro sitio el mensaje
-				.fail(function() { alert( "Error al enviar el CheckIn" ); });*/
-		Dajaxice.app.process_checkin(checkinDone, {'form': info});
-	} else {
-		hideElements(['#loading_page']);
-		alert ("Debes insertar el código");
-	}
+	$('#latitude').attr('value', position.coords.latitude);
+	$('#longitude').attr('value', position.coords.longitude);
+	$('#accuracy').attr('value', position.coords.accuracy);
+	$.post("http://" + document.location.host + "/checkin", $('#checkinbox').serialize(), checkinDone);
 }
 
 function checkinDone(data) {
