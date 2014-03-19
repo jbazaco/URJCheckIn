@@ -32,10 +32,9 @@ function signedSeminarChanged(data) {
 				if (professor_list.html().indexOf('La asignatura no es impartida') != -1)
 					professor_list.html('');
 				professor_list.append('<li id="professor_' + data.iduser + '">' +
-							'<a onClick="ask_ajax_page(\'profile\', loadAjaxPage, ' +
-							'{\'iduser\': \'' + data.iduser + '\'}); return false;" ' +
-							'href="/profile/view/' + data.iduser + '">' + data.name +
-							'</a></li>');
+							'<a onClick="ask_ajax_page(\'/profile/view/' + data.iduser + 
+							'\', loadAjaxPage); return false;" href="/profile/view/' + 
+							data.iduser + '">' + data.name + '</a></li>');
 				$('#sign_button').replaceWith(newChangeSignButton('Dejar de ser organizador', 
 														'danger', 'remove-circle'));
 				$('#professor_options').show();
