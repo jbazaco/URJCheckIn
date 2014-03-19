@@ -5,11 +5,6 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-#For dajaxice
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from dajaxice.core import dajaxice_autodiscover, dajaxice_config
-dajaxice_autodiscover()
-
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'app.views.home'),
@@ -41,10 +36,5 @@ urlpatterns = patterns('',
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^password_change/$', 'django.contrib.auth.views.password_change'),
 	url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done'),
-
-	url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 	url(r'^.*$', 'app.views.not_found'),
 )
-
-#For dajaxice
-urlpatterns += staticfiles_urlpatterns()

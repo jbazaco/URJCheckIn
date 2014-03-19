@@ -1,6 +1,0 @@
-Instalar Dajaxice
-
-1. Descargar https://github.com/jorgebastida/django-dajaxice
-2. Pegar la carpeta dajaxice en la raiz del proyecto Django
-3. en dajaxice/views.py cambiar from django.conf.urls.defaults import * por from django.conf.urls import * (opcional, django.conf.urls.defaults deprecated)
-

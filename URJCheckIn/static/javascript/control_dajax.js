@@ -20,9 +20,9 @@ function insertHtml(data) {
 
 /*Realiza una peticion ajax al recurso app.dfunct, pasandole un callback
 	y los argumento a enviar, mostrando el elemento #loading_page*/
-function ask_ajax_page(dfunct, callback, arg) {
+function ask_ajax_page(url, callback, arg) {
 	$('#loading_page').css('display','inherit');
-	Dajaxice.app[dfunct](callback, arg);
+	$.getJSON(url, callback);
 }
 
 

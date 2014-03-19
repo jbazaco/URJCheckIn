@@ -1,14 +1,21 @@
 # Create your views here.
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.template import Context, RequestContext
+from django.template import loader, Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 
-from forms import ReviewClassForm, ProfileEditionForm
-from models import UserProfile, Lesson, CheckIn, ForumComment
+from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
+from django.utils import timezone
+from django.utils.datastructures import MultiValueDictKeyError
+from forms import ProfileEditionForm, ReviewClassForm, SubjectForm
+from dateutil import parser
+from django.core.exceptions import ValidationError
+import datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.template import loader, RequestContext
 from django.contrib.auth.models import User
+import json
 
 from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_home_ctx, get_subject_edit_ctx, process_subject_edit_post
 
@@ -18,6 +25,17 @@ def not_found(request):
 																	#checkin, inicio, perfil...
 		context_instance=RequestContext(request))
 
+def send_error(request, error):
+	"""Devuelve una pagina de error"""
+	if request.is_ajax():
+		html = loader.get_template('error.html').render(RequestContext(request, {'message':error}))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
+	return render_to_response('main.html', {'htmlname': 'error.html',
+				'message': error}, context_instance=RequestContext(request))
+	
+
+WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
 @login_required
 def home(request):
@@ -28,11 +46,33 @@ def home(request):
 		week = int(request.GET.get('page'))
 	except (TypeError, ValueError):
 		week = 0
-	ctx = get_home_ctx(request, week)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'home.html'#Elemento necesario para renderizar main.html
+
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		return send_error(request, 'No tienes un perfil creado.')
+
+	today = datetime.date.today()
+	monday = today + datetime.timedelta(days= -today.weekday() + 7*week)
+	events = []
+	all_lessons = Lesson.objects.filter(subject__in=profile.subjects.all())
+	for day in WEEK_DAYS_BUT_SUNDAY:
+		date = monday + datetime.timedelta(days=WEEK_DAYS_BUT_SUNDAY.index(day))
+		events.append({
+						'day': day,
+						'events': all_lessons.filter(
+								start_time__year = date.year,
+								start_time__month = date.month,
+								start_time__day = date.day
+							).order_by('start_time')
+					})
+	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=7),
+			'previous':week-1, 'next': week+1, 'htmlname': 'home.html'}
+	if request.is_ajax():
+		print request.get_full_path()
+		html = loader.get_template('home.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")#TODO
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 @login_required
