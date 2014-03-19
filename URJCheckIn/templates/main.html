@@ -59,7 +59,8 @@
 					<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
 						<ul class="nav navbar-nav">
 							<li>
-								<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{request.user.id}}'}); return false;" href="/profile/view/{{request.user.id}}">
+								<a onClick="ask_ajax_page('/profile/view/{{request.user.id}}',
+								 loadAjaxPage); return false;" href="/profile/view/{{request.user.id}}">
 									<span class="glyphicon glyphicon-user"></span> Profile
 								</a>
 							</li>

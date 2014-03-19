@@ -158,13 +158,6 @@ def get_checkin_ctx(request):
 	return {'htmlname': 'checkin.html', 'form': ReviewClassForm(), 
 			'profile':profile, 'subjects':subjects}
 
-def get_profile_ctx(request, iduser):
-	"""Devuelve el contexto para la plantilla profile.html"""
-	try:
-		profile = UserProfile.objects.get(user=iduser)
-	except UserProfile.DoesNotExist:			
-		return {'error': 'El usuario con id ' + iduser + ' no tiene perfil'}
-	return {'profile': profile, 'form': ProfileEditionForm()}
 
 def get_subjects_ctx(request):
 	"""Devuelve el contexto para la plantilla subjects.html"""
@@ -192,21 +185,6 @@ def get_seminars_ctx(request):
 
 
 	return {'profile':profile, 'seminars': future_seminars, 'form': SubjectForm()}
-
-def process_profile_post(form, user):
-	"""Modifica el perfil del usuario user a partir de la informacion del formulario form"""
-	pform = ProfileEditionForm(form)
-	if not pform.is_valid():
-		return {'errors': pform.errors}
-	data = pform.cleaned_data
-	try:
-		profile = UserProfile.objects.get(user=user)
-	except UserProfile.DoesNotExist:
-		return {'errors': ['No tienes un perfil creado.']}#TODO Pone en el alert '0:No tienes...'
-	profile.age = data['age']
-	profile.description = data['description']
-	profile.save()
-	return {'user':{'id': user.id, 'age':data['age'], 'description':data['description']}}#coger datos del usuario tras guardar TODO cambiar esto y el js
 
 def process_subject_post(idsubj, user):
 	"""Pone un seminario en los subjects de un usuario o se lo quita si ya lo tiene"""

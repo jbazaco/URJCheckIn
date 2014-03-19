@@ -10,8 +10,8 @@
 			<ul class="subjects_list list-group classes_list">
 				{% for student in students%}
 					<a href="/profile/view/{{student.id}}" class="list-group-item"
-						onClick="ask_ajax_page('profile', loadAjaxPage, 
-							{'iduser': '{{student.id}}'}); return false;" >
+						onClick="ask_ajax_page('/profile/view/{{student.id}}',
+								 loadAjaxPage); return false;">
 						{{student.name}} <strong>{{student.percent}}%</strong>
 					</a>
 				{% empty %}

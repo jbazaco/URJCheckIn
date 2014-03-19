@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx,  get_forum_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
@@ -78,8 +78,6 @@ def home(request):
 		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
-
-#TODO method_not_allowed ajax ###############################################################
 
 def process_checkin(request):
 	"""Procesa un formulario para hacer checkin y devuelve un diccionario con 'ok' = True 
@@ -156,27 +154,59 @@ def checkin(request):
 @login_required
 def profile(request, iduser):
 	"""Devuelve la pagina de perfil del usuario loggeado y modifica el perfil si recibe un POST"""
+	if request.method != "GET" and request.method != "POST":
+		return method_not_allowed(request)
+
+	try:
+		profile = UserProfile.objects.get(user=iduser)
+	except UserProfile.DoesNotExist:			
+		return send_error_page(request, 'El usuario con id ' + iduser + ' no tiene perfil')
+
 	if request.method == "POST":
 		if iduser == str(request.user.id):
-			resp = process_profile_post(request.POST, request.user)
-			if ('errors' in resp):
-				return render_to_response('main.html', {'htmlname': 'error.html',
-						'message': resp['errors']}, 
-						context_instance=RequestContext(request))
+			pform = ProfileEditionForm(request.POST)
+			if not pform.is_valid():
+				if request.is_ajax():
+					return HttpResponse(json.dumps({'errors': pform.errors}), 
+										content_type="application/json")
+			else:
+				data = pform.cleaned_data
+				profile.age = data['age']
+				profile.description = data['description']
+				profile.save()
+				if request.is_ajax():
+					resp = {'user':{'age':data['age'], 'description':data['description']}}
+					#coger datos del usuario tras guardar TODO cambiar esto y el js TODO
+					return HttpResponse(json.dumps(resp), content_type="application/json")
 		else:
-			return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': 'Est&aacute;s intentando cambiar un perfil distinto del tuyo'}, 
-					context_instance=RequestContext(request))
+			return send_error_page(request, 
+						'Est&aacute;s intentando cambiar un perfil distinto del tuyo')
 
-	elif request.method != "GET":
-		return method_not_allowed(request)
-	
-	ctx = get_profile_ctx(request, iduser)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'profile.html'#Elemento necesario para renderizar main.html
+	ctx = {'profile': profile, 'form': ProfileEditionForm(), 'htmlname': 'profile.html'}
+	if request.is_ajax():
+		html = loader.get_template('profile.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
+	if request.method == "POST":
+		if pform.errors:
+			ctx['errors'] = pform.errors
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
+#TODO##########################################################
+"""@sensitive_post_parameters()
+@csrf_protect
+@login_required
+def password_change(request, form):
+	"""Metodo de django.contrib.auth adaptado a ajax"""
+	if request.method == "POST":
+		pform = PasswordChangeForm(user=request.user, data=form)
+		if pform.is_valid():
+			pform.save()
+			return simplejson.dumps({'ok': True})
+		else:
+			return simplejson.dumps({'errors': pform.errors})
+	else:
+		return wrongMethodJson(request)"""
 
 
 #TODO
@@ -208,6 +238,9 @@ def process_class(request, idclass):
 
 def method_not_allowed(request):
 	"""Devuelve una pagina indicando que el metodo no esta permitido"""
+	if request.is_ajax():
+		resp = {'error': 'Metodo ' + request.method + ' no soportado'}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('error.html', {'message': "M&eacutetodo " + request.method + 
 						" no soportado en " + request.path},
 						context_instance=RequestContext(request))

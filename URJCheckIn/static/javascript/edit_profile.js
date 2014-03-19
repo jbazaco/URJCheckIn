@@ -1,6 +1,6 @@
 
 /* Genera un formulario para editar el perfil */
-function showEditProfile(id) {
+function showEditProfile() {
 	setForm();
 	$('#show_form').addClass('hidden');
 	$('#editing_profile').removeClass('hidden');
@@ -29,7 +29,7 @@ function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 }
 
 /* Elimina el boton de cancelar y cambia el texto del otro boton a 'Editar perfil' y lo habilita */
-function restartButtons(id) {
+function restartButtons() {
 	$('#editing_profile').addClass('hidden');
 	$('#show_form').removeClass('hidden');
 	enableButtons(['button']);
@@ -43,7 +43,7 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 						'profile_alert', 'danger');
 		enableButtons(['button']);
 	} else {
-		restartButtons(data.user.id);//TODO necesito la id!!
+		restartButtons();
 		emptyPasswords();
 		unsetForm(data.user);
 	}
@@ -52,22 +52,19 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 
 /* Envia un POST al servidor para que actualice el perfil del usuario con la 
 	informacion del formulario */
-function sendChanges(id) {
+function sendChanges() {
 	$('.profile_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	/*$.post("http://" + document.location.host + "/profile/view/" + id, 
-							$('#profile_form').serialize(), infoSaved)
-			.fail(errorSaving);*/
-	Dajaxice.app.update_profile(infoSaved, {'iduser': id, 'form':$('#profile_form').serializeObject()});
+	$.post(window.location.href, $('#profile_form').serialize(), infoSaved);
 }
 
 /* Quita el formulario y vuelve a mostrar el perfil */
-function cancelEditProfile(id) {
+function cancelEditProfile() {
 	hideElements(['#profile_form', '#photo_form']);
 	emptyPasswords();
 	$('#profile .fields').css('display','inherit');
-	restartButtons(id);
+	restartButtons();
 }
 
 /*Vacia los inputs de passwords*/
@@ -78,12 +75,11 @@ function emptyPasswords() {
 }
 
 /* Envia un POST al servidor para que modifique la password */
-function changePassword() {
-		$('.password_alert').remove();
-		disableButtons(['button']);
-		$('#loading_page').css('display','inline');
-		Dajaxice.app.password_change(passwordChanged, 
-				{'form':$('#password_form').serializeObject()});
+function changePassword() {//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	$('.password_alert').remove();
+	disableButtons(['button']);
+	$('#loading_page').css('display','inline');
+	$.post('/password_change/', $('#password_form').serialize(), passwordChanged);
 }
 
 /* Reactiva los botones e indica el resultado del cambio de password*/

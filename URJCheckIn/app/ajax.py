@@ -18,18 +18,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, get_forum_ctx, process_profile_post, get_profile_ctx, get_subjects_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_home_ctx, get_subject_edit_ctx
 
-@dajaxice_register(method='POST')
-@login_required
-def update_profile(request, iduser, form):
-	"""Modifica el perfil del usuario registrado"""
-	if request.method == "POST":
-		if iduser == str(request.user.id):
-			return simplejson.dumps(process_profile_post(form, request.user))
-		else:
-			return simplejson.dumps({'errors': ['Estas intentando cambiar un perfil distinto del tuyo']})#TODO pone en el alert '0: Estas....'
-	else:
-		return wrongMethodJson(request)
-
 
 @dajaxice_register(method='POST')
 @login_required
