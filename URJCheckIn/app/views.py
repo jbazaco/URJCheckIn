@@ -386,12 +386,38 @@ def subject_attendance(request, idsubj):
 	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
+
+	try:
+		profile = request.user.userprofile
+		if profile.is_student:
+			send_error_page(request, 'Solo los profesores tienen acceso.')
+		subject = Subject.objects.get(id=idsubj)
+		if not subject in profile.subjects.all():
+			return send_error_page(request, 'No tienes acceso a esta informaci&oacute;n.')
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No tienes un perfil creado.')
+	except Subject.DoesNotExist:
+		return send_error_page(request, 'La asignatura con id ' + str(idsubj) + ' no existe.')
 	
-	ctx = get_subject_attendance_ctx(request, idsubj)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'subject_attendance.html'#Elemento necesario para renderizar main.html
+	students = subject.userprofile_set.filter(is_student=True)
+	lessons = subject.lesson_set.filter(end_time__lte = timezone.now())
+	n_lessons = lessons.count()
+	checkins = CheckIn.objects.filter(lesson__in = lessons)
+	students_info = []
+	for student in students:
+		if n_lessons > 0:
+			n_checkins = checkins.filter(user=student.user).count()
+			percent = round(100.0 * n_checkins / n_lessons,2)
+		else:
+			percent = 0
+		students_info.append({'id': student.user.id, 'percent': percent,
+				'name': student.user.first_name + ' ' + student.user.last_name})
+		
+	ctx = {'students': students_info, 'subject': subject, 'htmlname': 'subject_attendance.html'}
+	if request.is_ajax():
+		html = loader.get_template('subject_attendance.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 
