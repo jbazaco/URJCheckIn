@@ -4,7 +4,7 @@ from django.template import loader, Context, RequestContext
 from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.views import logout
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
@@ -218,14 +218,23 @@ def password_change(request, form):
 	else:
 		return wrongMethodJson(request)
 from django.views.decorators.debug import sensitive_post_parameters
-from django.contrib.auth import logout as auth_logout
-@dajaxice_register(method='POST')
-def logout(request):
-	""Cierra sesion y devuelve el body y la url de la pagina /login""
-	auth_logout(request)
-	html = loader.get_template('registration/login_body.html').render(RequestContext(request, {}))
-	return simplejson.dumps({'body': html, 'url': '/login'})
 """
+
+@login_required
+def my_logout(request):
+	"""Cierra sesion"""
+	resp = logout(request)
+	print request.is_ajax()
+	if request.is_ajax():
+		if resp.status_code == 200:
+			html = loader.get_template('registration/login_body.html').render(
+												RequestContext(request, {}))
+			print html
+			ajax_resp = {'body': html, 'url': '/login'}
+			return HttpResponse(json.dumps(ajax_resp), content_type="application/json")
+	return resp
+	
+
 
 
 #TODO

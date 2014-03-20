@@ -30,7 +30,7 @@ urlpatterns = patterns('',
 						{'document_root': 'lib'}),
     # url(r'^URJCheckIn/', include('URJCheckIn.foo.urls')),
 
-	url(r'^logout$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
+	url(r'^logout$', 'app.views.my_logout'),
 	url(r'^login$', 'django.contrib.auth.views.login'),
 	url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 	url(r'^admin/', include(admin.site.urls)),

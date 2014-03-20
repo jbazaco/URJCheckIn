@@ -37,8 +37,8 @@ window.setTimeout(function(){
 }, 1000);
 
 /* Cierra la sesion del usuario y carga la pagina de iniciar sesion */
-function logout() {//TODO////////////////////////////////////////////////////
-	Dajaxice.app.logout(loadAjaxPage, {}); 
+function logout() {
+	$.getJSON('/logout', loadAjaxPage); 
 }
 
 /*Para cerrar el menu desplegable en pantallas pequenas al pulsar
