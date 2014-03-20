@@ -18,8 +18,6 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 
-from ajax_views_bridge import  get_subject_edit_ctx, process_subject_edit_post
-
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
 def my_paginator(request, collection, n_elem):
@@ -218,7 +216,16 @@ def password_change(request, form):
 		else:
 			return simplejson.dumps({'errors': pform.errors})
 	else:
-		return wrongMethodJson(request)"""
+		return wrongMethodJson(request)
+from django.views.decorators.debug import sensitive_post_parameters
+from django.contrib.auth import logout as auth_logout
+@dajaxice_register(method='POST')
+def logout(request):
+	""Cierra sesion y devuelve el body y la url de la pagina /login""
+	auth_logout(request)
+	html = loader.get_template('registration/login_body.html').render(RequestContext(request, {}))
+	return simplejson.dumps({'body': html, 'url': '/login'})
+"""
 
 
 #TODO
@@ -580,21 +587,34 @@ def subject_attendance(request, idsubj):
 def subject_edit(request, idsubj):
 	"""Devuelve la pagina para editar/eliminar una asignatura y para crear nuevas
 		clases"""
+	if request.method != 'GET' and request.method != 'POST':
+		return method_not_allowed(request)
+
+
+	try:
+		profile = request.user.userprofile
+		if profile.is_student:
+			return send_error_page(request, 'Solo los profesores tienen acceso.')
+		subject = Subject.objects.get(id=idsubj)
+		if not subject in profile.subjects.all():
+			return send_error_page(request, 'No tienes acceso a esta informaci&oacute;n.')
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No tienes un perfil creado.')
+	except Subject.DoesNotExist:
+		return send_error_page(request, 'La asignatura con id ' + str(idsubj) + ' no existe.')
+
+
 	errors = False
 	if request.method == 'POST':
-		resp = process_subject_edit_post(request, request.POST, idsubj)
-		if 'errors' in resp:
-			errors = resp['errors']
-	elif request.method != 'GET':
-		return method_not_allowed(request)
+		pass #TODO#########################################
 	
-	ctx = get_subject_edit_ctx(request, idsubj)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	if errors:
-		ctx['errors'] = errors
-	ctx['htmlname'] = 'subject_edit.html'#Elemento necesario para renderizar main.html
+	
+	form = SubjectForm(instance=subject)
+	ctx = {'subject': subject, 'form': form, 'htmlname': 'subject_edit.html'}
+	if request.is_ajax():
+		html = loader.get_template('subject_edit.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 

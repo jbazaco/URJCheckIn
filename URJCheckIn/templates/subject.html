@@ -110,7 +110,8 @@
 {% if not profile.is_student %}
 	<div class="row" id="professor_options" {% if not signed %} hidden {% endif %}>
 		<div class="col-xs-12 col-md-6" id="config_subject">
-			<a onClick="ask_ajax_page('subject_edit', loadAjaxPage, {'idsubj': {{subject.id}}}); return false;" href="{{subject.id}}/edit" class="btn btn-warning btn-block">
+			<a onClick="ask_ajax_page('/subjects/{{subject.id}}/edit', loadAjaxPage);
+			 return false;" href="{{subject.id}}/edit" class="btn btn-warning btn-block">
 				<span class="glyphicon glyphicon-cog"></span> Gesti&oacute;n 
 				{% if subject.is_seminar %}del seminario{% else %}de la asignatura{% endif %}
 			</a>
