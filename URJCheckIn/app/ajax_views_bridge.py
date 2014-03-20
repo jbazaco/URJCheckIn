@@ -27,43 +27,6 @@ def my_paginator(request, collection, n_elem):
 		results = paginator.page(paginator.num_pages)
 	return results
 
-def get_subject_ctx(request, idsubj):
-	"""Devuelve el contexto para la plantilla subject.html"""
-	try:
-		profile = UserProfile.objects.get(user=request.user)
-		subject = Subject.objects.get(id=idsubj)
-	except UserProfile.DoesNotExist:
-		return {'error': 'No tienes un perfil creado.'}
-	except Subject.DoesNotExist:
-		return {'error': '#404 La asignatura a la que intentas acceder no existe.'}
-
-
-	if subject in profile.subjects.all():
-		signed = True
-	else:
-		signed = False
-		#Solo pueden ver las asignaturas en las que estan matriculados
-		if not subject.is_seminar:
-			return {'error': 'No est&aacutes matriculado en ' + str(subject)}
-		
-	lessons = subject.lesson_set.all()
-	profesors = subject.userprofile_set.filter(is_student=False)
-	now = timezone.now()
-	today = datetime.date(now.year, now.month, now.day)
-	started = subject.first_date < today#Si ha empezado True
-	classes_f = my_paginator(request, 
-				lessons.filter(start_time__gte=timezone.now()).order_by('end_time'),
-				10)
-	classes_p = my_paginator(request,
-				lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
-				10)
-	return {'classes_f': classes_f,
-			'classes_p': classes_p,
-			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
-										start_time__lt=timezone.now()),
-			'profesors': profesors, 'subject': subject, 'profile':profile,
-			'signed': signed, 'started': started}
-
 	
 def get_subject_edit_ctx(request, idsubj):
 	"""Devuelve el contexto para la plantilla subject_attendance.html"""

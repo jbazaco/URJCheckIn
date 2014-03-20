@@ -1,11 +1,11 @@
 
 /*Envia un POST al servidor para que ponga o elimine 
 	la asignatura al usuario que lo solicita*/
-function changeSignSeminar(idsubj){
+function changeSignSeminar(){
 	$('#alert_change_sign').html('');
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	Dajaxice.app.changeSignSeminar(signedSeminarChanged, {'idsubj': idsubj});
+	$.post(window.location.href, $('#sign_seminar').serialize(), signedSeminarChanged);
 }
 
 /* Modifica el boton y realiza los cambios que implican el haberse apuntado 
@@ -75,7 +75,8 @@ function askLessons(idlesson, newer) {
 		disableButtons(['#ask_newer']);
 	else
 		disableButtons(['#ask_older']);
-	Dajaxice.app.more_lessons(lessonsReceived, {'current': idlesson, 'newer': newer});
+	path = window.location.pathname + '?idlesson=' + idlesson + '&newer=' + newer;
+	$.getJSON(path, lessonsReceived);
 }
 
 /* Coloca las clases recibidas en su sitio */

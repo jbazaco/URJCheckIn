@@ -47,6 +47,15 @@
 				<dt>Descripci&oacute;n: </dt> <dd>{{subject.description}}</dd>
 
 				<div id="alert_change_sign">
+					{% if error %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{error}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
 				</div>
 				{% if not started %}
 				<!-- Si aun no ha empezado los alumnos pueden apuntarse/desapuntarse si hay plaza
@@ -55,8 +64,8 @@
 					{% if profile.is_student %}
 						{% if signed %}
 							<div class="row">
-								<form name="sign_seminar" action="" method="POST"
-										 onsubmit="changeSignSeminar({{subject.id}}); return false;">
+								<form name="sign_seminar" action="" method="POST" id="sign_seminar"
+										 onsubmit="changeSignSeminar(); return false;">
 									{% csrf_token %}
 									<button id="sign_button" class="btn btn-danger btn-block">
 										<span class="glyphicon glyphicon-remove-circle"></span> Desapuntarme
@@ -65,8 +74,8 @@
 							</div>
 						{% elif subject.n_students < subject.max_students %}			
 							<div class="row">
-								<form name="sign_seminar" action="" method="POST"
-									 onsubmit="changeSignSeminar({{subject.id}}); return false;">
+								<form name="sign_seminar" action="" method="POST" id="sign_seminar"
+									 onsubmit="changeSignSeminar(); return false;">
 									{% csrf_token %}
 									<button id="sign_button" class="btn btn-success btn-block">
 										<span class="glyphicon glyphicon-ok-circle"></span> Apuntarme
@@ -76,8 +85,8 @@
 						{% endif %}
 					{% else %}
 						<div class="row">
-							<form name="sign_seminar" action="" method="POST"
-								 onsubmit="changeSignSeminar({{subject.id}}); return false;">
+							<form name="sign_seminar" action="" method="POST" id="sign_seminar"
+								 onsubmit="changeSignSeminar(); return false;">
 								{% csrf_token %}
 								{% if signed %}
 									<button id="sign_button" class="btn btn-danger btn-block">

@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 
-from ajax_views_bridge import get_subject_ctx, get_checkin_ctx, process_subject_post, get_subject_edit_ctx, process_subject_edit_post
+from ajax_views_bridge import  get_subject_edit_ctx, process_subject_edit_post
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
@@ -358,6 +358,8 @@ def forum(request):
 			return HttpResponse(json.dumps(resp), content_type="application/json")
 	elif request.method != "GET":
 		return method_not_allowed(request)
+
+	#Para el caso en el que pida mas comentarios con ajax
 	if request.is_ajax():
 		if request.GET.get('idlesson') and request.GET.get('newer') and request.GET.get('idcomment'):
 			try:
@@ -366,6 +368,7 @@ def forum(request):
 								 int(request.GET.get('idlesson')))
 			except ValueError:
 				pass
+
 	comments =  ForumComment.objects.all().order_by('-date')
 	ctx = {'comments': my_paginator(request, comments, 10), 'htmlname': 'forum.html'}
 	if request.is_ajax():
@@ -446,20 +449,91 @@ def seminars(request):
 @login_required
 def subject(request, idsubj):
 	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
-	if request.method == 'POST':
-		resp = process_subject_post(idsubj, request.user)
-		if 'error' in resp:
-			return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': resp['error']}, context_instance=RequestContext(request))
-	elif request.method != 'GET':
+	if request.method != 'GET' and request.method != 'POST':
 		return method_not_allowed(request)
-	
-	ctx = get_subject_ctx(request, idsubj)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'subject.html'#Elemento necesario para renderizar main.html
+
+	try:
+		profile = UserProfile.objects.get(user=request.user)
+		subject = Subject.objects.get(id=idsubj)
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No tienes un perfil creado.')
+	except Subject.DoesNotExist:
+		return send_error_page(request, '#404 La asignatura a la que intentas acceder no existe.')
+
+	error = False
+	if request.method == 'POST':
+		if not subject.is_seminar:
+			return send_error_page(request, 
+					'La acci&oacute;n que intentas realizar solo se puede sobre seminarios.')
+		
+		now = timezone.now()
+		today = datetime.date(now.year, now.month, now.day)
+		if subject.first_date < today:
+			error = 'No puedes modificar tu registro en un seminario que ya ha empezado'
+			if request.is_ajax():
+				return HttpResponse(json.dumps(resp), content_type="application/json")
+		else:
+			if subject in profile.subjects.all():
+				profile.subjects.remove(subject)
+				signed = False
+			else:
+				if profile.is_student:
+					print subject.n_students()
+					if subject.max_students <= subject.n_students():
+						error = 'No hay plazas disponibles'
+						if request.is_ajax():
+							return HttpResponse(json.dumps({'error': error}), 
+												content_type="application/json")
+				if not error:
+					profile.subjects.add(subject)
+					signed = True
+			if request.is_ajax():
+				resp = {'signed': signed, 'is_student':profile.is_student, 'ok': True, 
+						'iduser': request.user.id, 'name': request.user.first_name + " " + 
+						request.user.last_name}
+				return HttpResponse(json.dumps(resp), content_type="application/json")
+
+	#Para el caso en el que pida mas comentarios con ajax
+	if request.is_ajax():
+		if request.GET.get('idlesson') and request.GET.get('newer'):
+			try:
+				return more_lessons(request, int(request.GET.get('idlesson')), 
+									request.GET.get('newer') == 'true')
+			except ValueError:
+				pass
+
+	if subject in profile.subjects.all():
+		signed = True
+	else:
+		signed = False
+		#Solo pueden ver las asignaturas en las que estan matriculados
+		if not subject.is_seminar:
+			return send_error_page(request, 'No est&aacutes matriculado en ' + str(subject))
+		
+	lessons = subject.lesson_set.all()
+	profesors = subject.userprofile_set.filter(is_student=False)
+	now = timezone.now()
+	today = datetime.date(now.year, now.month, now.day)
+	started = subject.first_date < today#Si ha empezado True
+	classes_f = my_paginator(request, 
+				lessons.filter(start_time__gte=timezone.now()).order_by('end_time'),
+				10)
+	classes_p = my_paginator(request,
+				lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
+				10)
+	ctx = {'classes_f': classes_f, 'classes_p': classes_p,
+			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
+										start_time__lt=timezone.now()),
+			'profesors': profesors, 'subject': subject, 'profile':profile,
+			'signed': signed, 'started': started, 'htmlname': 'subject.html'}
+	if request.is_ajax():
+		html = loader.get_template('subject.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
+	if error:
+		ctx['error'] = error
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+
 
 
 @login_required
@@ -580,5 +654,40 @@ def more_comments(request, current, newer, idlesson):
 	html = loader.get_template('pieces/comments.html').render(RequestContext(
 												request, {'comments':comments}))
 	resp = {'comments':html, 'newer':newer, 'idcomment':idcomment, 'idlesson':idlesson}
+	return HttpResponse(json.dumps(resp), content_type="application/json")
+
+
+def more_lessons(request, current, newer):
+	"""Si newer = True devuelve un fragmento html con 10 clases posteriores a la lesson con
+		id current ordenados de menor fecha a mayor fecha. Si newer = False las anteriores 
+		ordenadas de mayor fecha a menos fecha.
+		Ademas indica si son newer y el id de la ultima lesson que devuelve (si no hay 
+		devuelve 0)"""
+	try:
+		lesson = Lesson.objects.get(id=current)
+		subject = lesson.subject
+	except Lesson.DoesNotExist:
+		return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+	#no tiene acceso a asignaturas que no tiene
+	if not subject.is_seminar:
+		try:
+			profile = request.user.userprofile
+		except UserProfile.DoesNotExist:
+			return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+		if not subject in profile.subjects.all():
+			return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+
+	all_lessons = Lesson.objects.filter(subject=subject.id)
+	if newer:
+		lessons = all_lessons.filter(end_time__gt=lesson.end_time).order_by('end_time')[0:10]
+	else:
+		lessons = all_lessons.filter(start_time__lt=lesson.start_time).order_by('-start_time')[0:10]
+	if lessons:
+		idlesson = lessons[lessons.count()-1].id
+	else:
+		idlesson = 0
+	html = loader.get_template('pieces/lessons.html').render(RequestContext(
+									request, {'lessons':lessons, 'future':newer}))
+	resp = {'lessons': html, 'newer': newer, 'idlesson': idlesson}
 	return HttpResponse(json.dumps(resp), content_type="application/json")
 
