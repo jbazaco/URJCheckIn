@@ -4,15 +4,8 @@
 
 /* Envia el comentario de la clase con un POST, bloquea el boton hasta recibir respuesta */
 function sendClassComment(idclass) {
-	var content = $('#comment_field').val()
-	if(content) {
-		disableButtons(['#comment_button']);
-		Dajaxice.app.process_class(commentSaved, 
-						{'form':$('#comment_form').serializeObject(),
-						'idclass':idclass});
-	} else {
-		alert('No puedes enviar comentarios vacios');
-	}
+	disableButtons(['#comment_button']);
+	$.post(window.location.href, $('#comment_form').serialize(), commentSaved);
 }
 
 

@@ -128,7 +128,8 @@
 				</div>
 				<ul class="subjects_list list-group classes_list">
 					{% for class in classes_n %}
-						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
+						<a onClick="ask_ajax_page('/class/{{class.id}}', loadAjaxPage);
+						 return false;" href="/class/{{class.id}}" class="list-group-item">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 						</a>
 					{% endfor %}
@@ -156,7 +157,8 @@
 				{% endif %}
 				<ul id="future_lessons" class="list-group classes_list">
 					{% for class in classes_f%}
-						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
+						<a onClick="ask_ajax_page('/class/{{class.id}}', loadAjaxPage);
+						 return false;" href="/class/{{class.id}}" class="list-group-item">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 							 dentro de {{ class.start_time|timeuntil }}
 						</a>
@@ -198,7 +200,8 @@
 				{% endif %}
 				<ul id="past_lessons" class="list-group classes_list">
 					{% for class in classes_p %}
-						<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{class.id}}}); return false;" href="/class/{{class.id}}" class="list-group-item">
+						<a onClick="ask_ajax_page('/class/{{class.id}}', loadAjaxPage);
+						 return false;" href="/class/{{class.id}}" class="list-group-item">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 						</a>
 					{%empty%}

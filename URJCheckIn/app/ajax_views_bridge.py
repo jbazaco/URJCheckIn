@@ -27,37 +27,6 @@ def my_paginator(request, collection, n_elem):
 		results = paginator.page(paginator.num_pages)
 	return results
 
-def get_class_ctx(request, idclass):
-	"""Devuelve el contexto para la plantilla class.html"""
-	try:
-		lesson = Lesson.objects.get(id=idclass)
-		try:
-			profile = lesson.subject.userprofile_set.get(user=request.user)
-		except UserProfile.DoesNotExist:
-			return {'error': 'No est&aacutes matriculado en ' + str(lesson.subject)}
-		if (lesson.start_time > timezone.now()):
-			lesson_state = 'sin realizar'
-		elif (lesson.end_time < timezone.now()):
-			try:
-				lesson.checkin_set.get(user=request.user)
-				lesson_state = 'asististe'
-			except CheckIn.DoesNotExist:
-				lesson_state = 'no asististe'
-		else:
-			lesson_state = 'imperti&eacute;ndose en este momento'
-		all_comments = lesson.lessoncomment_set.all().order_by('-date')
-		comments = my_paginator(request, all_comments, 10)
-		profesors = lesson.subject.userprofile_set.filter(is_student=False)
-		#En caso de que se asigne un profesor a una clase en vez de todos se obtendria de otra forma
-	except Lesson.DoesNotExist:
-		return {'error': '#404 La clase a la que intentas acceder no existe.'}
-	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 
-						'lesson_state':lesson_state, 'profesors':profesors}
-	if  not profile.is_student and lesson_state != "sin realizar":
-		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
-		ctx['opinions'] = opinions
-	return ctx
-
 def get_subject_ctx(request, idsubj):
 	"""Devuelve el contexto para la plantilla subject.html"""
 	try:
@@ -95,35 +64,6 @@ def get_subject_ctx(request, idsubj):
 			'profesors': profesors, 'subject': subject, 'profile':profile,
 			'signed': signed, 'started': started}
 
-def get_subject_attendance_ctx(request, idsubj):
-	"""Devuelve el contexto para la plantilla subject_attendance.html"""
-	try:
-		profile = request.user.userprofile
-		if profile.is_student:
-			return {'error': 'Solo los profesores tienen acceso.'}
-		subject = Subject.objects.get(id=idsubj)
-		if not subject in profile.subjects.all():
-			return {'error': 'No tienes acceso a esta informaci&oacute;n.'}
-	except UserProfile.DoesNotExist:
-		return {'error': 'No tienes un perfil creado.'}
-	except Subject.DoesNotExist:
-		return {'error': 'La asignatura con id ' + str(idsubj) + ' no existe.'}
-	
-	students = subject.userprofile_set.filter(is_student=True)
-	lessons = subject.lesson_set.filter(end_time__lte = timezone.now())
-	n_lessons = lessons.count()
-	checkins = CheckIn.objects.filter(lesson__in = lessons)
-	students_info = []
-	for student in students:
-		if n_lessons > 0:
-			n_checkins = checkins.filter(user=student.user).count()
-			percent = round(100.0 * n_checkins / n_lessons,2)
-		else:
-			percent = 0
-		students_info.append({'id': student.user.id, 'percent': percent,
-				'name': student.user.first_name + ' ' + student.user.last_name})
-		
-	return {'students': students_info, 'subject': subject}
 	
 def get_subject_edit_ctx(request, idsubj):
 	"""Devuelve el contexto para la plantilla subject_attendance.html"""
@@ -182,51 +122,6 @@ def process_subject_post(idsubj, user):
 			'ok': True, 'iduser': user.id, 
 			'name': user.first_name + " " + user.last_name}
 
-
-def process_class_post(request, form, idclass):
-	"""Procesa un POST sobre una clase, pudiendo ser de diferentes tipos"""
-	try:
-		action = form.__getitem__("action")
-		if action in action_class:
-			return action_class[action](request, form, idclass)
-	except MultiValueDictKeyError:
-		pass
-	return {'error': 'Formulario incorrecto'}
-
-"""Funciones para procesar las clases"""
-#TODO
-def delete_class(request, form, idclass):
-	"""Elimina una clase si lo solicita el usuario que la creo"""
-	#Comprobar que esta la clase y que se puede borrar, si no informar del error
-	print "delete!"
-	return {'error': 'funcion sin hacer'}
-
-def comment_class(request, form, idclass):
-	"""Guarda un comentario de una clase"""
-	try:
-		comment = form.__getitem__("comment")
-		comment = comment[:250]
-	except MultiValueDictKeyError:
-		return {'error': 'Formulario para comentar incorrecto'}
-
-	try:
-		lesson = Lesson.objects.get(id=idclass)
-	except Lesson.DoesNotExist:
-		return {'error': 'La clase en la que comentas no existe'}
-	try:
-		lesson.subject.userprofile_set.get(user=request.user)
-	except UserProfile.DoesNotExist:
-		return {'error': 'No tienes permisos para comentar en esta clase'}
-
-	new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
-	new_comment.save()
-	html = loader.get_template('pieces/comments.html').render(RequestContext(
-												request, {'comments': [new_comment]}))
-	return {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
-
-action_class = {'delete': delete_class,
-				'comment': comment_class,
-}
 
 
 def process_subject_edit_post(request, form, idsubj):
