@@ -5,6 +5,8 @@ from django.shortcuts import render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import logout
+from django.contrib.auth.forms import PasswordChangeForm
+from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
@@ -21,13 +23,14 @@ from django.db import IntegrityError
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
 def ajax_required(funct):
-    def wrap(request, *args, **kwargs):
-        if not request.is_ajax():
-            return HttpResponseBadRequest
-        return funct(request, *args, **kwargs)
-    wrap.__doc__=funct.__doc__
-    wrap.__name__=funct.__name__
-    return wrap
+	"""Decorator requiring an ajax request"""
+	def wrap(request, *args, **kwargs):
+		if not request.is_ajax():
+			return HttpResponseBadRequest()
+		return funct(request, *args, **kwargs)
+	wrap.__doc__=funct.__doc__
+	wrap.__name__=funct.__name__
+	return wrap
 
 
 def my_paginator(request, collection, n_elem):
@@ -98,7 +101,7 @@ def home(request):
 		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
-
+@login_required
 def process_checkin(request):
 	"""Procesa un formulario para hacer checkin y devuelve un diccionario con 'ok' = True 
 		si se realiza con exito o con 'error' = mensaje_de_error si hay errores"""
@@ -212,39 +215,34 @@ def profile(request, iduser):
 			ctx['errors'] = pform.errors
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
-#TODO##########################################################
-"""@sensitive_post_parameters()
-@csrf_protect
+
+@sensitive_post_parameters()
 @login_required
-def password_change(request, form):
-	""Metodo de django.contrib.auth adaptado a ajax""
+@ajax_required
+def password_change(request):
+	"""Metodo de django.contrib.auth adaptado a ajax"""
 	if request.method == "POST":
-		pform = PasswordChangeForm(user=request.user, data=form)
+		pform = PasswordChangeForm(user=request.user, data=request.POST)
 		if pform.is_valid():
 			pform.save()
-			return simplejson.dumps({'ok': True})
+			return HttpResponse(json.dumps({'ok': True}), content_type="application/json")
 		else:
-			return simplejson.dumps({'errors': pform.errors})
+			return HttpResponse(json.dumps({'errors': pform.errors}), content_type="application/json")
 	else:
-		return wrongMethodJson(request)
-from django.views.decorators.debug import sensitive_post_parameters
-"""
+		return method_not_allowed(request)
+
 
 @login_required
 def my_logout(request):
 	"""Cierra sesion"""
 	resp = logout(request)
-	print request.is_ajax()
 	if request.is_ajax():
 		if resp.status_code == 200:
 			html = loader.get_template('registration/login_body.html').render(
 												RequestContext(request, {}))
-			print html
 			ajax_resp = {'body': html, 'url': '/login'}
 			return HttpResponse(json.dumps(ajax_resp), content_type="application/json")
 	return resp
-	
-
 
 
 #TODO
@@ -504,7 +502,6 @@ def subject(request, idsubj):
 				signed = False
 			else:
 				if profile.is_student:
-					print subject.n_students()
 					if subject.max_students <= subject.n_students():
 						error = 'No hay plazas disponibles'
 						if request.is_ajax():

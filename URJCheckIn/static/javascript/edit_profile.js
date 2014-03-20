@@ -79,7 +79,7 @@ function changePassword() {//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	$('.password_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	$.post('/password_change/', $('#password_form').serialize(), passwordChanged);
+	$.post('/password_change/ajax', $('#password_form').serialize(), passwordChanged);
 }
 
 /* Reactiva los botones e indica el resultado del cambio de password*/
