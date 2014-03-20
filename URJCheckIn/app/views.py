@@ -46,23 +46,24 @@ def my_paginator(request, collection, n_elem):
 		results = paginator.page(paginator.num_pages)
 	return results
 
-def not_found(request):
-	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
+def response_ajax_or_not(request, ctx):
+	"""Devuelve un HttpResponse con un objeto JSON con '#mainbody' el contenido de 
+	ctx['htmlname'] y 'url' la url pedida si la peticion es ajax o la pagina main.html
+	renderizada con el contexto ctx si no es ajax"""
 	if request.is_ajax():
-		html = loader.get_template('404.html').render(RequestContext(request, {}))
+		html = loader.get_template(ctx['htmlname']).render(RequestContext(request, ctx))
 		resp = {'#mainbody':html, 'url': request.get_full_path()}
 		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', {'htmlname': '404.html'},
+	return render_to_response('main.html', ctx,
 			context_instance=RequestContext(request))
+
+def not_found(request):
+	"""Devuelve una pagina que indica que la pagina solicitada no existe"""
+	return response_ajax_or_not(request, {'htmlname': '404.html'})
 
 def send_error_page(request, error):
 	"""Devuelve una pagina de error"""
-	if request.is_ajax():
-		html = loader.get_template('error.html').render(RequestContext(request, {'message':error}))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', {'htmlname': 'error.html',
-				'message': error}, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, {'htmlname': 'error.html', 'message': error})
 
 @login_required
 def home(request):
@@ -95,13 +96,9 @@ def home(request):
 					})
 	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=7),
 			'previous':week-1, 'next': week+1, 'htmlname': 'home.html'}
-	if request.is_ajax():
-		html = loader.get_template('home.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
-@login_required
+
 def process_checkin(request):
 	"""Procesa un formulario para hacer checkin y devuelve un diccionario con 'ok' = True 
 		si se realiza con exito o con 'error' = mensaje_de_error si hay errores"""
@@ -167,11 +164,7 @@ def checkin(request):
 	if request.method == "POST":
 		if 'error' in resp:
 			ctx['error'] = resp['error']
-	if request.is_ajax():
-		html = loader.get_template('checkin.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 
 @login_required
@@ -206,14 +199,10 @@ def profile(request, iduser):
 						'Est&aacute;s intentando cambiar un perfil distinto del tuyo')
 
 	ctx = {'profile': profile, 'form': ProfileEditionForm(), 'htmlname': 'profile.html'}
-	if request.is_ajax():
-		html = loader.get_template('profile.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
 	if request.method == "POST":
 		if pform.errors:
 			ctx['errors'] = pform.errors
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 
 @sensitive_post_parameters()
@@ -305,17 +294,12 @@ def process_class(request, idclass):#TODO que solo se pueda comentar (editar y b
 		#En caso de que se asigne un profesor a una clase en vez de todos se obtendria de otra forma
 	except Lesson.DoesNotExist:
 		return send_error_page(request, '#404 La clase a la que intentas acceder no existe.')
-	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 
-						'lesson_state':lesson_state, 'profesors':profesors}
+	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 'lesson_state':lesson_state,
+			'profesors':profesors, 'htmlname': 'class.html'}
 	if  not profile.is_student and lesson_state != "sin realizar":
 		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
 		ctx['opinions'] = opinions
-	ctx['htmlname'] = 'class.html'
-	if request.is_ajax():
-		html = loader.get_template('class.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 """Funciones para procesar las clases"""
 #TODO
@@ -395,11 +379,7 @@ def forum(request):
 
 	comments =  ForumComment.objects.all().order_by('-date')
 	ctx = {'comments': my_paginator(request, comments, 10), 'htmlname': 'forum.html'}
-	if request.is_ajax():
-		html = loader.get_template('forum.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 
 @login_required
@@ -415,11 +395,7 @@ def subjects(request):
 	subjects = profile.subjects.all()
 	ctx = {'subjects':subjects.filter(is_seminar=False), 
 			'seminars':subjects.filter(is_seminar=True), 'htmlname': 'subjects.html'}
-	if request.is_ajax():
-		html = loader.get_template('subjects.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 	
 
 @login_required
@@ -464,11 +440,7 @@ def seminars(request):
 		form = SubjectForm()
 	ctx = {'profile':profile, 'seminars': future_seminars, 'form': form, 
 			'htmlname': 'seminars.html'}
-	if request.is_ajax():
-		html = loader.get_template('seminars.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 @login_required
 def subject(request, idsubj):
@@ -549,13 +521,9 @@ def subject(request, idsubj):
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject, 'profile':profile,
 			'signed': signed, 'started': started, 'htmlname': 'subject.html'}
-	if request.is_ajax():
-		html = loader.get_template('subject.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
 	if error:
 		ctx['error'] = error
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 
 
@@ -592,11 +560,7 @@ def subject_attendance(request, idsubj):
 				'name': student.user.first_name + ' ' + student.user.last_name})
 		
 	ctx = {'students': students_info, 'subject': subject, 'htmlname': 'subject_attendance.html'}
-	if request.is_ajax():
-		html = loader.get_template('subject_attendance.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 
 @login_required
@@ -627,11 +591,7 @@ def subject_edit(request, idsubj):
 	
 	form = SubjectForm(instance=subject)
 	ctx = {'subject': subject, 'form': form, 'htmlname': 'subject_edit.html'}
-	if request.is_ajax():
-		html = loader.get_template('subject_edit.html').render(RequestContext(request, ctx))
-		resp = {'#mainbody':html, 'url': request.get_full_path()}
-		return HttpResponse(json.dumps(resp), content_type="application/json")
-	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
+	return response_ajax_or_not(request, ctx)
 
 
 ########################################################
