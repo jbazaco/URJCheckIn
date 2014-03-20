@@ -20,6 +20,16 @@ from django.db import IntegrityError
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
+def ajax_required(funct):
+    def wrap(request, *args, **kwargs):
+        if not request.is_ajax():
+            return HttpResponseBadRequest
+        return funct(request, *args, **kwargs)
+    wrap.__doc__=funct.__doc__
+    wrap.__name__=funct.__name__
+    return wrap
+
+
 def my_paginator(request, collection, n_elem):
 	paginator = Paginator(collection, n_elem)
 	page = request.GET.get('page')
@@ -647,7 +657,7 @@ def more_comments(request, current, newer, idlesson):
 			return HttpResponse(json.dumps(resp), content_type="application/json")
 		current_date = comment.date
 	else: #Para el caso en el que no hubiese ningun mensaje en la pagina
-		current_date = timezone.now() - timedelta(days=1)
+		current_date = timezone.now() - datetime.timedelta(days=1)
 		
 
 	if idlesson > 0:
