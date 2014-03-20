@@ -77,11 +77,11 @@
 						{% csrf_token %}
 						<fieldset>
 							<legend>Informaci&oacute;n del perfil</legend>
-							{% if errors %}<!--TODO poner a cada campo su error-->
+							{% if form.non_field_errors %}
 								<div class="row">
 									<div class="col-sm-10 col-sm-offset-1">
 										<div class="alert alert-danger">
-											{{errors}}
+											{{form.non_field_errors}}
 										</div>
 									</div>
 								</div>
@@ -94,14 +94,30 @@
 									value="{{profile.user.first_name}} {{profile.user.last_name}}">
 								</div>
 							</div>
-
+							{% if form.errors.age %}
+								<div class="row">
+									<div class="col-sm-10 col-sm-offset-1">
+										<div class="alert alert-danger">
+											{{form.errors.age}}
+										</div>
+									</div>
+								</div>
+							{% endif %}
 							<div id="group_age" class="form-group">
 								<label for="id_age" class="col-sm-2 control-label">Edad:</label>
 								<div class="col-sm-10">
 									{{form.age}}
 								</div>
 							</div>
-				
+							{% if form.errors.description %}
+								<div class="row">
+									<div class="col-sm-10 col-sm-offset-1">
+										<div class="alert alert-danger">
+											{{form.errors.description}}
+										</div>
+									</div>
+								</div>
+							{% endif %}
 							<div id="group_description" class="form-group">
 								<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
 								<div class="col-sm-10">

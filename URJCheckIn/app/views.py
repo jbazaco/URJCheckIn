@@ -180,28 +180,27 @@ def profile(request, iduser):
 
 	if request.method == "POST":
 		if iduser == str(request.user.id):
-			pform = ProfileEditionForm(request.POST)
+			pform = ProfileEditionForm(request.POST, instance=profile)
 			if not pform.is_valid():
 				if request.is_ajax():
 					return HttpResponse(json.dumps({'errors': pform.errors}), 
 										content_type="application/json")
+				else:
+					#si no lo obtengo de nuevo cuando renderice con
+					# profile puede aparecer mal la edad
+					profile = UserProfile.objects.get(user=iduser)
 			else:
-				data = pform.cleaned_data
-				profile.age = data['age']
-				profile.description = data['description']
-				profile.save()
+				pform.save()
 				if request.is_ajax():
-					resp = {'user':{'age':data['age'], 'description':data['description']}}
-					#coger datos del usuario tras guardar TODO cambiar esto y el js TODO
+					resp = {'user': {'age': profile.age, 'description': profile.description}}
 					return HttpResponse(json.dumps(resp), content_type="application/json")
 		else:
 			return send_error_page(request, 
 						'Est&aacute;s intentando cambiar un perfil distinto del tuyo')
+	if request.method != "POST":#si es un POST coge el form que ha recibido
+		pform = ProfileEditionForm(instance=profile)
 
-	ctx = {'profile': profile, 'form': ProfileEditionForm(), 'htmlname': 'profile.html'}
-	if request.method == "POST":
-		if pform.errors:
-			ctx['errors'] = pform.errors
+	ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html'}
 	return response_ajax_or_not(request, ctx)
 
 

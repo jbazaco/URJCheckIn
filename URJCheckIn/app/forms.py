@@ -1,5 +1,5 @@
 from django import forms
-from models import Degree, Subject
+from models import Degree, Subject, UserProfile
 
 class ReviewClassForm(forms.Form):
 	mark = forms.IntegerField(min_value=0, max_value=5, widget=forms.TextInput(attrs={
@@ -7,12 +7,17 @@ class ReviewClassForm(forms.Form):
 	comment = forms.CharField(max_length=150, required=False, widget=forms.Textarea(attrs={
 			'maxlength':'150', 'class': 'form-control', 'rows': '3'}))
 
-class ProfileEditionForm(forms.Form):
-	age = forms.IntegerField(min_value=17, max_value=80, widget=forms.TextInput(attrs={
-			'required':'required','type':'number', 'min':17, 'max':'80', 'step':'1'}))
-	description = forms.CharField(max_length=200, widget=forms.Textarea(attrs={
-			'maxlength':'200', 'class': 'form-control', 'rows': '3'}))
+class ProfileEditionForm(forms.ModelForm):
 	#TODO poner el resto de campos
+	class Meta:
+		model = UserProfile
+		fields = ('age', 'description')
+		widgets = {
+			'age': forms.TextInput(attrs={'required':'required','type':'number', 
+											'min':17, 'max':'100', 'step':'1'}),
+			'description': forms.Textarea(attrs={'maxlength':'200', 'class': 'form-control', 
+												'rows': '3'}),
+		}
 
 
 #Formulario poner clase la asignatura seleccionable pasando un array de las asignaturas disponibles
