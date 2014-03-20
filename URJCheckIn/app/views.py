@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 
-from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_class_post, get_seminars_ctx, process_seminars_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
+from ajax_views_bridge import get_class_ctx, get_subject_ctx, get_checkin_ctx, process_class_post, process_subject_post, get_subject_attendance_ctx, get_subject_edit_ctx, process_subject_edit_post
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
@@ -317,29 +317,49 @@ def subjects(request):
 @login_required
 def seminars(request):
 	"""Devuelve la pagina con las asignaturas del usuario registrado"""
-	resp = False
-	if request.method == "POST":
-		resp = process_seminars_post(request.POST, request.user)
-		if ('idsubj' in resp):
-			idsubj = resp['idsubj']
-			return HttpResponseRedirect('/subjects/' + str(idsubj))
-		else:
-			if ('errors' in resp):
-				error = resp['errors']
-			else:
-				resp['errors'] = ["Se ha producido un error interno al crear el semianio"]
-	elif request.method != "GET":
+	if request.method != "GET" and request.method != "POST":
 		return method_not_allowed(request)
 
-	ctx = get_seminars_ctx(request)
-	if ('error' in ctx):
-		return render_to_response('main.html', {'htmlname': 'error.html',
-					'message': ctx['error']}, context_instance=RequestContext(request))
-	ctx['htmlname'] = 'seminars.html'#Elemento necesario para renderizar main.html
-	#resp es distinto de false si se recibio un POST erroneo y por tanto 
-	#resp['errors'] contiene los errores
-	if resp:
-		ctx['errors'] = resp['errors']
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:			
+		return send_error_page(request, 'No tienes un perfil creado.')
+
+	errors = False
+	if request.method == "POST":
+		if profile.is_student:
+			return send_error_page(request, 'Los estudiantes no pueden crear seminarios')
+
+		subj = Subject(is_seminar=True)
+		csform = SubjectForm(request.POST, instance=subj)
+		if not csform.is_valid():
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'errors': csform.errors}), 
+									content_type="application/json")
+		else:
+			new_subj = csform.save()
+			profile.subjects.add(new_subj)
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'idsubj': new_subj.id}), content_type="application/json")
+			return HttpResponseRedirect('/subjects/' + str(new_subj.id))
+
+	future_seminars = Subject.objects.filter(
+						is_seminar=True		
+					).filter(
+						first_date__gt = timezone.now()
+					).filter(
+						degrees__in = profile.degrees.all()
+					).distinct().order_by('first_date')
+	if request.method == "POST":
+		form = csform
+	else:
+		form = SubjectForm()
+	ctx = {'profile':profile, 'seminars': future_seminars, 'form': form, 
+			'htmlname': 'seminars.html'}
+	if request.is_ajax():
+		html = loader.get_template('seminars.html').render(RequestContext(request, ctx))
+		resp = {'#mainbody':html, 'url': request.get_full_path()}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	return render_to_response('main.html', ctx, context_instance=RequestContext(request))
 
 @login_required

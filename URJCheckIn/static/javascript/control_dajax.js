@@ -37,7 +37,7 @@ window.setTimeout(function(){
 }, 1000);
 
 /* Cierra la sesion del usuario y carga la pagina de iniciar sesion */
-function logout() {
+function logout() {//TODO////////////////////////////////////////////////////
 	Dajaxice.app.logout(loadAjaxPage, {}); 
 }
 

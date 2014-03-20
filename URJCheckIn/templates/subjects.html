@@ -32,7 +32,7 @@
 					<h3 class="panel-title">Mis seminarios</h3>
 				</div>
 				<ul class="subjects_list list-group">
-					<a onClick="ask_ajax_page('seminars', loadAjaxPage, {}); return false;" href="/seminars" class="list-group-item">
+					<a onClick="ask_ajax_page('/seminars', loadAjaxPage); return false;" href="/seminars" class="list-group-item">
 						<em>Pr&oacute;ximos seminarios</em>
 					</a>
 					{% for seminar in seminars %}

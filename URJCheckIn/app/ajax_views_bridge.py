@@ -154,23 +154,6 @@ def get_checkin_ctx(request):
 			'profile':profile, 'subjects':subjects}
 
 
-def get_seminars_ctx(request):
-	"""Devuelve el contexto para la plantilla subjects.html"""
-	try:
-		profile = UserProfile.objects.get(user=request.user)
-	except UserProfile.DoesNotExist:			
-		return {'error': 'No tienes un perfil creado.'}
-	future_seminars = Subject.objects.filter(
-							is_seminar=True		
-						).filter(
-							first_date__gt = timezone.now()
-						).filter(
-							degrees__in = profile.degrees.all()
-						).distinct().order_by('first_date')
-
-
-	return {'profile':profile, 'seminars': future_seminars, 'form': SubjectForm()}
-
 def process_subject_post(idsubj, user):
 	"""Pone un seminario en los subjects de un usuario o se lo quita si ya lo tiene"""
 	try:
@@ -198,25 +181,6 @@ def process_subject_post(idsubj, user):
 	return {'signed': signed, 'is_student':profile.is_student, 
 			'ok': True, 'iduser': user.id, 
 			'name': user.first_name + " " + user.last_name}
-
-
-def process_seminars_post(form, user):
-	"""Procesa un POST para la creacion o modificacion de un seminario"""
-	try:
-		profile = UserProfile.objects.get(user=user)
-		if profile.is_student:
-			return {'errors': ['Los estudiantes no pueden crear seminarios']}
-	except UserProfile.DoesNotExist:
-		return {'errors': ['No tienes un perfil creado.']}
-		
-	subj = Subject(is_seminar=True)
-	csform = SubjectForm(form, instance=subj)
-	if not csform.is_valid():
-		return {'errors': csform.errors}
-	new_subj = csform.save()
-	
-	profile.subjects.add(new_subj)
-	return {'idsubj': new_subj.id}
 
 
 def process_class_post(request, form, idclass):

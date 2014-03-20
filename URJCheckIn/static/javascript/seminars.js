@@ -4,10 +4,7 @@ function createSeminar() {
 	$('.seminar_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	var form = $('#create_seminar').serializeObject();
-	//Si solo se selecciona uno no crea un array lo que provoca errores al validar el form
-	if (!isNaN(form['degrees'])) form['degrees'] = [form['degrees']];
-	Dajaxice.app.create_seminar(seminarCreated, {'form':form});
+	$.post(window.location.href, $('#create_seminar').serialize(), seminarCreated);
 }
 
 /* Reactiva los botones y 'recarga' indica el resultado del cambio de password*/
@@ -21,7 +18,7 @@ function seminarCreated(data) {
 			alertBefore(data.errors[error], 
 				'#group_'+error, alert_class, 'danger');
 	} else if (data.idsubj) {
-		ask_ajax_page('subject', loadAjaxPage, {'idsubj':data.idsubj});
+		ask_ajax_page('/subjects/' + data.idsubj, loadAjaxPage);
 	} else {
 		alert("Se ha producido un error");
 	}

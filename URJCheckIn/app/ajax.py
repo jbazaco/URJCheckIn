@@ -28,27 +28,7 @@ def process_class(request, form, idclass):
 	else:
 		return wrongMethodJson(request)
 
-@dajaxice_register(method='GET')
-@login_required
-def seminars(request):
-	"""Devuelve el contenido de la pagina de los proximos seminarios"""
-	if request.method == "GET":
-		ctx = get_seminars_ctx(request)
-		if ('error' in ctx):
-			return send_error(request, ctx['error'], '/seminars')
-		html = loader.get_template('seminars.html').render(RequestContext(request, ctx))
-		return simplejson.dumps({'#mainbody':html, 'url': '/seminars'})
-	else:
-		return wrongMethodJson(request)
 
-@dajaxice_register(method='POST')#quitar POSTs si son por defecto
-@login_required
-def create_seminar(request, form):
-	"""procesa la creacion de un seminario y devuelve la id del seminario creado"""
-	if request.method == "POST":
-		return simplejson.dumps(process_seminars_post(form, request.user))
-	else:
-		return wrongMethodJson(request)
 
 @dajaxice_register(method='POST')#quitar POSTs si son por defecto
 @login_required
@@ -109,24 +89,6 @@ def class_info(request, idclass):
 			return send_error(request, ctx['error'], "/class/"+str(idclass))
 		html = loader.get_template('class.html').render(RequestContext(request, ctx))
 		return simplejson.dumps({'#mainbody':html, 'url': '/class/'+str(idclass)})
-	else:
-		return wrongMethodJson(request)
-
-
-@dajaxice_register(method='GET')
-@login_required
-def home(request, week):
-	"""Devuelve la pagina para hacer check in"""
-	if request.method == "GET":
-		try:
-			n_week = int(week)
-		except (TypeError, ValueError):
-			n_week = 0
-		ctx = get_home_ctx(request, n_week)
-		if ('error' in ctx):
-			return send_error(request, ctx['error'], "/")
-		html = loader.get_template('home.html').render(RequestContext(request, ctx))
-		return simplejson.dumps({'#mainbody':html, 'url': '/?page=' + str(n_week)})
 	else:
 		return wrongMethodJson(request)
 
