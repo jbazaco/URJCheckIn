@@ -37,7 +37,8 @@
 					</div>
 					<ul class="list-group classes_list events">
 						{% for event in day.events %}
-							<a onClick="ask_ajax_page('class_info', loadAjaxPage, {'idclass': {{event.id}}}); return false;" href="/class/{{event.id}}" class="list-group-item">
+							<a onClick="ask_ajax_page('/class/{{event.id}}', loadAjaxPage);
+							 return false;" href="/class/{{event.id}}" class="list-group-item">
 								<strong>{{event.subject}}</strong><br/>
 								{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
 							</a>
