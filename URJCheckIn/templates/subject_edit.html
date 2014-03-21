@@ -4,73 +4,122 @@
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
 			<form name="edit_subject" class="form-horizontal" id="edit_subject"
-			 onsubmit="editSubject('edit_seminar'); return false;" action="" method="POST">
-				{% csrf_token %}
+			 onsubmit="editSubject('edit_subject'); return false;" action="" method="POST">
 				<fieldset>
 					<legend>Editar {{subject}}</legend>
-					<div class="form-group">
-						{% if errors %}<!--TODO mirar por si se hizo un POST erroneo sin ajax-->
-							<div class="row">
-								<div class="col-sm-10 col-sm-offset-1">
-									<div class="alert alert-danger">
-										{{errors}}
-									</div>
+					{% csrf_token %}
+					{% if form.non_field_errors %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.non_field_errors}}
 								</div>
 							</div>
-						{% endif %}
-						<div id="group_name" class="form-group">
-							<label class="col-sm-2 control-label" for="id_name">Nombre:</label>
-							<div class="col-sm-10">
-								{{form.name}}
+						</div>
+					{% endif %}
+					{% if form.errors.name %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.name}}
+								</div>
 							</div>
 						</div>
-						<div id="group_degrees" class="form-group">
-							<label class="col-sm-2 control-label" for="id_degrees">Grados:</label>
-							<div class="col-sm-10">
-								{{form.degrees}}
-							</div>
+					{% endif %}
+					<div id="group_name" class="form-group">
+						<label class="col-sm-2 control-label" for="id_name">Nombre:</label>
+						<div class="col-sm-10">
+							{{form.name}}
 						</div>
-		
-						<div id="group_first_date" class="form-group">
-							<label class="col-sm-2 control-label" for="id_first_date">Inicio: </label>
-							<div class="col-sm-10">
-								{{form.first_date}}
-							</div>
-						</div>
-
-						<div id="group_last_date" class="form-group">
-							<label class="col-sm-2 control-label" for="id_last_date">Fin: </label>
-							<div class="col-sm-10">
-								{{form.last_date}}
-							</div>
-						</div>
-
-						<div id="group_max_students" class="form-group">
-							<label class="col-sm-2 control-label" for="id_max_students">Plazas:</label>
-							<div class="col-sm-10">
-								{{form.max_students}}
-							</div>
-						</div>
-
-						<div id="group_description" class="form-group">
-							<label class="col-sm-2 control-label" for="id_description">
-								Descripci&oacute;n:
-							</label>
-							<div class="col-sm-9">
-								{{form.description}}
-							</div>
-						</div>
-						<input name="action" value="edit" hidden>
-
-						<button type="submit" class="btn btn-success btn-block" name="edit_submit" >
-							<span class="glyphicon glyphicon-save"></span> Guardar cambios
-						</button>
 					</div>
+					{% if form.errors.degrees %}<!--Por si se hizo un POST erroneo sin ajax-->
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.degrees}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_degrees" class="form-group">
+						<label class="col-sm-2 control-label" for="id_degrees">Grados:</label>
+						<div class="col-sm-10">
+							{{form.degrees}}
+						</div>
+					</div>
+					{% if form.errors.first_date %}<!--Por si se hizo un POST erroneo sin ajax-->
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.first_date}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_first_date" class="form-group">
+						<label class="col-sm-2 control-label" for="id_first_date">Inicio: </label>
+						<div class="col-sm-10">
+							{{form.first_date}}
+							<!-- TODO problema con internet explorer y firefox-->
+						</div>
+					</div>
+					{% if form.errors.last_date %}<!--Por si se hizo un POST erroneo sin ajax-->
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.last_date}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_last_date" class="form-group">
+						<label class="col-sm-2 control-label" for="id_last_date">Fin: </label>
+						<div class="col-sm-10">
+							{{form.last_date}}
+							<!-- TODO problema con internet explorer y firefox-->
+						</div>
+					</div>
+					{% if form.errors.max_students %}<!--Por si se hizo un POST erroneo sin ajax-->
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.max_students}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_max_students" class="form-group">
+						<label class="col-sm-2 control-label" for="id_max_students">Plazas:</label>
+						<div class="col-sm-10">
+							{{form.max_students}}
+						</div>
+					</div>
+					{% if form.errors.description %}<!--Por si se hizo un POST erroneo sin ajax-->
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.description}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_description" class="form-group">
+						<label class="col-sm-2 control-label" for="id_description">
+							Descripci&oacute;n:
+						</label>
+						<div class="col-sm-9">
+							{{form.description}}
+						</div>
+					</div>
+					<button type="submit" class="btn btn-success btn-block" name="edit_submit" >
+						<span class="glyphicon glyphicon-save"></span> Guardar cambios
+					</button>
 				</fieldset>
 			</form>
+			<br/>
 			<form name="delete_subject" class="form-horizontal" id="delete_subject"
-			 onsubmit="editSubject('delete_seminar'); return false;" action="" method="POST">
-				<div class="form-group">
+			 onsubmit="editSubject('delete_subject'); return false;" action="" method="POST">
+				<div col-xs-12>
 					{% csrf_token %}
 					<input name="action" value="delete" hidden>
 					<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
@@ -82,8 +131,6 @@
 	</div>
 </div>
 {% endif %}
-
-FORMULARIO DE LA CLASE
 
 <a id="back_to_subject" class="btn btn-danger btn-block" href="/subjects/{{subject.id}}"
 	 onclick="ask_ajax_page('/subjects/{{subject.id}}', loadAjaxPage); return false;">

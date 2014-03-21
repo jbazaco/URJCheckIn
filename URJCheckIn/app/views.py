@@ -564,34 +564,46 @@ def subject_attendance(request, idsubj):
 
 @login_required
 def subject_edit(request, idsubj):
-	"""Devuelve la pagina para editar/eliminar una asignatura y para crear nuevas
-		clases"""
+	"""Devuelve la pagina para editar o eliminar una asignatura"""
 	if request.method != 'GET' and request.method != 'POST':
 		return method_not_allowed(request)
 
-
 	try:
-		profile = request.user.userprofile
-		if profile.is_student:
-			return send_error_page(request, 'Solo los profesores tienen acceso.')
 		subject = Subject.objects.get(id=idsubj)
-		if not subject in profile.subjects.all():
-			return send_error_page(request, 'No tienes acceso a esta informaci&oacute;n.')
-	except UserProfile.DoesNotExist:
-		return send_error_page(request, 'No tienes un perfil creado.')
+		if subject.creator != request.user:
+			return send_error_page(request, 'Solo el creador de la asignatura puede editarla.')
 	except Subject.DoesNotExist:
 		return send_error_page(request, 'La asignatura con id ' + str(idsubj) + ' no existe.')
 
-
-	errors = False
 	if request.method == 'POST':
-		pass #TODO#########################################
+		try:
+			if request.POST.get("action", default='edit') == 'delete':
+				subject.delete()
+				if request.is_ajax():
+					return HttpResponse(json.dumps({'deleted': True, 'redirect': '/subjects'}),
+										content_type="application/json")
+				return HttpResponseRedirect('/subjects')
+		except ValueError:
+			pass
+		sform = SubjectForm(request.POST, instance=subject)
+		if not sform.is_valid():
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'errors': sform.errors}), 
+									content_type="application/json")
+		else:
+			sform.save()
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'ok': True}), content_type="application/json")
 	
-	
-	form = SubjectForm(instance=subject)
-	ctx = {'subject': subject, 'form': form, 'htmlname': 'subject_edit.html'}
+	if request.method != 'POST':
+		sform = SubjectForm(instance=subject)
+	ctx = {'subject': subject, 'form': sform, 'htmlname': 'subject_edit.html'}
 	return response_ajax_or_not(request, ctx)
 
+
+@login_required
+def create_class(request, idsubj):
+	return send_error_page(request, 'sin hacer')
 
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #

@@ -101,3 +101,24 @@ function lessonsReceived(data) {
 	button.removeAttr("disabled"); 
 }
 
+/* Envia el contenido del formulario idform */
+function editSubject(idform) {
+	disableButtons(['button']);
+	$('.subject_alert').remove();
+	$('#loading_page').css('display','inline');
+	$.post(window.location.href, $('#' + idform).serialize(), subjectEdited);
+}
+
+/*Si recibe errores los imprime en su lugar correspondiente y si recibe un deleted
+	carga la pagina en data.redirect*/
+function subjectEdited(data) {
+	if (data.errors) {
+		for (error in data.errors)
+			alertBefore(data.errors[error], '#group_'+error, 'subject_alert', 'danger');
+	} else if (data.deleted) {
+		$.getJSON(data.redirect, loadAjaxPage);
+	}
+	hideElements(['#loading_page']);
+	enableButtons(['button']);
+}
+

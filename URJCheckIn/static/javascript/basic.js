@@ -33,6 +33,7 @@ function alertBefore(errors, elem_id, class_id, alert_type) {
 				'<div class="alert alert-'+ alert_type + '">' +
 				error_msg + '</div></div></div>');
 	} else { //en caso de que no exista el elemento sobre el que hay que ponerlo
+		//TODO ponerlo al principio del formulario
 		alert(error_msg);
 	}
 }
