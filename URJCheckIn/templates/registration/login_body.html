@@ -16,21 +16,20 @@
 					<h2 id="maintitle">Sesion iniciada<br/>
 						<small>Registrado como {{request.user.username}}</small>
 					</h2>
-					<a class="btn btn-danger btn-block" href="/logout">
+					<a class="btn btn-danger btn-block" href="/logout" onClick="logout(); return false;">
 						<span class="glyphicon glyphicon-off"></span>
 						Logout
 					</a>
 				{% else %}
 					<form name="login" action="/login" method="POST"
-						class="form-horizontal" id="loggin_form">
+					 class="form-horizontal" id="loggin_form">
 						<fieldset>
 							<legend class="text-center">Inicia Sesi&oacute;n:</legend>
 							{% csrf_token %}
-							{% if form.errors %}
-								<div class="alert alert-danger text-center">
-									Usuario o contrase&ntilde;a inv&aacute;lidos
-								</div>
-							{% endif %}
+							<div class="alert alert-danger text-center" id="login_error"
+							 {% if not form.errors %} hidden {% endif %}>
+								Usuario o contrase&ntilde;a inv&aacute;lidos
+							</div>
 							<div class="form-group">
 								<label class="col-sm-5 control-label" for="id_username">
 									Usuario:
@@ -49,13 +48,21 @@
 										id="id_password"/>
 								</div>
 							</div>
-							<button type="submit" class="btn btn-info btn-block"
-								 name="checkin_submit" >
+							<button type="submit" class="btn btn-success btn-block"
+								 name="login_submit" >
 									<span class="glyphicon glyphicon-log-in"></span>
 									Iniciar sesi&oacute;n
 							</button>
 						</fieldset>
 					</form>
+					<br/>
+					<div class="row">
+						<div class="col-xs-12">
+							<a class="btn btn-info btn-block" href="/password_reset/">
+								¿Olvidaste la contrase&ntilde;a?
+							</a>
+						</div>
+					</div>
 				{% endif %}
 			</div>
 		</div>
