@@ -94,8 +94,7 @@ class Lesson(models.Model):
 	end_time = models.DateTimeField(verbose_name='hora de finalizacion')
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	room =	models.ForeignKey(Room, verbose_name='aula')#TODO on_delete funcion para buscar otra aula
-	creator = models.ForeignKey(User, verbose_name='creador', default=FIRST_ADMIN_ID)
-	#No se si poner profesor o todos los de la asignatura
+	is_extra = models.BooleanField(default=False, verbose_name='es clase extra')
 	
 	class Meta:
 		verbose_name='clase'
@@ -118,11 +117,11 @@ class Lesson(models.Model):
 					)
 			try:
 				if lesson_same_time.filter(subject=self.subject):
-					raise ValidationError('The lesson can not coincide with \
-											another of the same subject')
+					raise ValidationError('The lesson can not coincide with ' +
+											'another of the same subject')
 				if lesson_same_time.filter(room=self.room):
-					raise ValidationError('The lesson can not coincide with \
-											another in the same room')
+					raise ValidationError('The lesson can not coincide with ' +
+											'another in the same room')
 			except (Subject.DoesNotExist, Room.DoesNotExist):
 				pass
 

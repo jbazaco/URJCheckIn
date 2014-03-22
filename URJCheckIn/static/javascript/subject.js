@@ -101,24 +101,46 @@ function lessonsReceived(data) {
 	button.removeAttr("disabled"); 
 }
 
-/* Envia el contenido del formulario idform */
-function editSubject(idform) {
+/* Envia el contenido del formulario idform para editar o eliminar un objeto */
+function editObject(idform) {
 	disableButtons(['button']);
-	$('.subject_alert').remove();
+	$('.object_alert').remove();
 	$('#loading_page').css('display','inline');
-	$.post(window.location.href, $('#' + idform).serialize(), subjectEdited);
+	$.post(window.location.href, $('#' + idform).serialize(), objectEdited);
 }
 
 /*Si recibe errores los imprime en su lugar correspondiente y si recibe un deleted
 	carga la pagina en data.redirect*/
-function subjectEdited(data) {
+function objectEdited(data) {
 	if (data.errors) {
 		for (error in data.errors)
-			alertBefore(data.errors[error], '#group_'+error, 'subject_alert', 'danger');
+			alertBefore(data.errors[error], '#group_'+error, 'object_alert', 'danger');
 	} else if (data.deleted) {
 		$.getJSON(data.redirect, loadAjaxPage);
 	}
 	hideElements(['#loading_page']);
 	enableButtons(['button']);
 }
+
+/* Solicita la creacion de una clase y si se crea redirige a ella */
+function createLesson() {
+	disableButtons(['button']);
+	$('.lesson_alert').remove();
+	$('#loading_page').css('display','inline');
+	$.post(window.location.href, $('#new_class').serialize(), lessonCreated);
+}
+
+/*Si recibe errores los imprime en su lugar correspondiente y si recibe un ok
+	carga la pagina en data.redirect*/
+function lessonCreated(data) {
+	if (data.errors) {
+		for (error in data.errors)
+			alertBefore(data.errors[error], '#group_'+error, 'lesson_alert', 'danger');
+	} else if (data.ok) {
+		$.getJSON(data.redirect, loadAjaxPage);
+	}
+	hideElements(['#loading_page']);
+	enableButtons(['button']);
+}
+
 

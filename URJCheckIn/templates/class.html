@@ -129,38 +129,11 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 			{%ifequal lesson_state "sin realizar"%}
-				<div class="well">
-					<form name="change_class" class="form-horizontal" id="change_date">
-						<fieldset>
-							<legend>Editar clase</legend>
-							<div class="form-group">
-								<label class="col-sm-2 control-label" for="id_date">
-									Cambiar fecha:
-								</label>
-								<div class="col-sm-10">
-									<input id="id_date" type="datetime-local" required>
-									<!--TODO no sale en firefox!!!!-->
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-2 control-label" for="id_room">
-									Aula:
-								</label>
-								<div class="col-sm-10">
-									<input id="id_room" type="number" required>
-								</div>
-							</div>
-							<button type="button" class="btn btn-info btn-block">
-								<span class="glyphicon glyphicon-refresh"></span> Ver aulas
-							</button><!--TODO javascript pregunta aulas libres-->
-							<button type="submit" class="btn btn-success btn-block">
-								<span class="glyphicon glyphicon-save"></span> Cambiar fecha
-							</button><!--TODO envio js y procesado django-->
-							<!--TODO? ver horarios libres alumnos-->
-						</fieldset>
-					</form>
-					<!--TODO si la ha creado el profesor la puede borrar tambien-->
-				</div>
+				<a id="back_to_subject" class="btn btn-warning btn-block"
+				 href="/class/{{lesson.id}}/edit"
+				 onclick="ask_ajax_page('/class/{{lesson.id}}/edit', loadAjaxPage); return false;">
+					<span class="glyphicon glyphicon-pencil"></span> Editar clase
+				</a>
 			{% else %}
 				<div class="panel panel-default comments">
 					<div class="panel-heading">

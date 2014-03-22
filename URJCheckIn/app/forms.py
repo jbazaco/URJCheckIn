@@ -1,5 +1,21 @@
 from django import forms
-from models import Degree, Subject, UserProfile
+from models import Degree, Subject, UserProfile, Lesson
+from django.forms.util import to_current_timezone
+
+class MySplitDateTimeWidget(forms.MultiWidget):
+	"""SplitDateTimeWidget pero permitiendo editar los attrs de DateInput y TimeInput por
+		separado"""
+	def __init__(self, attrs=None, date_attrs=None, time_attrs=None, date_format=None, time_format=None):
+		widgets = (forms.DateInput(attrs=date_attrs, format=date_format),
+					forms.TimeInput(attrs=time_attrs, format=time_format))
+		super(MySplitDateTimeWidget, self).__init__(widgets, attrs)
+
+	def decompress(self, value):
+		if value:
+			value = to_current_timezone(value)
+			return [value.date(), value.time().replace(microsecond=0)]
+		return [None, None]
+
 
 class ReviewClassForm(forms.Form):
 	mark = forms.IntegerField(min_value=0, max_value=5, widget=forms.TextInput(attrs={
@@ -19,14 +35,19 @@ class ProfileEditionForm(forms.ModelForm):
 												'rows': '3'}),
 		}
 
-
-#Formulario poner clase la asignatura seleccionable pasando un array de las asignaturas disponibles
-#si se elige desde la pagina de una asignatura se pone el campo fijo (o no?)
-class AddClassForm(forms.Form):
-	reason =  forms.CharField(max_length=200)
-	#subject = selecionable
-	#date =
-	#mas campos
+#Formulario para que un profesor cree una Lesson
+class ExtraLessonForm(forms.ModelForm):
+	class Meta:
+		model = Lesson
+		fields = ('start_time', 'end_time', 'room')
+		widgets = {
+			'start_time': MySplitDateTimeWidget(date_attrs={'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 'required': 'required', 'placeholder':'HH:MM'}),
+			'end_time': MySplitDateTimeWidget(date_attrs={'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 'required': 'required', 'placeholder':'HH:MM'}),
+			#'start_time': forms.TextInput(attrs={'type': 'datetime-local', 'required': 'required',
+			#							'placeholder':'AAAA-MM-DDTHH:MM'}),
+			#'end_time': forms.TextInput(attrs={'type': 'datetime-local', 'required': 'required',
+			#							 'placeholder':'AAAA-MM-DDTHH:MM'}),
+		}
 	
 #Formulario para crear un Subject (no incluye el campo is_seminar)
 class SubjectForm(forms.ModelForm):

@@ -1,0 +1,88 @@
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="well">
+			<form name="edit_class" class="form-horizontal" id="edit_class"
+			 onsubmit="editObject('edit_class'); return false;" action="" method="POST">
+				<fieldset>
+					<legend>Crear clase de {{subject}}</legend>
+					{% csrf_token %}
+					{% if form.non_field_errors %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.non_field_errors}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% if form.errors.start_time %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.start_time}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_start_time" class="form-group">
+						<label class="col-sm-2 control-label" for="id_start_time_0">Inicio:</label>
+						<div class="col-sm-10">
+							{{form.start_time}}
+						</div>
+					</div>
+					{% if form.errors.end_time %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.end_time}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_end_time" class="form-group">
+						<label class="col-sm-2 control-label" for="id_end_time_0">Fin:</label>
+						<div class="col-sm-10">
+							{{form.end_time}}
+						</div>
+					</div>
+					{% if form.errors.room %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.room}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_room" class="form-group">
+						<label class="col-sm-2 control-label" for="id_room">Aula:</label>
+						<div class="col-sm-10">
+							{{form.room}}
+						</div>
+					</div>
+					<button type="submit" class="btn btn-success btn-block" name="edit_submit" >
+						<span class="glyphicon glyphicon-save"></span> Editar clase
+					</button>
+				</fieldset>
+			</form>
+			{% if lesson.is_extra %}
+				</br>
+				<form name="delete_lesson" class="form-horizontal" id="delete_lesson"
+				 onsubmit="editObject('delete_lesson'); return false;" action="" method="POST">
+					<div col-xs-12>
+						{% csrf_token %}
+						<input name="action" value="delete" type="hidden">
+						<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
+							<span class="glyphicon glyphicon-remove"></span> Eliminar {{lesson}}
+						</button>
+					</div>
+				</form>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+<a id="back_to_subject" class="btn btn-danger btn-block" href="/class/{{lesson.id}}"
+	 onclick="ask_ajax_page('/class/{{lesson.id}}', loadAjaxPage); return false;">
+	<span class="glyphicon glyphicon-chevron-left"></span> Volver a {{lesson}}
+</a>

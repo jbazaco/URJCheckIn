@@ -115,7 +115,7 @@
 				<span class="glyphicon glyphicon-user"></span> Comprobar asistencia
 			</a>
 		</div>
-		<div class="col-xs-12 col-md-6" id="config_subject">
+		<div class="col-xs-12 col-md-6" id="new_subject">
 			<a onClick="ask_ajax_page('/subjects/{{subject.id}}/new_class', loadAjaxPage);
 			 return false;" href="{{subject.id}}/new_class" class="btn btn-warning btn-block">
 				<span class="glyphicon glyphicon-cog"></span> Crear clases
@@ -125,7 +125,7 @@
 			<div class="col-xs-12 col-md-6" id="config_subject">
 				<a onClick="ask_ajax_page('/subjects/{{subject.id}}/edit', loadAjaxPage);
 				 return false;" href="{{subject.id}}/edit" class="btn btn-warning btn-block">
-					<span class="glyphicon glyphicon-cog"></span> Gesti&oacute;n 
+					<span class="glyphicon glyphicon-pencil"></span> Gesti&oacute;n 
 					{% if subject.is_seminar %}del seminario{% else %}de la asignatura{% endif %}
 				</a>
 			</div>

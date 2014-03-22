@@ -1,10 +1,9 @@
-{% if request.user == subject.creator %}
-	<!-- El creador del seminario puede modificarlo -->
+
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
 			<form name="edit_subject" class="form-horizontal" id="edit_subject"
-			 onsubmit="editSubject('edit_subject'); return false;" action="" method="POST">
+			 onsubmit="editObject('edit_subject'); return false;" action="" method="POST">
 				<fieldset>
 					<legend>Editar {{subject}}</legend>
 					{% csrf_token %}
@@ -118,10 +117,10 @@
 			</form>
 			<br/>
 			<form name="delete_subject" class="form-horizontal" id="delete_subject"
-			 onsubmit="editSubject('delete_subject'); return false;" action="" method="POST">
+			 onsubmit="editObject('delete_subject'); return false;" action="" method="POST">
 				<div col-xs-12>
 					{% csrf_token %}
-					<input name="action" value="delete" hidden>
+					<input name="action" value="delete" type="hidden">
 					<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
 						<span class="glyphicon glyphicon-remove"></span> Eliminar {{subject}}
 					</button>
@@ -130,7 +129,6 @@
 		</div>
 	</div>
 </div>
-{% endif %}
 
 <a id="back_to_subject" class="btn btn-danger btn-block" href="/subjects/{{subject.id}}"
 	 onclick="ask_ajax_page('/subjects/{{subject.id}}', loadAjaxPage); return false;">

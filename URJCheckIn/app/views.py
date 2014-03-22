@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, ReviewClassForm, SubjectForm
+from forms import ProfileEditionForm, ReviewClassForm, SubjectForm, ExtraLessonForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -294,14 +294,14 @@ def process_class(request, idclass):#TODO que solo se pueda comentar (editar y b
 	except Lesson.DoesNotExist:
 		return send_error_page(request, '#404 La clase a la que intentas acceder no existe.')
 	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 'lesson_state':lesson_state,
-			'profesors':profesors, 'htmlname': 'class.html'}
+			'profesors':profesors, 'subject': lesson.subject, 'htmlname': 'class.html'}
 	if  not profile.is_student and lesson_state != "sin realizar":
 		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
 		ctx['opinions'] = opinions
 	return response_ajax_or_not(request, ctx)
 
 """Funciones para procesar las clases"""
-#TODO
+#TODO###########################################
 def delete_class(request, form, idclass):
 	"""Elimina una clase si lo solicita el usuario que la creo"""
 	#Comprobar que esta la clase y que se puede borrar, si no informar del error
@@ -576,15 +576,13 @@ def subject_edit(request, idsubj):
 		return send_error_page(request, 'La asignatura con id ' + str(idsubj) + ' no existe.')
 
 	if request.method == 'POST':
-		try:
-			if request.POST.get("action", default='edit') == 'delete':
-				subject.delete()
-				if request.is_ajax():
-					return HttpResponse(json.dumps({'deleted': True, 'redirect': '/subjects'}),
-										content_type="application/json")
-				return HttpResponseRedirect('/subjects')
-		except ValueError:
-			pass
+		if request.POST.get("action", default='edit') == 'delete':
+			subject.delete()
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'deleted': True, 'redirect': '/subjects'}),
+									content_type="application/json")
+			return HttpResponseRedirect('/subjects')
+
 		sform = SubjectForm(request.POST, instance=subject)
 		if not sform.is_valid():
 			if request.is_ajax():
@@ -603,7 +601,86 @@ def subject_edit(request, idsubj):
 
 @login_required
 def create_class(request, idsubj):
-	return send_error_page(request, 'sin hacer')
+	"""Devuelve la pagina para crear una clase"""
+	if request.method != 'GET' and request.method != 'POST':
+		return method_not_allowed(request)
+
+	try:
+		profile = request.user.userprofile
+		if profile.is_student:
+			return send_error_page(request, 'Solo los profesores tienen acceso.')
+		subject = profile.subjects.get(id=idsubj)
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No tienes un perfil creado.')
+	except Subject.DoesNotExist:
+		return send_error_page(request, 'No eres profesor de la asignatura con id ' + str(idsubj))
+
+	if request.method == 'POST':
+		lesson = Lesson(is_extra=True, subject=subject)
+		lform = ExtraLessonForm(request.POST, instance=lesson)
+		if not lform.is_valid():
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'errors': lform.errors}), 
+									content_type="application/json")
+		else:
+			lesson = lform.save()
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'ok': True, 'redirect': '/class/' + str(lesson.id)}), 
+									content_type="application/json")
+			return HttpResponseRedirect('/class/' + str(lesson.id))
+	
+	if request.method != 'POST':
+		lform = ExtraLessonForm()
+	ctx = {'subject': subject, 'form': lform, 'htmlname': 'new_class.html'}
+	return response_ajax_or_not(request, ctx)
+
+
+def edit_class(request, idlesson):
+	"""Devuelve la pagina para editar o eliminar una clase"""
+	if request.method != 'GET' and request.method != 'POST':
+		return method_not_allowed(request)
+
+	try:
+		profile = request.user.userprofile
+		if profile.is_student:
+			return send_error_page(request, 'Solo los profesores tienen acceso.')
+		lesson = Lesson.objects.get(id=idlesson)
+		if lesson.start_time < timezone.now():
+			return send_error_page(request, 'No se pueden editar clases antiguas.')
+		if lesson.subject not in profile.subjects.all():
+			return send_error_page(request, 'Tienes que ser profesor de la asignatura para editarla.')
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No tienes un perfil creado.')
+	except Lesson.DoesNotExist:
+		return send_error_page(request, 'No existe ninguna clase con id ' + str(idlesson))
+
+	if request.method == 'POST':
+		if request.POST.get("action", default='edit') == 'delete':
+			if lesson.is_extra:
+				url_redirect = '/subjects/' + str(lesson.subject.id)
+				lesson.delete()
+				if request.is_ajax():
+					return HttpResponse(json.dumps({'deleted': True, 'redirect': url_redirect}),
+										content_type="application/json")
+				return HttpResponseRedirect(url_redirect)
+			else:
+				return send_error_page(request, 'Solo se pueden eliminar clases extras')
+
+		lform = ExtraLessonForm(request.POST, instance=lesson)
+		if not lform.is_valid():
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'errors': lform.errors}), 
+									content_type="application/json")
+		else:
+			lform.save()
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'ok': True}), content_type="application/json")
+	
+	if request.method != 'POST':
+		lform = ExtraLessonForm(instance=lesson)
+	print lesson.is_extra
+	ctx = {'lesson': lesson, 'form': lform, 'htmlname': 'class_edit.html'}
+	return response_ajax_or_not(request, ctx)
 
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #

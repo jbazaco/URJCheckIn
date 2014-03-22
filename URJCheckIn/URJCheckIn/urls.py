@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 	url(r'^profile/view/(\d+)$', 'app.views.profile'),
 	url(r'^profile/img/(\d+)$', 'app.views.profile_img'),#TODO quitar, lo sustituye media/
 	url(r'^class/(\d+)$', 'app.views.process_class'),
+	url(r'^class/(\d+)/edit$', 'app.views.edit_class'),
 	url(r'^forum$', 'app.views.forum'),
 	url(r'^subjects$', 'app.views.subjects'),
 	url(r'^seminars$', 'app.views.seminars'),
