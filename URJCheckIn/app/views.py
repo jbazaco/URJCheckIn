@@ -242,25 +242,36 @@ def profile_img(request, user):
 
 
 @login_required
-def process_class(request, idclass):#TODO que solo se pueda comentar (editar y borrar en /class/id/edit)
-	"""Procesa las peticiones sobre una clase o seminario"""
-	if request.method == "POST":
-		try:
-			action = request.POST.__getitem__("action")
-			if action in action_class:
-				resp = action_class[action](request, request.POST, idclass)
-				if request.is_ajax():
-					return HttpResponse(json.dumps(resp), content_type="application/json")
-			else:
-				error = 'La acci&oacute;n que intentas realizar no existe'
-				if request.is_ajax():
-					return HttpResponse(json.dumps({'error': error}), content_type="application/json")
-		except MultiValueDictKeyError:
-			error = 'Formulario incorrecto'
-			if request.is_ajax():
-				return HttpResponse(json.dumps({'error': error}), content_type="application/json")
-	elif request.method != "GET":
+def process_class(request, idclass):
+	"""Procesa las peticiones sobre una clase y guarda un LessonComment si recibe un POST"""
+	if request.method != "GET" and request.method != "POST":
 		return method_not_allowed(request)
+
+	try:
+		lesson = Lesson.objects.get(id=idclass)
+		profile = lesson.subject.userprofile_set.get(user=request.user)
+	except Lesson.DoesNotExist:
+		return send_error_page(request, 'La clase a la que intentas acceder no existe.')
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'No est&aacutes matriculado en ' + str(lesson.subject))
+
+	if request.method == "POST":
+		if profile.is_student:
+			return send_error_page(request, 'Solo los profesores pueden comentar en las clases')
+
+		try:
+			comment = request.POST.__getitem__("comment")
+			comment = comment[:250]
+		except MultiValueDictKeyError:
+			return {'error': 'Formulario para comentar incorrecto'}
+		new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
+		new_comment.save()
+		if request.is_ajax():
+			html = loader.get_template('pieces/comments.html').render(RequestContext(
+													request, {'comments': [new_comment]}))
+			resp = {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+
 	
 	#Para el caso en el que pida mas comentarios con ajax
 	if request.is_ajax():
@@ -271,69 +282,27 @@ def process_class(request, idclass):#TODO que solo se pueda comentar (editar y b
 								 int(request.GET.get('idlesson')))
 			except ValueError:
 				pass
-	try:
-		lesson = Lesson.objects.get(id=idclass)
+
+	if (lesson.start_time > timezone.now()):
+		lesson_state = 'sin realizar'
+	elif (lesson.end_time < timezone.now()):
 		try:
-			profile = lesson.subject.userprofile_set.get(user=request.user)
-		except UserProfile.DoesNotExist:
-			return send_error_page(request, 'No est&aacutes matriculado en ' + str(lesson.subject))
-		if (lesson.start_time > timezone.now()):
-			lesson_state = 'sin realizar'
-		elif (lesson.end_time < timezone.now()):
-			try:
-				lesson.checkin_set.get(user=request.user)
-				lesson_state = 'asististe'
-			except CheckIn.DoesNotExist:
-				lesson_state = 'no asististe'
-		else:
-			lesson_state = 'imperti&eacute;ndose en este momento'
-		all_comments = lesson.lessoncomment_set.all().order_by('-date')
-		comments = my_paginator(request, all_comments, 10)
-		profesors = lesson.subject.userprofile_set.filter(is_student=False)
-		#En caso de que se asigne un profesor a una clase en vez de todos se obtendria de otra forma
-	except Lesson.DoesNotExist:
-		return send_error_page(request, '#404 La clase a la que intentas acceder no existe.')
+			lesson.checkin_set.get(user=request.user)
+			lesson_state = 'asististe'
+		except CheckIn.DoesNotExist:
+			lesson_state = 'no asististe'
+	else:
+		lesson_state = 'imperti&eacute;ndose en este momento'
+	all_comments = lesson.lessoncomment_set.all().order_by('-date')
+	comments = my_paginator(request, all_comments, 10)
+	profesors = lesson.subject.userprofile_set.filter(is_student=False)
+	
 	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 'lesson_state':lesson_state,
 			'profesors':profesors, 'subject': lesson.subject, 'htmlname': 'class.html'}
-	if  not profile.is_student and lesson_state != "sin realizar":
+	if not profile.is_student and lesson_state != "sin realizar":
 		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
 		ctx['opinions'] = opinions
 	return response_ajax_or_not(request, ctx)
-
-"""Funciones para procesar las clases"""
-#TODO###########################################
-def delete_class(request, form, idclass):
-	"""Elimina una clase si lo solicita el usuario que la creo"""
-	#Comprobar que esta la clase y que se puede borrar, si no informar del error
-	print "delete!"
-	return {'error': 'funcion sin hacer'}
-
-def comment_class(request, form, idclass):
-	"""Guarda un comentario de una clase"""
-	try:
-		comment = form.__getitem__("comment")
-		comment = comment[:250]
-	except MultiValueDictKeyError:
-		return {'error': 'Formulario para comentar incorrecto'}
-
-	try:
-		lesson = Lesson.objects.get(id=idclass)
-	except Lesson.DoesNotExist:
-		return {'error': 'La clase en la que comentas no existe'}
-	try:
-		lesson.subject.userprofile_set.get(user=request.user)
-	except UserProfile.DoesNotExist:
-		return {'error': 'No tienes permisos para comentar en esta clase'}
-
-	new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
-	new_comment.save()
-	html = loader.get_template('pieces/comments.html').render(RequestContext(
-												request, {'comments': [new_comment]}))
-	return {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
-
-action_class = {'delete': delete_class,
-				'comment': comment_class,
-}
 
 
 def method_not_allowed(request):

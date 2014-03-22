@@ -52,7 +52,6 @@
 							onsubmit="sendClassComment({{lesson.id}}); return false;">
 							{% csrf_token %}
 							<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
-							<input type="hidden" value="comment" name="action">
 							<div class="row">				
 								<button type="submit" name="comment_submit" id="comment_button" class="btn btn-success btn-block">
 									<span class="glyphicon glyphicon-send"></span> Comentar
