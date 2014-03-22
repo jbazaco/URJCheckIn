@@ -407,11 +407,9 @@ def seminars(request):
 					).filter(
 						degrees__in = profile.degrees.all()
 					).distinct().order_by('first_date')
-	if request.method == "POST":
-		form = csform
-	else:
-		form = SubjectForm()
-	ctx = {'profile':profile, 'seminars': future_seminars, 'form': form, 
+	if request.method != "POST":
+		csform = SubjectForm()
+	ctx = {'profile':profile, 'seminars': future_seminars, 'form': csform, 
 			'htmlname': 'seminars.html'}
 	return response_ajax_or_not(request, ctx)
 
