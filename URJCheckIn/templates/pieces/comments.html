@@ -5,7 +5,7 @@
 				<img src="http://placehold.it/80" class="img-rounded img-responsive" alt="" />
 			</div>
 				<div class="col-xs-10 col-md-11">
-				<a onClick="ask_ajax_page('profile', loadAjaxPage, {'iduser': '{{comment.user.id}}'}); return false;" href="/profile/view/{{comment.user.id}}">
+				<a onClick="ask_ajax_page('/profile/view/{{comment.user.id}}', loadAjaxPage); return false;" href="/profile/view/{{comment.user.id}}">
 					{{comment.user.first_name}} {{comment.user.last_name}}
 				</a>
 				<div class="mic-info">
