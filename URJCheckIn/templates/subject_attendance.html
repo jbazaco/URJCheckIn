@@ -2,17 +2,37 @@
 <h2 id="maintitle">Asistencia de alumnos de {{subject}}</h2>
 
 <div class="row">
-	<div class="col-sm-6 col-sm-offset-3 text-center">
+	<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 text-center">
 		<div class="panel panel-info">
 			<div class="panel-heading">
 				<h3 class="panel-title">Porcentaje de asistencia</h3>
 			</div>
 			<ul class="subjects_list list-group classes_list">
+				{% if students %}
+					<div class="list-group-item hidden-xs">
+						<div class="row">
+							<strong>
+								<div class="col-sm-5">Alumno</div>
+								<div class="col-sm-4">DNI</div>
+								<div class="col-sm-3">Asistencia</div>
+							</strong>
+						</div>
+					</div>
+				{% endif %}
 				{% for student in students%}
 					<a href="/profile/view/{{student.id}}" class="list-group-item"
 						onClick="ask_ajax_page('/profile/view/{{student.id}}',
 								 loadAjaxPage); return false;">
-						{{student.name}} <strong>{{student.percent}}%</strong>
+						<div class="row">
+							<div class="col-sm-5">{{student.name}}</div>
+							<div class="col-sm-4">
+								<!--Si pongo el dni fuera del visible-xs sale en otra linea porque
+								visible- tiene display:block-->
+								<span class="visible-xs">DNI: {{student.dni}}</span>
+								<span class="hidden-xs">{{student.dni}}</span>
+							</div>
+							<div class="col-sm-3"><strong>{{student.percent}}%</strong></div>
+						</div>
 					</a>
 				{% empty %}
 					<li class="list-group-item">No hay alumnos matriculados</li>

@@ -525,7 +525,8 @@ def subject_attendance(request, idsubj):
 		else:
 			percent = 0
 		students_info.append({'id': student.user.id, 'percent': percent,
-				'name': student.user.first_name + ' ' + student.user.last_name})
+				'name': student.user.first_name + ' ' + student.user.last_name,
+				'dni': student.dni})
 		
 	ctx = {'students': students_info, 'subject': subject, 'htmlname': 'subject_attendance.html'}
 	return response_ajax_or_not(request, ctx)
