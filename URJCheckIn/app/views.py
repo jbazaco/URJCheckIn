@@ -262,17 +262,18 @@ def process_class(request, idclass):
 		try:
 			comment = request.POST.__getitem__("comment")
 			comment = comment[:250]
+			new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
+			new_comment.save()
+			if request.is_ajax():
+				html = loader.get_template('pieces/comments.html').render(RequestContext(
+														request, {'comments': [new_comment]}))
+				resp = {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
+				return HttpResponse(json.dumps(resp), content_type="application/json")
 		except MultiValueDictKeyError:
-			return {'error': 'Formulario para comentar incorrecto'}
-		new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
-		new_comment.save()
-		if request.is_ajax():
-			html = loader.get_template('pieces/comments.html').render(RequestContext(
-													request, {'comments': [new_comment]}))
-			resp = {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
-			return HttpResponse(json.dumps(resp), content_type="application/json")
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'error': 'Formulario para comentar incorrecto'}), 
+									content_type="application/json")
 
-	
 	#Para el caso en el que pida mas comentarios con ajax
 	if request.is_ajax():
 		if request.GET.get('idlesson') and request.GET.get('newer') and request.GET.get('idcomment'):
@@ -282,19 +283,9 @@ def process_class(request, idclass):
 								 int(request.GET.get('idlesson')))
 			except ValueError:
 				pass
-
-	if (lesson.start_time > timezone.now()):
-		lesson_state = 'sin realizar'
-	elif (lesson.end_time < timezone.now()):
-		try:
-			lesson.checkin_set.get(user=request.user)
-			lesson_state = 'asististe'
-		except CheckIn.DoesNotExist:
-			lesson_state = 'no asististe'
-	else:
-		lesson_state = 'imperti&eacute;ndose en este momento'
-	all_comments = lesson.lessoncomment_set.all().order_by('-date')
-	comments = my_paginator(request, all_comments, 10)
+	
+	lesson_state = lesson_str_state(lesson, request.user)
+	comments = my_paginator(request, lesson.lessoncomment_set.all().order_by('-date'), 10)
 	profesors = lesson.subject.userprofile_set.filter(is_student=False)
 	
 	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 'lesson_state':lesson_state,
@@ -304,6 +295,20 @@ def process_class(request, idclass):
 		ctx['opinions'] = opinions
 	return response_ajax_or_not(request, ctx)
 
+
+def lesson_str_state(lesson, user):#TODO poner tambien si no fue el profesor
+	"""Devuelve un string indicando el estado de la clase o si asististe o no si ya
+		se ha realizado la clase"""
+	if (lesson.start_time > timezone.now()):
+		return 'sin realizar'
+	elif (lesson.end_time < timezone.now()):
+		try:
+			lesson.checkin_set.get(user=user)
+			return 'asististe'
+		except CheckIn.DoesNotExist:
+			return 'no asististe'
+	else:
+		return 'imperti&eacute;ndose en este momento'
 
 def method_not_allowed(request):
 	"""Devuelve una pagina indicando que el metodo no esta permitido"""
