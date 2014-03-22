@@ -105,6 +105,8 @@ class Lesson(models.Model):
 	def clean(self):
 		super(Lesson, self).clean()
 		if self.start_time and self.end_time:
+			if self.start_time < timezone.now():
+				raise ValidationError('Start_time must be greater than now')
 			if self.start_time >= self.end_time:
 				raise ValidationError('End_time must me greater than start_time')
 			#Para evitar solapamiento de clases
