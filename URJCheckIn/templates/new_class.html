@@ -3,7 +3,7 @@
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
 			<form name="new_class" class="form-horizontal" id="new_class"
-			 onsubmit="createLesson(); return false;" action="" method="POST">
+			 action="/subjects/{{subject.id}}/new_class" method="POST">
 				<fieldset>
 					<legend>Crear clase de {{subject}}</legend>
 					{% csrf_token %}

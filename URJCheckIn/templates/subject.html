@@ -62,8 +62,8 @@
 					{% if profile.is_student %}
 						{% if signed %}
 							<div class="row">
-								<form name="sign_seminar" action="" method="POST" id="sign_seminar"
-										 onsubmit="changeSignSeminar(); return false;">
+								<form name="sign_seminar" action="/subjects/{{subject.id}}" method="POST"
+								 id="sign_seminar" class="sign_seminar">
 									{% csrf_token %}
 									<button id="sign_button" class="btn btn-danger btn-block">
 										<span class="glyphicon glyphicon-remove-circle"></span> Desapuntarme
@@ -72,8 +72,8 @@
 							</div>
 						{% elif subject.n_students < subject.max_students %}			
 							<div class="row">
-								<form name="sign_seminar" action="" method="POST" id="sign_seminar"
-									 onsubmit="changeSignSeminar(); return false;">
+								<form name="sign_seminar" action="/subjects/{{subject.id}}" method="POST"
+								 id="sign_seminar" class="sign_seminar">
 									{% csrf_token %}
 									<button id="sign_button" class="btn btn-success btn-block">
 										<span class="glyphicon glyphicon-ok-circle"></span> Apuntarme
@@ -83,8 +83,8 @@
 						{% endif %}
 					{% else %}
 						<div class="row">
-							<form name="sign_seminar" action="" method="POST" id="sign_seminar"
-								 onsubmit="changeSignSeminar(); return false;">
+							<form name="sign_seminar" action="/subjects/{{subject.id}}" method="POST" 
+							 id="sign_seminar" class="sign_seminar">
 								{% csrf_token %}
 								{% if signed %}
 									<button id="sign_button" class="btn btn-danger btn-block">

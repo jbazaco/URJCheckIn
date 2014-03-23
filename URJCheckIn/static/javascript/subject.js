@@ -1,11 +1,18 @@
 
+$(document).ready(function() {
+	$('#mainbody').delegate('form.edit_form', 'submit', editObject);
+	$('#mainbody').delegate('#new_class', 'submit', createLesson);
+	$('#mainbody').delegate('form.sign_seminar', 'submit', changeSignSeminar);
+})
+
 /*Envia un POST al servidor para que ponga o elimine 
 	la asignatura al usuario que lo solicita*/
-function changeSignSeminar(){
+function changeSignSeminar(event) {
+	event.preventDefault();
 	$('#alert_change_sign').html('');
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	$.post(window.location.href, $('#sign_seminar').serialize(), signedSeminarChanged);
+	$.post($(this).attr('action'), $(this).serialize(), signedSeminarChanged);
 }
 
 /* Modifica el boton y realiza los cambios que implican el haberse apuntado 
@@ -32,9 +39,8 @@ function signedSeminarChanged(data) {
 				if (professor_list.html().indexOf('La asignatura no es impartida') != -1)
 					professor_list.html('');
 				professor_list.append('<li id="professor_' + data.iduser + '">' +
-							'<a onClick="ask_ajax_page(\'/profile/view/' + data.iduser + 
-							'\', loadAjaxPage); return false;" href="/profile/view/' + 
-							data.iduser + '">' + data.name + '</a></li>');
+							'<a class="ajax" href="/profile/view/' + data.iduser + 
+							'">' + data.name + '</a></li>');
 				$('#sign_button').replaceWith(newChangeSignButton('Dejar de ser organizador', 
 														'danger', 'remove-circle'));
 				$('#professor_options').show();
@@ -102,11 +108,12 @@ function lessonsReceived(data) {
 }
 
 /* Envia el contenido del formulario idform para editar o eliminar un objeto */
-function editObject(idform) {
+function editObject(event) {
+	event.preventDefault();
 	disableButtons(['button']);
 	$('.object_alert').remove();
 	$('#loading_page').css('display','inline');
-	$.post(window.location.href, $('#' + idform).serialize(), objectEdited);
+	$.post($(this).attr('action'), $(this).serialize(), objectEdited);
 }
 
 /*Si recibe errores los imprime en su lugar correspondiente y si recibe un deleted
@@ -123,16 +130,18 @@ function objectEdited(data) {
 }
 
 /* Solicita la creacion de una clase y si se crea redirige a ella */
-function createLesson() {
+function createLesson(event) {
+	event.preventDefault();
 	disableButtons(['button']);
 	$('.lesson_alert').remove();
 	$('#loading_page').css('display','inline');
-	$.post(window.location.href, $('#new_class').serialize(), lessonCreated);
+	$.post($(this).attr('action'), $(this).serialize(), lessonCreated);
 }
 
 /*Si recibe errores los imprime en su lugar correspondiente y si recibe un ok
 	carga la pagina en data.redirect*/
 function lessonCreated(data) {
+	//TODO poner otros errores arriba
 	if (data.errors) {
 		for (error in data.errors)
 			alertBefore(data.errors[error], '#group_'+error, 'lesson_alert', 'danger');

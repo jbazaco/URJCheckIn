@@ -1,8 +1,8 @@
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
-			<form name="edit_class" class="form-horizontal" id="edit_class"
-			 onsubmit="editObject('edit_class'); return false;" action="" method="POST">
+			<form name="edit_class" class="form-horizontal edit_form" id="edit_class"
+			 action="/class/{{lesson.id}}/edit" method="POST">
 				<fieldset>
 					<legend>Crear clase de {{subject}}</legend>
 					{% csrf_token %}
@@ -67,8 +67,8 @@
 			</form>
 			{% if lesson.is_extra %}
 				</br>
-				<form name="delete_lesson" class="form-horizontal" id="delete_lesson"
-				 onsubmit="editObject('delete_lesson'); return false;" action="" method="POST">
+				<form name="delete_lesson" class="form-horizontal edit_form" id="delete_lesson"
+				 action="/class/{{lesson.id}}/edit" method="POST">
 					<div col-xs-12>
 						{% csrf_token %}
 						<input name="action" value="delete" type="hidden">

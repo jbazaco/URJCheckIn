@@ -2,8 +2,8 @@
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
-			<form name="edit_subject" class="form-horizontal" id="edit_subject"
-			 onsubmit="editObject('edit_subject'); return false;" action="" method="POST">
+			<form name="edit_subject" class="form-horizontal edit_form" id="edit_subject"
+			 action="/subjects/{{subject.id}}/edit" method="POST">
 				<fieldset>
 					<legend>Editar {{subject}}</legend>
 					{% csrf_token %}
@@ -116,8 +116,8 @@
 				</fieldset>
 			</form>
 			<br/>
-			<form name="delete_subject" class="form-horizontal" id="delete_subject"
-			 onsubmit="editObject('delete_subject'); return false;" action="" method="POST">
+			<form name="delete_subject" class="form-horizontal edit_form" id="delete_subject"
+			 action="/subjects/{{subject.id}}/edit" method="POST">
 				<div col-xs-12>
 					{% csrf_token %}
 					<input name="action" value="delete" type="hidden">
