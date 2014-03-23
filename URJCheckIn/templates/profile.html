@@ -79,8 +79,8 @@
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
-					<form name="profile_form" class="form-horizontal" id="profile_form" action=""
-					 method="POST">
+					<form name="profile_form" class="form-horizontal" id="profile_form"
+					 action="/profile/view/{{request.user.id}}" method="POST">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Informaci&oacute;n del perfil</legend>
