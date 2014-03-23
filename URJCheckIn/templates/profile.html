@@ -61,15 +61,13 @@
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
-					 onsubmit="//return false;//TODO" action="/profile/img/{{request.user.id}}">
+					 onsubmit="uploadImage(); return false;" action="/profile/img/{{request.user.id}}">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Imagen de perfil</legend>
-							<!--input class="btn btn-default btn-block" type="file" accept="image/*"/-->
 							{{form_img.photo}}
 						</fieldset>
 						<br/>
-						<!--TODO enviar para cambiar foto-->
 						<button type="submit" name="checkin_submit" id="save_image" 
 								class="btn btn-success btn-block">
 							<span class="glyphicon glyphicon-save"></span> Cambiar foto

@@ -98,3 +98,15 @@ function passwordChanged(data) {
 	enableButtons(['button']);
 }
 
+/* Envia una nueva foto de perfil 
+function uploadImage(iduser) {
+	disableButtons(['button']);
+	$('#loading_page').show();
+	var form = $('#photo_form');
+	$.post(form.attr('action'), form.serialize(), function() {
+		$('#loading_page').hide();
+		loadAjaxPage('/profile/view/' + iduser);	
+	});
+}*/
+
+
