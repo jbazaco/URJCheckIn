@@ -1,4 +1,10 @@
-function checkIn() {
+
+$(document).ready(function() {
+	$('#mainbody').delegate('#checkinbox', 'submit', checkIn);
+})
+
+function checkIn(event) {
+	event.preventDefault();
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(sendLocation, geolocationError, {enableHighAccuracy: true});
 	} else {
@@ -13,7 +19,7 @@ function sendLocation(position) {
 	$('#latitude').attr('value', position.coords.latitude);
 	$('#longitude').attr('value', position.coords.longitude);
 	$('#accuracy').attr('value', position.coords.accuracy);
-	$.post("http://" + document.location.host + "/checkin", $('#checkinbox').serialize(), checkinDone);
+	$.post($('#checkinbox').attr('action'), $('#checkinbox').serialize(), checkinDone);
 }
 
 function checkinDone(data) {
