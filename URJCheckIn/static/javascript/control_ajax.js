@@ -5,10 +5,9 @@ $(document).ready(function() {
 
 /* Pide la pagina en el href del elemento seleccionado y carga su contenido */
 function event_ask_ajax_page(event) {
-	$('#loading_page').css('display','inherit');
 	var href = $(this).attr('href');
 	event.preventDefault();
-	$.getJSON(href, loadAjaxPage);
+	ask_ajax_page(href, loadAjaxPage);
 }
 
 /*Inserta el html en data segun la id y cambia la url por la que haya en data.url
@@ -33,11 +32,10 @@ function insertHtml(data) {
 
 /*Realiza una peticion ajax al recurso app.dfunct, pasandole un callback
 	y los argumento a enviar, mostrando el elemento #loading_page*/
-function ask_ajax_page(url, callback, arg) {
+function ask_ajax_page(url, callback) {
 	$('#loading_page').css('display','inherit');
 	$.getJSON(url, callback);
 }
-
 
 
 /*Para controlar el boton de atras y alante del navegador

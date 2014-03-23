@@ -28,9 +28,7 @@
 				<ul id="profesor_list">
 					{%for prof in profesors%}
 						<li id="professor_{{prof.user.id}}">
-							<a onClick="ask_ajax_page('/profile/view/{{prof.user.id}}',
-							 loadAjaxPage); return false;"
-							 href="/profile/view/{{prof.user.id}}">
+							<a href="/profile/view/{{prof.user.id}}" class="ajax">
 								{{prof.user.first_name}} {{prof.user.last_name}}
 							</a>
 						</li>
@@ -110,21 +108,18 @@
 {% if not profile.is_student %}
 	<div class="row" id="professor_options" {% if not signed %} hidden {% endif %}>
 		<div class="col-xs-12 col-md-6" id="check_attendance">
-			<a onClick="ask_ajax_page('/subjects/{{subject.id}}/attendance', loadAjaxPage);
-			 return false;" href="{{subject.id}}/attendance" class="btn btn-info btn-block">
+			<a href="{{subject.id}}/attendance" class="btn btn-info btn-block ajax">
 				<span class="glyphicon glyphicon-user"></span> Comprobar asistencia
 			</a>
 		</div>
 		<div class="col-xs-12 col-md-6" id="new_subject">
-			<a onClick="ask_ajax_page('/subjects/{{subject.id}}/new_class', loadAjaxPage);
-			 return false;" href="{{subject.id}}/new_class" class="btn btn-warning btn-block">
+			<a href="{{subject.id}}/new_class" class="btn btn-warning btn-block ajax">
 				<span class="glyphicon glyphicon-cog"></span> Crear clases
 			</a>
 		</div>
 		{% if request.user == subject.creator %}
 			<div class="col-xs-12 col-md-6" id="config_subject">
-				<a onClick="ask_ajax_page('/subjects/{{subject.id}}/edit', loadAjaxPage);
-				 return false;" href="{{subject.id}}/edit" class="btn btn-warning btn-block">
+				<a href="{{subject.id}}/edit" class="btn btn-warning btn-block ajax">
 					<span class="glyphicon glyphicon-pencil"></span> Gesti&oacute;n 
 					{% if subject.is_seminar %}del seminario{% else %}de la asignatura{% endif %}
 				</a>
@@ -173,8 +168,7 @@
 				{% endif %}
 				<ul id="future_lessons" class="list-group classes_list">
 					{% for class in classes_f%}
-						<a onClick="ask_ajax_page('/class/{{class.id}}', loadAjaxPage);
-						 return false;" href="/class/{{class.id}}" class="list-group-item">
+						<a href="/class/{{class.id}}" class="list-group-item ajax">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 							 dentro de {{ class.start_time|timeuntil }}
 						</a>
@@ -216,8 +210,7 @@
 				{% endif %}
 				<ul id="past_lessons" class="list-group classes_list">
 					{% for class in classes_p %}
-						<a onClick="ask_ajax_page('/class/{{class.id}}', loadAjaxPage);
-						 return false;" href="/class/{{class.id}}" class="list-group-item">
+						<a href="/class/{{class.id}}" class="list-group-item ajax">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 						</a>
 					{%empty%}
