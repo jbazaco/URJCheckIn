@@ -49,32 +49,29 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a onClick="ask_ajax_page('/?page=0', loadAjaxPage); return false;" href="/" class="first navbar-brand">
+						<a href="/" class="first navbar-brand ajax">
 							<span class="glyphicon glyphicon-home"></span> Inicio
 						</a>
 					</div>
 					<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
 						<ul class="nav navbar-nav">
 							<li>
-								<a onClick="ask_ajax_page('/profile/view/{{request.user.id}}',
-								 loadAjaxPage); return false;" href="/profile/view/{{request.user.id}}">
+								<a href="/profile/view/{{request.user.id}}" class="ajax">
 									<span class="glyphicon glyphicon-user"></span> Profile
 								</a>
 							</li>
 							<li>
-								<a onClick="ask_ajax_page('/checkin', loadAjaxPage); return false;" href="/checkin">
+								<a href="/checkin" class="ajax">
 									<span class="glyphicon glyphicon-map-marker"></span> Checkin
 								</a>
 							</li>
 							<li>
-								<a onClick="ask_ajax_page('/forum', loadAjaxPage); return false;"
-								 href="/forum">
+								<a href="/forum" class="ajax">
 									<span class="glyphicon glyphicon-comment"></span> Foro
 								</a>
 							</li>
 							<li>
-								<a onClick="ask_ajax_page('/subjects', loadAjaxPage); return false;"
-								 href="/subjects">
+								<a href="/subjects" class="ajax">
 									<span class="glyphicon glyphicon-book"></span> Asignaturas
 								</a>
 							</li>
@@ -83,7 +80,7 @@
 						<div class="pull-right">
 							<ul class="nav pull-right">
 								<li>
-									<a onClick="logout(); return false;"
+									<a onClick="ask_ajax_page('/logout', loadAjaxPage); return false;"
 									 href="/logout?next=/" class="logout">
 										Bienvenido, {{request.user.username}}.
 										<span class="glyphicon glyphicon-off"></span>

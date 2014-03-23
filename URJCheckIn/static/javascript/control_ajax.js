@@ -1,3 +1,16 @@
+
+$(document).ready(function() {
+	$('body').delegate('a.ajax', 'click', event_ask_ajax_page);
+})
+
+/* Pide la pagina en el href del elemento seleccionado y carga su contenido */
+function event_ask_ajax_page(event) {
+	$('#loading_page').css('display','inherit');
+	var href = $(this).attr('href');
+	event.preventDefault();
+	$.getJSON(href, loadAjaxPage);
+}
+
 /*Inserta el html en data segun la id y cambia la url por la que haya en data.url
 	y esconde el elemento #loading_page
 	Callback para funciones de dajaxice*/
@@ -35,11 +48,6 @@ window.setTimeout(function(){
 		$.getJSON(window.location.href, insertHtml)
     };
 }, 1000);
-
-/* Cierra la sesion del usuario y carga la pagina de iniciar sesion */
-function logout() {
-	$.getJSON('/logout', loadAjaxPage); 
-}
 
 /*Para cerrar el menu desplegable en pantallas pequenas al pulsar
 	sobre un enlace*/

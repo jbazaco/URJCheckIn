@@ -20,9 +20,7 @@
 					</div>
 				{% endif %}
 				{% for student in students%}
-					<a href="/profile/view/{{student.id}}" class="list-group-item"
-						onClick="ask_ajax_page('/profile/view/{{student.id}}',
-								 loadAjaxPage); return false;">
+					<a href="/profile/view/{{student.id}}" class="list-group-item ajax">
 						<div class="row">
 							<div class="col-sm-5">{{student.name}}</div>
 							<div class="col-sm-4">

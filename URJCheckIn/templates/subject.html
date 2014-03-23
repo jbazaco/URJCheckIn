@@ -145,8 +145,7 @@
 				</div>
 				<ul class="subjects_list list-group classes_list">
 					{% for class in classes_n %}
-						<a onClick="ask_ajax_page('/class/{{class.id}}', loadAjaxPage);
-						 return false;" href="/class/{{class.id}}" class="list-group-item">
+						<a href="/class/{{class.id}}" class="list-group-item ajax">
 							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
 						</a>
 					{% endfor %}

@@ -139,8 +139,7 @@
 				</div>
 				<ul class="seminars_list list-group">
 					{% for seminar in seminars %}
-						<a onClick="ask_ajax_page('/subjects/{{seminar.id}}', loadAjaxPage);
-						 return false;" href="/subjects/{{seminar.id}}" class="list-group-item">
+						<a href="/subjects/{{seminar.id}}" class="list-group-item ajax">
 							{{seminar.name}}<br/>
 							<em>{{seminar.first_date|date:'d-m-Y'}}/{{seminar.last_date|date:'d-m-Y'}}</em>
 						</a>

@@ -8,15 +8,13 @@
 	<div class="panel-heading">
 		<div class="row">
 			<div class="previous_week col-xs-2">
-		  		<a href="?page={{previous}}" class="btn btn-default btn-block"
-				 onClick="ask_ajax_page('/?page={{previous}}', loadAjaxPage); return false;">
+		  		<a href="?page={{previous}}" class="btn btn-default btn-block ajax">
 					&laquo;
 				</a>
 			</div>
 			<div class="title col-xs-8">Calendario</div>
 			<div class="next_week col-xs-2">
-				<a href="?page={{next}}" class="btn btn-default btn-block"
-				 onClick="ask_ajax_page('/?page={{next}}', loadAjaxPage); return false;">
+				<a href="?page={{next}}" class="btn btn-default btn-block ajax">
 					&raquo;
 				</a>
 			</div>
@@ -37,8 +35,7 @@
 					</div>
 					<ul class="list-group classes_list events">
 						{% for event in day.events %}
-							<a onClick="ask_ajax_page('/class/{{event.id}}', loadAjaxPage);
-							 return false;" href="/class/{{event.id}}" class="list-group-item">
+							<a href="/class/{{event.id}}" class="list-group-item ajax">
 								<strong>{{event.subject}}</strong><br/>
 								{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
 							</a>

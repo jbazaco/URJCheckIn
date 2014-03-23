@@ -19,9 +19,7 @@
 				<ul id="profesor_list">
 					{% for prof in profesors %}
 						<li>
-							<a onClick="ask_ajax_page('/profile/view/{{prof.user.id}}',
-								 loadAjaxPage); return false;"
-							href="/profile/view/{{prof.user.id}}">
+							<a class="ajax" href="/profile/view/{{prof.user.id}}">
 								{{prof.user.first_name}} {{prof.user.last_name}}
 							</a>
 						</li>
@@ -104,9 +102,8 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 			{%ifequal lesson_state "sin realizar"%}
-				<a id="back_to_subject" class="btn btn-warning btn-block"
-				 href="/class/{{lesson.id}}/edit"
-				 onclick="ask_ajax_page('/class/{{lesson.id}}/edit', loadAjaxPage); return false;">
+				<a id="edit_class_button" class="btn btn-warning btn-block ajax"
+				 href="/class/{{lesson.id}}/edit">
 					<span class="glyphicon glyphicon-pencil"></span> Editar clase
 				</a>
 			{% else %}

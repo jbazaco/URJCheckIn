@@ -13,8 +13,7 @@
 				</div>
 				<ul class="subjects_list list-group">
 					{% for subject in subjects %}
-						<a onClick="ask_ajax_page('/subjects/{{subject.id}}', loadAjaxPage);
-						 return false;" href="/subjects/{{subject.id}}" class="list-group-item">
+						<a href="/subjects/{{subject.id}}" class="list-group-item ajax">
 							{{subject.name}}
 						</a>
 					{% empty %}
@@ -33,12 +32,11 @@
 					<h3 class="panel-title">Mis seminarios</h3>
 				</div>
 				<ul class="subjects_list list-group">
-					<a onClick="ask_ajax_page('/seminars', loadAjaxPage); return false;" href="/seminars" class="list-group-item">
+					<a href="/seminars" class="list-group-item ajax">
 						<em>Pr&oacute;ximos seminarios</em>
 					</a>
 					{% for seminar in seminars %}
-						<a onClick="ask_ajax_page('/subjects/{{seminar.id}}', loadAjaxPage);
-						 return false;" href="/subjects/{{subject.id}}" class="list-group-item">
+						<a href="/subjects/{{seminar.id}}" class="list-group-item ajax">
 							{{seminar.name}}
 						</a>
 					{% empty %}

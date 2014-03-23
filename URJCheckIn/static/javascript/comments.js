@@ -2,7 +2,6 @@
 /*TODO funcion que pida mensajes nuevos cada X tiempo*/
 
 $(document).ready(function() {
-	console.log("ready");
 	$('#mainbody').delegate('#comment_form', 'submit', sendComment);
 })
 

@@ -1,6 +1,5 @@
 {% for lesson in lessons %}
-	<a onClick="ask_ajax_page('/class/{{lesson.id}}', loadAjaxPage); return false;"
-	 href="/class/{{lesson.id}}" class="list-group-item">
+	<a href="/class/{{lesson.id}}" class="list-group-item ajax">
 		{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 		{% if future %}
 			dentro de {{ lesson.start_time|timeuntil }}
