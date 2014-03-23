@@ -258,21 +258,9 @@ def process_class(request, idclass):
 	if request.method == "POST":
 		if profile.is_student:
 			return send_error_page(request, 'Solo los profesores pueden comentar en las clases')
-
-		try:
-			comment = request.POST.__getitem__("comment")
-			comment = comment[:250]
-			new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
-			new_comment.save()
-			if request.is_ajax():
-				html = loader.get_template('pieces/comments.html').render(RequestContext(
-														request, {'comments': [new_comment]}))
-				resp = {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':idclass}
-				return HttpResponse(json.dumps(resp), content_type="application/json")
-		except MultiValueDictKeyError:
-			if request.is_ajax():
-				return HttpResponse(json.dumps({'error': 'Formulario para comentar incorrecto'}), 
-									content_type="application/json")
+		resp = save_lesson_comment(request, lesson)
+		if request.is_ajax():
+			return HttpResponse(json.dumps(resp), content_type="application/json")
 
 	#Para el caso en el que pida mas comentarios con ajax
 	if request.is_ajax():
@@ -294,6 +282,27 @@ def process_class(request, idclass):
 		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
 		ctx['opinions'] = opinions
 	return response_ajax_or_not(request, ctx)
+
+
+@login_required
+def save_lesson_comment(request, lesson):
+	"""Guarda un LessonComment con la informacion del formulario recibido para la clase lesson y 
+		el usuario request.user y devuelve un diccionario con un ok = True si la peticion no es ajax
+		o la respuesta para una peticion ajax. O con error = mensaje de error si se produce un error"""
+	try:
+		comment = request.POST.__getitem__("comment")
+	except MultiValueDictKeyError:
+		return {'error': 'Formulario para comentar incorrecto'}
+	comment = comment[:250]
+	new_comment = LessonComment(comment=comment, user=request.user, lesson=lesson)
+	new_comment.save()
+	if request.is_ajax():
+		html = loader.get_template('pieces/comments.html').render(RequestContext(
+												request, {'comments': [new_comment]}))
+		return {'ok': True, 'comment': html, 'idcomment': new_comment.id, 'idlesson':lesson.id}
+	else:
+		return {'ok': True}
+	
 
 
 def lesson_str_state(lesson, user):#TODO poner tambien si no fue el profesor
@@ -324,18 +333,8 @@ def method_not_allowed(request):
 def forum(request):
 	"""Devuelve la pagina del foro y almacena comentarios nuevos"""
 	if request.method == "POST":
-		qd = request.POST
-		try:
-			comment = qd.__getitem__("comment")
-		except MultiValueDictKeyError:
-			return HttpResponseBadRequest()
-		comment = comment[:150] #si el comentario tiene mas de 150 caracteres se corta
-		new_comment = ForumComment(comment=comment, user=request.user)
-		new_comment.save()
+		resp = save_forum_comment(request)
 		if request.is_ajax():
-			html = loader.get_template('pieces/comments.html').render(RequestContext(
-												request, {'comments': [new_comment]}))
-			resp = {'ok': True, 'comment': html, 'idcomment': new_comment.id}
 			return HttpResponse(json.dumps(resp), content_type="application/json")
 	elif request.method != "GET":
 		return method_not_allowed(request)
@@ -353,6 +352,26 @@ def forum(request):
 	comments =  ForumComment.objects.all().order_by('-date')
 	ctx = {'comments': my_paginator(request, comments, 10), 'htmlname': 'forum.html'}
 	return response_ajax_or_not(request, ctx)
+
+
+@login_required
+def save_forum_comment(request):
+	"""Guarda un ForumComment del usuario request.user con la informacion del formulario recibido 
+		y devuelve un diccionario con un ok = True si la peticion no es ajax o la respuesta para 
+		una peticion ajax. O con error = mensaje de error si se produce un error"""
+	try:
+		comment = request.POST.__getitem__("comment")
+	except MultiValueDictKeyError:
+		return {'error': 'Formulario para comentar incorrecto'}
+	comment = comment[:150] #si el comentario tiene mas de 150 caracteres se corta
+	new_comment = ForumComment(comment=comment, user=request.user)
+	new_comment.save()
+	if request.is_ajax():
+		html = loader.get_template('pieces/comments.html').render(RequestContext(
+											request, {'comments': [new_comment]}))
+		return {'ok': True, 'comment': html, 'idcomment': new_comment.id}
+	else:
+		return {'ok': True}
 
 
 @login_required
