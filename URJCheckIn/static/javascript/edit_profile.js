@@ -1,10 +1,16 @@
 
+$(document).ready(function() {
+	$('#mainbody').delegate('#show_form', 'click', showEditProfile);
+	$('#mainbody').delegate('#hide_form', 'click', cancelEditProfile);
+	$('#mainbody').delegate('#password_form', 'submit', changePassword);
+	$('#mainbody').delegate('#profile_form', 'submit', sendChanges);
+})
+
 /* Genera un formulario para editar el perfil */
-function showEditProfile() {
+function showEditProfile(event) {
 	setForm();
 	$('#show_form').addClass('hidden');
 	$('#editing_profile').removeClass('hidden');
-
 }
 
 /* Muestra el formulario inicializando su valor con la informacion del perfil y oculta el perfil*/
@@ -52,11 +58,12 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 
 /* Envia un POST al servidor para que actualice el perfil del usuario con la 
 	informacion del formulario */
-function sendChanges() {
+function sendChanges(event) {
+	event.preventDefault();
 	$('.profile_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	$.post(window.location.href, $('#profile_form').serialize(), infoSaved);
+	$.post($(this).attr('action'), $(this).serialize(), infoSaved);
 }
 
 /* Quita el formulario y vuelve a mostrar el perfil */
@@ -75,11 +82,12 @@ function emptyPasswords() {
 }
 
 /* Envia un POST al servidor para que modifique la password */
-function changePassword() {
+function changePassword(event) {
+	event.preventDefault();
 	$('.password_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	$.post('/password_change/ajax', $('#password_form').serialize(), passwordChanged);
+	$.post('/password_change/ajax', $(this).serialize(), passwordChanged);
 }
 
 /* Reactiva los botones e indica el resultado del cambio de password*/

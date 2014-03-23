@@ -50,8 +50,7 @@
 {%if request.user == profile.user %}
 	<div class="row">
 		<div class="col-sm-10 col-sm-offset-1"> 
-			<button name="show_form" class="btn btn-primary btn-block hidden" onclick="showEditProfile();
-			 return false;" id="show_form">
+			<button name="show_form" class="btn btn-primary btn-block hidden" id="show_form">
 				<span class="glyphicon glyphicon-pencil"></span> Editar perfil
 			</button>
 		</div>
@@ -80,9 +79,8 @@
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
-					<form name="profile_form" class="form-horizontal" id="profile_form" 
-							onsubmit="sendChanges(); return false;" 
-							action="" method="POST">
+					<form name="profile_form" class="form-horizontal" id="profile_form" action=""
+					 method="POST">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Informaci&oacute;n del perfil</legend>
@@ -147,8 +145,7 @@
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="password_form" class="form-horizontal" id="password_form"
-							 onsubmit="changePassword(); return false;"
-							 action="/password_change/" method="POST">
+					 action="/password_change/" method="POST">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Cambiar contrase&ntilde;a</legend>
@@ -187,8 +184,7 @@
 				</div>
 			</div>
 		</div>
-		<button name="show_form" class="btn btn-danger btn-block" 
-							onclick="cancelEditProfile('{{profile.user.id}}')" id="hide_form">
+		<button name="hide_form" class="btn btn-danger btn-block" id="hide_form">
 				<span class="glyphicon glyphicon-remove"></span> Cancelar y volver al perfil
 		</button>
 	</div>
