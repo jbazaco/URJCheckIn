@@ -1,10 +1,15 @@
 
+$(document).ready(function() {
+	$('#mainbody').delegate('#create_seminar', 'submit', createSeminar);
+})
+
 /* Envia un POST al servidor para que se cree un nuevo seminario */
-function createSeminar() {
+function createSeminar(event) {
+	event.preventDefault();
 	$('.seminar_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');
-	$.post(window.location.href, $('#create_seminar').serialize(), seminarCreated);
+	$.post($(this).attr('action'), $(this).serialize(), seminarCreated);
 }
 
 /* Reactiva los botones y 'recarga' indica el resultado del cambio de password*/
