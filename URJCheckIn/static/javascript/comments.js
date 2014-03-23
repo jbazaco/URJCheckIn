@@ -1,6 +1,10 @@
 
 /*TODO funcion que pida mensajes nuevos cada X tiempo*/
 
+$(document).ready(function() {
+	console.log("ready");
+	$('#mainbody').delegate('#comment_form', 'submit', sendComment);
+})
 
 /* Envia el comentario de la clase con un POST, bloquea el boton hasta recibir respuesta */
 function sendClassComment(idclass) {
@@ -10,9 +14,10 @@ function sendClassComment(idclass) {
 
 
 /* Envia el comentario con un POST, bloquea el boton hasta recibir respuesta */
-function sendComment() {
+function sendComment(event) {
+	event.preventDefault();
 	disableButtons(['#comment_button']);
-	$.post(window.location.href, $('#comment_form').serialize(), commentSaved);
+	$.post($(this).attr('action'), $(this).serialize(), commentSaved);
 }
 
 
