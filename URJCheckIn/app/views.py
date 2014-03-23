@@ -448,35 +448,11 @@ def subject(request, idsubj):
 
 	error = False
 	if request.method == 'POST':
-		if not subject.is_seminar:
-			return send_error_page(request, 
-					'La acci&oacute;n que intentas realizar solo se puede sobre seminarios.')
-		
-		now = timezone.now()
-		today = datetime.date(now.year, now.month, now.day)
-		if subject.first_date < today:
-			error = 'No puedes modificar tu registro en un seminario que ya ha empezado'
-			if request.is_ajax():
-				return HttpResponse(json.dumps(resp), content_type="application/json")
-		else:
-			if subject in profile.subjects.all():
-				profile.subjects.remove(subject)
-				signed = False
-			else:
-				if profile.is_student:
-					if subject.max_students <= subject.n_students():
-						error = 'No hay plazas disponibles'
-						if request.is_ajax():
-							return HttpResponse(json.dumps({'error': error}), 
-												content_type="application/json")
-				if not error:
-					profile.subjects.add(subject)
-					signed = True
-			if request.is_ajax():
-				resp = {'signed': signed, 'is_student':profile.is_student, 'ok': True, 
-						'iduser': request.user.id, 'name': request.user.first_name + " " + 
-						request.user.last_name}
-				return HttpResponse(json.dumps(resp), content_type="application/json")
+		resp = sign_in_seminar(request, subject, profile)
+		if request.is_ajax():
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+		elif 'error' in resp:
+			error = resp['error']
 
 	#Para el caso en el que pida mas comentarios con ajax
 	if request.is_ajax():
@@ -515,6 +491,35 @@ def subject(request, idsubj):
 		ctx['error'] = error
 	return response_ajax_or_not(request, ctx)
 
+
+@login_required
+def sign_in_seminar(request, subject, profile):
+	"""Te apunta a un seminario (si no estas apuntado) o te desapunta en caso contrario
+		Devuelve un diccionario con error = error si ocurre un error o un ok = True si la
+		peticion no es ajax o el diccionario para crear el objeto json para responder
+		si la peticion es ajax"""
+	if not subject.is_seminar:
+		return {'error': 'La acci&oacute;n que intentas realizar solo se puede sobre seminarios.'}
+	now = timezone.now()
+	today = datetime.date(now.year, now.month, now.day)
+	if subject.first_date < today:
+		return {'error': 'No puedes modificar tu registro en un seminario que ya ha empezado'}
+	else:
+		if subject in profile.subjects.all():
+			profile.subjects.remove(subject)
+			signed = False
+		else:
+			if profile.is_student:
+				if subject.max_students <= subject.n_students():
+					return {'error': 'No hay plazas disponibles'}
+			profile.subjects.add(subject)
+			signed = True
+		if request.is_ajax():
+			return {'signed': signed, 'is_student':profile.is_student, 'ok': True, 
+					'iduser': request.user.id, 'name': request.user.first_name + " " + 
+					request.user.last_name}
+		else:
+			return {'ok': True}
 
 
 @login_required
