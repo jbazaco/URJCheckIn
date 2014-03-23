@@ -2,7 +2,13 @@
 	<li class="list-group-item">
 		<div class="row">
 			<div class="col-xs-2 col-md-1">
-				<img src="http://placehold.it/80" class="img-rounded img-responsive" alt="" />
+				<img class="img-rounded img-responsive" alt="foto de perfil" 
+				{% if comment.user.userprofile.photo %}
+					src="{{comment.user.userprofile.photo.url}}"
+				{% else %}
+					src="/img/default_profile_img.png"
+				{% endif %}
+				/>
 			</div>
 				<div class="col-xs-10 col-md-11">
 				<a onClick="ask_ajax_page('/profile/view/{{comment.user.id}}', loadAjaxPage); return false;" href="/profile/view/{{comment.user.id}}">
@@ -17,5 +23,9 @@
 				</div>
 			</div>
 		</div>
+	</li>
+{% empty %}
+	<li class="list-group-item">
+		No hay mensajes
 	</li>
 {% endfor %}

@@ -5,8 +5,14 @@
 
 <div class="row">
 	<div id="profile">
-		<div class="col-xs-6 col-xs-offset-3 col-sm-3 col-sm-offset-1">
-			<img src="{{ MEDIA_URL }}{profile.user.photo.url}" alt="foto de perfil" alt="foto de perfil" class="img-rounded img-responsive"><!--TODO url imagen-->
+		<div class="col-xs-6 col-xs-offset-3 col-sm-2 col-sm-offset-1">
+			<img alt="foto de perfil" class="img-rounded img-responsive"
+				{% if profile.photo %}
+					src="{{profile.photo.url}}"
+				{% else %}
+					src="/img/default_profile_img.png"
+				{% endif %}
+			 >
 		</div>
 		<dl class="dl-horizontal fields col-xs-12 col-sm-8 col-sm-offset-0">
 			<div class="span2 well">
@@ -42,20 +48,25 @@
 </div>
 
 {%if request.user == profile.user %}
-	<a name="show_form" class="btn btn-primary btn-block hidden" onclick="showEditProfile();
-	 return false;" id="show_form" href="/profile/edit">
-		<span class="glyphicon glyphicon-pencil"></span> Editar perfil
-	</a>
+	<div class="row">
+		<div class="col-sm-10 col-sm-offset-1"> 
+			<a name="show_form" class="btn btn-primary btn-block hidden" onclick="showEditProfile();
+			 return false;" id="show_form" href="/profile/edit">
+				<span class="glyphicon glyphicon-pencil"></span> Editar perfil
+			</a>
+		</div>
+	</div>
 	<div id="editing_profile">
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
-					<form name="photo_form" id="photo_form"
-							onsubmit="return false;//TODO" action="PONER-URL-TODO" method="POST">
+					<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
+					 onsubmit="//return false;//TODO" action="/profile/img/{{request.user.id}}">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Imagen de perfil</legend>
-							<input class="btn btn-default btn-block" type="file" accept="image/*"/>
+							<!--input class="btn btn-default btn-block" type="file" accept="image/*"/-->
+							{{form_img.photo}}
 						</fieldset>
 						<br/>
 						<!--TODO enviar para cambiar foto-->

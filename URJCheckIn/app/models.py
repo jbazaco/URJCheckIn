@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db.models import Avg
+from django.conf import settings
+import os
 
 WEEK_DAYS = (
 	('Mon', 'Monday'),
@@ -68,9 +70,18 @@ class Room(models.Model):
 		return u"Aula %i" % (self.id)
 
 
+def user_image_path(instance, filename):
+	"""Si ya habia una imagen de perfil del usuario la elimina y devuelve como nombre
+		/profile_photos/ + instance.user.id"""
+	name = 'profile_photos/' + str(instance.user.id)
+	fullname = settings.MEDIA_ROOT + name
+	if os.path.exists(fullname):
+		os.remove(fullname)
+	return name
+
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, verbose_name='usuario')
-	photo = models.ImageField(upload_to='profile_photos', blank=True)#Poner una por defecto (la tipica silueta)
+	photo = models.ImageField(upload_to=user_image_path, blank=True)#Poner una por defecto (la tipica silueta)
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripcion')
 	subjects = models.ManyToManyField(Subject, blank=True, verbose_name='asignatura')
 	degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grados')
@@ -87,7 +98,6 @@ class UserProfile(models.Model):
 	def __unicode__(self):
 		return u"Perfil de %s" % (self.user)
 
-	
 
 class Lesson(models.Model):
 	start_time =  models.DateTimeField(verbose_name='hora de inicio')

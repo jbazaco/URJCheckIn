@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, ReviewClassForm, SubjectForm, ExtraLessonForm
+from forms import ProfileEditionForm, ReviewClassForm, SubjectForm, ExtraLessonForm, ProfileImageForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -19,6 +19,7 @@ from django.template import loader, RequestContext
 from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
+from django.core.files.storage import default_storage
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
@@ -200,7 +201,7 @@ def profile(request, iduser):
 	if request.method != "POST":#si es un POST coge el form que ha recibido
 		pform = ProfileEditionForm(instance=profile)
 
-	ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html'}
+	ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html', 'form_img': ProfileImageForm()}
 	return response_ajax_or_not(request, ctx)
 
 
@@ -233,12 +234,24 @@ def my_logout(request):
 	return resp
 
 
-#TODO
+#TODO con ajax
 @login_required
 def profile_img(request, iduser):
 	"""Devuelve la foto de perfil del usuario user"""
-	return render_to_response('main.html', {'htmlname': '404.html'},
-		context_instance=RequestContext(request))
+	if request.method != "POST":
+		return method_not_allowed(request)
+
+	if iduser != str(request.user.id):
+		return send_error_page(request, 'Solo puedes modificar tu foto de perfil')
+	try:
+		profile = UserProfile.objects.get(user=iduser)
+	except UserProfile.DoesNotExist:			
+		return send_error_page(request, 'No tienes perfil de usuario')
+
+	pform = ProfileImageForm(request.POST, request.FILES, instance=profile)
+	if pform.is_valid():
+		pform.save()
+	return HttpResponseRedirect('/profile/view/' + iduser)
 
 
 @login_required

@@ -13,7 +13,7 @@ function setForm() {
 	$('#id_age').attr('value', $('#age_profile').html()); //FIREFOX NO LO MUESTRA COMO NUMBER
 	$('#id_description').html($('#desc_profile').html());
 	//TODO para el resto de campos
-	hideElements(['#profile .fields']);
+	$('#profile').hide();
 	$('#profile_form').css('display','inherit');
 	$('#photo_form').css('display','inherit');
 }
@@ -25,7 +25,7 @@ function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 	$('#desc_profile').html(user.description);
 	//TODO hacerlo con el resto de propiedades
 	hideElements(['#profile_form', '#photo_form']);
-	$('#profile .fields').css('display','inherit');
+	$('#profile').show();
 }
 
 /* Elimina el boton de cancelar y cambia el texto del otro boton a 'Editar perfil' y lo habilita */
@@ -63,7 +63,7 @@ function sendChanges() {
 function cancelEditProfile() {
 	hideElements(['#profile_form', '#photo_form']);
 	emptyPasswords();
-	$('#profile .fields').css('display','inherit');
+	$('#profile').show();
 	restartButtons();
 }
 
@@ -75,7 +75,7 @@ function emptyPasswords() {
 }
 
 /* Envia un POST al servidor para que modifique la password */
-function changePassword() {//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+function changePassword() {
 	$('.password_alert').remove();
 	disableButtons(['button']);
 	$('#loading_page').css('display','inline');

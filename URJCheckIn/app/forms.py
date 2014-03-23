@@ -66,4 +66,9 @@ class SubjectForm(forms.ModelForm):
 												 'rows': '3', 'required':'required'}),
 		}
 	
+#Formulario para editar la foto de perfil
+class ProfileImageForm(forms.ModelForm):
+	class Meta:
+		model = UserProfile
+		fields = ('photo',)
 
