@@ -1,14 +1,12 @@
 
 $(document).ready(function() {
-	$('body').delegate('a.ajax', 'click', event_ask_ajax_page);
+	/* Pide la pagina en el href del elemento a clickeado y carga su contenido */
+	$('body').delegate('a.ajax', 'click', function(event) {
+		event.preventDefault();
+		var href = $(this).attr('href');
+		ask_ajax_page(href, loadAjaxPage);
+	});
 })
-
-/* Pide la pagina en el href del elemento seleccionado y carga su contenido */
-function event_ask_ajax_page(event) {
-	var href = $(this).attr('href');
-	event.preventDefault();
-	ask_ajax_page(href, loadAjaxPage);
-}
 
 /*Inserta el html en data segun la id y cambia la url por la que haya en data.url
 	y esconde el elemento #loading_page
