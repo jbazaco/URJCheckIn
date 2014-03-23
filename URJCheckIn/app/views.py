@@ -235,7 +235,7 @@ def my_logout(request):
 
 #TODO
 @login_required
-def profile_img(request, user):
+def profile_img(request, iduser):
 	"""Devuelve la foto de perfil del usuario user"""
 	return render_to_response('main.html', {'htmlname': '404.html'},
 		context_instance=RequestContext(request))
@@ -434,7 +434,8 @@ def seminars(request):
 
 @login_required
 def subject(request, idsubj):
-	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
+	"""Devuelve la pagina con la informacion y las clases de una asignatura
+		mediante un POST permite al usuario apuntarse o desapuntarse de un seminario"""
 	if request.method != 'GET' and request.method != 'POST':
 		return method_not_allowed(request)
 
@@ -523,15 +524,15 @@ def sign_in_seminar(request, subject, profile):
 
 
 @login_required
-def subject_attendance(request, idsubj):
-	"""Devuelve la pagina con la informacion y las clases de una asignatura"""
+def subject_attendance(request, idsubj):#TODO que no cuente las clases a las que no asistio el profesor
+	"""Devuelve la pagina con la informacion de la asistencia de los alumnos a una asignatura"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
 
 	try:
 		profile = request.user.userprofile
 		if profile.is_student:
-			send_error_page(request, 'Solo los profesores tienen acceso.')
+			return send_error_page(request, 'Solo los profesores tienen acceso.')
 		subject = Subject.objects.get(id=idsubj)
 		if not subject in profile.subjects.all():
 			return send_error_page(request, 'No tienes acceso a esta informaci&oacute;n.')
