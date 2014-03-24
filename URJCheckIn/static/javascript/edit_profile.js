@@ -10,11 +10,13 @@ $(document).ready(function() {
 	var ajax_form_active = false;
 	$('#mainbody').delegate('#photo_form', 'submit', function(event) {
 		if (!ajax_form_active) {
+			$('#loading_page').show();
 			event.preventDefault();
 			/*para subir la imagen con ajax*/
 			$('#photo_form').ajaxForm(function(data) {
+				$('#loading_page').hide();
 				if (data.ok) {
-					$('#profile_img').attr('src', data.img_url);
+					$('#profile_img').attr('src', data.img_url+"?="+ Math.round(100000*Math.random()));
 					$('#hide_form').trigger('click');
 				} else {
 					alert(data.error||"error al modificar la foto");
