@@ -4,6 +4,27 @@ $(document).ready(function() {
 	$('#mainbody').delegate('#hide_form', 'click', cancelEditProfile);
 	$('#mainbody').delegate('#password_form', 'submit', changePassword);
 	$('#mainbody').delegate('#profile_form', 'submit', sendChanges);
+
+	/*Al no estar siempre #photo_form, tiene que escucharse con delegate, pero el envio del
+	formulario se realiza con ajaxForm, por lo que se activa cuando existe y se intenta enviar*/
+	var ajax_form_active = false;
+	$('#mainbody').delegate('#photo_form', 'submit', function(event) {
+		if (!ajax_form_active) {
+			event.preventDefault();
+			/*para subir la imagen con ajax*/
+			$('#photo_form').ajaxForm(function(data) {
+				if (data.ok) {
+					$('#profile_img').attr('src', data.img_url);
+					$('#hide_form').trigger('click');
+				} else {
+					alert(data.error||"error al modificar la foto");
+				}
+			});
+			ajax_form_active = true;
+			/* Para que se dispare el evento ajaxForm*/
+			$('#photo_form').trigger('submit');
+		}
+	});
 })
 
 /* Genera un formulario para editar el perfil */

@@ -247,10 +247,14 @@ def profile_img(request, iduser):
 		profile = UserProfile.objects.get(user=iduser)
 	except UserProfile.DoesNotExist:			
 		return send_error_page(request, 'No tienes perfil de usuario')
-
+	img_url = '/img/default_profile_img.png'
 	pform = ProfileImageForm(request.POST, request.FILES, instance=profile)
 	if pform.is_valid():
 		pform.save()
+		img_url = profile.photo.url
+	if request.is_ajax():
+		return HttpResponse(json.dumps({'ok': True, 'img_url': img_url}), 
+							content_type="application/json")
 	return HttpResponseRedirect('/profile/view/' + iduser)
 
 

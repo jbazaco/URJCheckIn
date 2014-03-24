@@ -6,7 +6,7 @@
 <div class="row">
 	<div id="profile">
 		<div class="col-xs-6 col-xs-offset-3 col-sm-2 col-sm-offset-1">
-			<img alt="foto de perfil" class="img-rounded img-responsive"
+			<img alt="foto de perfil" class="img-rounded img-responsive" id="profile_img"
 				{% if profile.photo %}
 					src="{{profile.photo.url}}"
 				{% else %}
@@ -60,7 +60,7 @@
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
-					 onsubmit="uploadImage(); return false;" action="/profile/img/{{request.user.id}}">
+					 action="/profile/img/{{request.user.id}}">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Imagen de perfil</legend>
