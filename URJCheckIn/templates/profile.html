@@ -57,10 +57,10 @@
 	</div>
 	<div id="editing_profile">
 		<div class="row">
-			<div class="col-md-8 col-md-offset-2"><!--TODO poder eliminar la foto-->
+			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
-					 action="/profile/img/{{request.user.id}}">
+					 action="/profile/img/edit" class="unsetted_form">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Imagen de perfil</legend>
@@ -71,6 +71,18 @@
 								class="btn btn-success btn-block">
 							<span class="glyphicon glyphicon-save"></span> Cambiar foto
 						</button>
+					</form>
+					<br/>
+					<form name="delete_prof_img" id="delete_prof_img" action="/profile/img/delete"
+					 method="POST">
+						<div col-xs-12>
+							{% csrf_token %}
+							<input name="action" value="delete" type="hidden">
+							<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
+								<span class="glyphicon glyphicon-remove"></span>
+								Eliminar mi foto de perfil
+							</button>
+						</div>
 					</form>
 				</div>
 			</div>

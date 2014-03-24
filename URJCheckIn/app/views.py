@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.debug import sensitive_post_parameters
-from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment
+from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
 from forms import ProfileEditionForm, ReviewClassForm, SubjectForm, ExtraLessonForm, ProfileImageForm
@@ -234,28 +234,30 @@ def my_logout(request):
 	return resp
 
 
-#TODO con ajax
 @login_required
-def profile_img(request, iduser):
-	"""Devuelve la foto de perfil del usuario user"""
+def change_profile_img(request, action):
+	"""Modifica la foto de perfil de request.user"""
 	if request.method != "POST":
 		return method_not_allowed(request)
 
-	if iduser != str(request.user.id):
-		return send_error_page(request, 'Solo puedes modificar tu foto de perfil')
 	try:
-		profile = UserProfile.objects.get(user=iduser)
+		profile = request.user.userprofile
 	except UserProfile.DoesNotExist:			
 		return send_error_page(request, 'No tienes perfil de usuario')
 	img_url = '/img/default_profile_img.png'
-	pform = ProfileImageForm(request.POST, request.FILES, instance=profile)
-	if pform.is_valid():
-		pform.save()
-		img_url = profile.photo.url
+	if action == 'edit':
+		pform = ProfileImageForm(request.POST, request.FILES, instance=profile)
+		if pform.is_valid():
+			pform.save()
+			img_url = profile.photo.url
+	else: #delete
+		remove_if_exists('profile_photos/' + str(request.user.id))
+		profile.photo = None
+		profile.save()
 	if request.is_ajax():
 		return HttpResponse(json.dumps({'ok': True, 'img_url': img_url}), 
-							content_type="application/json")
-	return HttpResponseRedirect('/profile/view/' + iduser)
+								content_type="application/json")
+	return HttpResponseRedirect('/profile/view/' + str(request.user.id))
 
 
 @login_required

@@ -6,28 +6,44 @@ $(document).ready(function() {
 	$('#mainbody').delegate('#profile_form', 'submit', sendChanges);
 
 	/*Al no estar siempre #photo_form, tiene que escucharse con delegate, pero el envio del
-	formulario se realiza con ajaxForm, por lo que se activa cuando existe y se intenta enviar*/
-	var ajax_form_active = false;
-	$('#mainbody').delegate('#photo_form', 'submit', function(event) {
-		if (!ajax_form_active) {
-			$('#loading_page').show();
-			event.preventDefault();
-			/*para subir la imagen con ajax*/
-			$('#photo_form').ajaxForm(function(data) {
-				$('#loading_page').hide();
-				if (data.ok) {
-					$('#profile_img').attr('src', data.img_url+"?="+ Math.round(100000*Math.random()));
-					$('#hide_form').trigger('click');
-				} else {
-					alert(data.error||"error al modificar la foto");
-				}
-			});
-			ajax_form_active = true;
-			/* Para que se dispare el evento ajaxForm*/
-			$('#photo_form').trigger('submit');
-		}
+	formulario se realiza con ajaxForm, por lo que se activa cuando existe y se intenta enviar,
+	y para evitar que se vuelva a ejecutar la funcion de delegate se quita la clase unsetted_form*/
+	$('#mainbody').delegate('#photo_form.unsetted_form', 'submit', function(event) {
+		event.preventDefault();
+		$(this).removeClass('unsetted_form');
+		/*para subir la imagen con ajax*/
+		$('#photo_form').ajaxForm({
+			beforeSubmit: function() {
+				$('#loading_page').show();
+				disableButtons(['button']);
+			},
+			success: photoChanged
+		});
+		/* Para que se dispare el evento ajaxForm*/
+		$('#photo_form').trigger('submit');
 	});
+	$('#mainbody').delegate('#delete_prof_img', 'submit', deletePhoto);
 })
+
+/*Envia una peticion para eliminar la foto de perfil*/
+function deletePhoto(event) {
+	event.preventDefault();
+	disableButtons(['button']);
+	$('#loading_page').show();
+	$.post($(this).attr('action'), $(this).serialize(), photoChanged);
+}
+
+/*Muestra el perfil con la nueva foto*/
+function photoChanged(data) {
+	$('#loading_page').hide();
+	enableButtons(['button']);
+	if (data.ok) {
+		$('#profile_img').attr('src', data.img_url+"?="+ Math.round(100000*Math.random()));
+		$('#hide_form').trigger('click');
+	} else {
+		alert(data.error||"error al modificar la foto");
+	}
+}
 
 /* Genera un formulario para editar el perfil */
 function showEditProfile(event) {

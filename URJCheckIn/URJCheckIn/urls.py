@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     url(r'^$', 'app.views.home'),
 	url(r'^checkin$', 'app.views.checkin'),
 	url(r'^profile/view/(?P<iduser>\d+)$', 'app.views.profile'),
-	url(r'^profile/img/(?P<iduser>\d+)$', 'app.views.profile_img'),#TODO quitar, lo sustituye media/
+	url(r'^profile/img/(?P<action>edit|delete)$', 'app.views.change_profile_img'),
 	url(r'^class/(?P<idclass>\d+)$', 'app.views.process_class'),
 	url(r'^class/(?P<idlesson>\d+)/edit$', 'app.views.edit_class'),
 	url(r'^forum$', 'app.views.forum'),

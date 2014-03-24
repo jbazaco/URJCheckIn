@@ -74,10 +74,18 @@ def user_image_path(instance, filename):
 	"""Si ya habia una imagen de perfil del usuario la elimina y devuelve como nombre
 		/profile_photos/ + instance.user.id"""
 	name = 'profile_photos/' + str(instance.user.id)
+	remove_if_exists(name)
+	return name
+
+def remove_if_exists(name):
+	"""Elimina el fichero de nombre name en la ruta MEDIA_ROOT, si existe
+		Devuelve True si existia y False si no existia"""
 	fullname = settings.MEDIA_ROOT + name
 	if os.path.exists(fullname):
 		os.remove(fullname)
-	return name
+		return True
+	return False
+
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, verbose_name='usuario')
