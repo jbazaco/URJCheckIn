@@ -54,6 +54,21 @@ class Subject(models.Model):
 	def n_students(self):
 		return self.userprofile_set.filter(is_student=True).count()
 
+	def percent_prof_attend(self):#TODO##################################
+		return 100
+
+	def percent_stud_attend(self):#TODO##################################
+		return 100
+
+	def avg_mark(self):#TODO#########################################
+		lessons = self.lesson_set.filter(end_time__lte = timezone.now())#TODO solo las dadas
+		if not lessons:
+			return 3
+		mark = 0
+		for lesson in lessons:
+			mark += lesson.avg_mark()
+		return mark / lessons.count()
+
 
 class Room(models.Model):
 	room = models.CharField(max_length=20, verbose_name='aula')
@@ -107,12 +122,20 @@ class UserProfile(models.Model):
 		return u"Perfil de %s" % (self.user)
 
 
+def get_rand_string():
+	"""Devuelve un string de 20 caracteres aleatorios"""
+	import random, string
+	return ''.join(random.choice(string.lowercase) for i in range(20))
+
 class Lesson(models.Model):
 	start_time =  models.DateTimeField(verbose_name='hora de inicio')
 	end_time = models.DateTimeField(verbose_name='hora de finalizacion')
 	subject = models.ForeignKey(Subject, verbose_name='asignatura')
 	room =	models.ForeignKey(Room, verbose_name='aula')#TODO on_delete funcion para buscar otra aula
 	is_extra = models.BooleanField(default=False, verbose_name='es clase extra')
+	done = models.BooleanField(verbose_name='realizada', default=False)
+	codeword = models.CharField(max_length=20, verbose_name='codigo', default=get_rand_string)
+	students_counted = models.PositiveIntegerField(verbose_name='alumnos contados', default=0)
 	
 	class Meta:
 		verbose_name='clase'
@@ -161,10 +184,14 @@ class Lesson(models.Model):
 		mark = checkins.aggregate(Avg('mark'))['mark__avg']
 		return round(mark,2)
 
+
 class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
 	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='puntuacion', blank=True)
+	longitude = models.FloatField(verbose_name='puntuacion', blank=True, null=True)
+	latitude = models.FloatField(verbose_name='puntuacion', blank=True, null=True)
+	codeword = models.CharField(max_length=20, verbose_name='codigo', blank=True)
 	comment = models.TextField(max_length=250, verbose_name='comentario', blank=True)
 
 	class Meta:
@@ -172,6 +199,8 @@ class CheckIn(models.Model):
 
 	def __unicode__(self):
 		return u"Checkin de %s" % (self.lesson)
+	
+	#TODO clean, codeword==lesson.codeword si no error
 
 
 class LessonComment(models.Model):
