@@ -31,7 +31,7 @@ urlpatterns = patterns('',
 	url(r'^lib/(?P<path>.*)$', 'django.views.static.serve',
 						{'document_root': 'lib'}),
     # url(r'^URJCheckIn/', include('URJCheckIn.foo.urls')),
-
+	url(r'control/attendance$', 'app.views.control_attendance'),
 	url(r'^logout$', 'app.views.my_logout'),
 	url(r'^login$', 'django.contrib.auth.views.login'),
 	url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

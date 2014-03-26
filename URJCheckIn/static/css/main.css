@@ -160,3 +160,14 @@ textarea {
 }
 /*end CHECKIN*/
 
+/*start CONTROL_ATTENDANCE*/
+.control_attendance ul {
+	word-wrap: break-word;
+	padding-left: 0;
+}
+
+.control_attendance .legend {
+	font-weight: bold;
+}
+/*end CONTROL_ATTENDACE*/
+

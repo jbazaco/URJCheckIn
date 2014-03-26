@@ -60,8 +60,8 @@ class Subject(models.Model):
 	def percent_stud_attend(self):#TODO##################################
 		return 100
 
-	def avg_mark(self):#TODO#########################################
-		lessons = self.lesson_set.filter(end_time__lte = timezone.now())#TODO solo las dadas
+	def avg_mark(self):#TODO#########################################probar
+		lessons = self.lesson_set.filter(done=True)
 		if not lessons:
 			return 3
 		mark = 0
