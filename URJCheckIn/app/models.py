@@ -55,20 +55,32 @@ class Subject(models.Model):
 	def n_students(self):
 		return self.userprofile_set.filter(is_student=True).count()
 
-	def percent_prof_attend(self):#TODO##################################
-		return 100
+	def percent_prof_attend(self):
+		n_lesson_done = self.lesson_set.filter(done=True).count()
+		n_lesson_past = self.lesson_set.filter(end_time__lt = timezone.now()).count()
+		if n_lesson_past < 0:
+			return 0
+		return round(100.0*n_lesson_done/n_lesson_past, 2)
 
-	def percent_stud_attend(self):#TODO##################################
-		return 100
+	def percent_stud_attend(self):
+		n_lessons_done = self.lesson_set.filter(done=True).count()
+		#El total de checkins que podria haber es el numero de clases dadas por el numero 
+		# de estudiantes de la asignatura
+		n_div = self.n_students()*n_lessons_done
+		n_checks = CheckIn.objects.filter(user__userprofile__is_student=True, 
+					lesson__subject=self, lesson__done=True).count()
+		if n_div < 0:
+			return 0
+		return round(100.0*n_checks/n_div,2)
 
-	def avg_mark(self):#TODO#########################################probar
+	def avg_mark(self):
 		lessons = self.lesson_set.filter(done=True)
 		if not lessons:
 			return 3
 		mark = 0
 		for lesson in lessons:
 			mark += lesson.avg_mark()
-		return mark / lessons.count()
+		return round(mark/lessons.count(), 2)
 
 
 class Room(models.Model):
