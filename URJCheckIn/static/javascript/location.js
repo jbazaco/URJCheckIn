@@ -3,38 +3,50 @@ $(document).ready(function() {
 	$('#mainbody').delegate('#checkinbox', 'submit', checkIn);
 })
 
+var checkin_alert_class = 'alert_checkin';
+
 function checkIn(event) {
 	event.preventDefault();
+	$('.'+checkin_alert_class).remove();
+	$('#result_checkin').html("");
+	$('#loading_page').css('display','inline');
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(sendLocation, geolocationError, {enableHighAccuracy: true});
 	} else {
-		alert("Geolocalización no disponible en este dispositivo");
+		$.post($('#checkinbox').attr('action'), $('#checkinbox').serialize(), checkinDone);
 	}
 }
 
+/* Rellena los inputs Longitude y Latitude con la posicion */
 function sendLocation(position) {
-	$('#result_checkin').html("");
-	var codeword = $('#codeword');
-	$('#loading_page').css('display','inline');
-	$('#latitude').attr('value', position.coords.latitude);
-	$('#longitude').attr('value', position.coords.longitude);
-	$('#accuracy').attr('value', position.coords.accuracy);
+	$('#id_latitude').attr('value', position.coords.latitude);
+	$('#id_longitude').attr('value', position.coords.longitude);
 	$.post($('#checkinbox').attr('action'), $('#checkinbox').serialize(), checkinDone);
 }
 
 function checkinDone(data) {
-	if (data.error) {
-		var msg = "Error: " + data.error;
-		var alert_type = "danger";
+	if (data.errors) {
+		for (error in data.errors)
+			alertBefore(data.errors[error], 
+				'#group_'+error, checkin_alert_class, 'danger');
 	} else if (data.ok) {
-		$('#codeword').val('');
-		var msg = "Checkin realizado";
-		var alert_type = "success";
+		$('#id_codeword').val('');
+		$('#id_longitude').val('');
+		$('#id_latitude').val('');
+		$('#id_comment').val('');
+		$('#id_mark').val('3');
+		$('#n_students').val('0');
 	}
-	hideElements(['#loading_page']);
-	$('#alert_checkin').html('<div class="alert alert-' + alert_type + '"><button ' +
+	$('#loading_page').hide();
+	if (data.msg) {
+		if (data.ok)
+			alert_type = "success";
+		else
+			alert_type = "danger";
+		$('#alert_checkin').html('<div class="alert alert-' + alert_type + '"><button ' +
 			'type="button" class="close" aria-hidden="true" data-dismiss="alert" ' +
-			'aria-hidden="true">&times;</button><p>'+ msg + '</p></div>');
+			'aria-hidden="true">&times;</button><p>'+ data.msg + '</p></div>');
+	}
 }
 
 function geolocationError(error) {

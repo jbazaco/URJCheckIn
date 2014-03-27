@@ -1,5 +1,5 @@
 from django import forms
-from models import Degree, Subject, UserProfile, Lesson
+from models import Degree, Subject, UserProfile, Lesson, CheckIn
 from django.forms.util import to_current_timezone
 
 class MySplitDateTimeWidget(forms.MultiWidget):
@@ -17,11 +17,19 @@ class MySplitDateTimeWidget(forms.MultiWidget):
 		return [None, None]
 
 
-class ReviewClassForm(forms.Form):
-	mark = forms.IntegerField(min_value=0, max_value=5, widget=forms.TextInput(attrs={
-			'required':'required','type':'number', 'min':1, 'max':'5', 'value':'3', 'step':'1'}))
-	comment = forms.CharField(max_length=150, required=False, widget=forms.Textarea(attrs={
-			'maxlength':'150', 'class': 'form-control', 'rows': '3'}))
+class CheckInForm(forms.ModelForm):
+	class Meta:
+		model = CheckIn
+		fields = ('mark', 'comment', 'longitude', 'latitude', 'codeword')
+		widgets = {
+			'mark': forms.TextInput(attrs={'required':'required','type':'number', 'min':1, 
+											'max':'5', 'value':'3', 'step':'1'}),
+			'comment': forms.Textarea(attrs={'maxlength':'250', 'class': 'form-control', 
+												'rows': '3'}),
+			'longitude': forms.TextInput(attrs={'hidden': 'hidden'}),
+			'latitude': forms.TextInput(attrs={'hidden': 'hidden'}),
+		}
+
 
 class ProfileEditionForm(forms.ModelForm):
 	#TODO poner el resto de campos

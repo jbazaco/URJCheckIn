@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Avg
 from django.conf import settings
 import os
+from django.db.models.signals import post_save
 
 WEEK_DAYS = (
 	('Mon', 'Monday'),
@@ -189,8 +190,8 @@ class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
 	mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='puntuacion', blank=True)
-	longitude = models.FloatField(verbose_name='puntuacion', blank=True, null=True)
-	latitude = models.FloatField(verbose_name='puntuacion', blank=True, null=True)
+	longitude = models.FloatField(verbose_name='longitud', blank=True, null=True)
+	latitude = models.FloatField(verbose_name='latitud', blank=True, null=True)
 	codeword = models.CharField(max_length=20, verbose_name='codigo', blank=True)
 	comment = models.TextField(max_length=250, verbose_name='comentario', blank=True)
 
@@ -200,7 +201,26 @@ class CheckIn(models.Model):
 	def __unicode__(self):
 		return u"Checkin de %s" % (self.lesson)
 	
-	#TODO clean, codeword==lesson.codeword si no error
+	def clean(self):
+		super(CheckIn, self).clean()
+		if not (self.codeword or self.longitude):
+			raise ValidationError('Tienes que enviar el codigo o tu localizacion para hacer CheckIn')
+		if self.codeword:
+			if self.codeword != self.lesson.codeword:
+				raise ValidationError('Ese codigo no se corresponde con el de la clase actual')
+
+
+def check_lesson_done(sender, instance, **kwargs):
+	"""Si el checkin es realizado por un profesor pone lesson.done = True"""
+	try:
+		profile = instance.user.userprofile
+		if not profile.is_student:
+			lesson = instance.lesson
+			lesson.done = True
+			lesson.save()
+	except UserProfile.DoesNotExist:
+		pass
+post_save.connect(check_lesson_done, sender=CheckIn)
 
 
 class LessonComment(models.Model):

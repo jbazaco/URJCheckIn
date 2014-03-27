@@ -17,19 +17,18 @@
 				{% csrf_token %}
 				<fieldset>
 					<legend>Check in</legend>
-
-					{% if error %}
+					{% if form.non_field_errors %}
 						<div class="row">
 							<div class="col-sm-10 col-sm-offset-1">
 								<div class="alert alert-danger">
-									{{error}}
+									{{form.non_field_errors}}
 								</div>
 							</div>
 						</div>
 					{% endif %}
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="subject_select">Asignatura:</label>
-						<div class="col-sm-10">
+					<div id="group_subject" class="form-group">
+						<label class="col-sm-4 control-label" for="subject_select">Asignatura:</label>
+						<div class="col-sm-8">
 							<select id="subject_select" name="subject" class="btn btn-default" required>
 								{% for subject in subjects %}
 									<option value="{{subject.id}}">{{subject}}</option>
@@ -37,31 +36,92 @@
 							</select>
 						</div>
 					</div>
-		
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="codeword">C&oacute;digo: </label>
-						<div class="col-sm-10">
-							<input id="codeword" type="text" name="codeword" maxlength="20" size="15px" autofocus required>
+					{% if form.errors.codeword %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.codeword}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_codeword" class="form-group">
+						<label class="col-sm-4 control-label" for="id_codeword">C&oacute;digo: </label>
+						<div class="col-sm-8">
+							{{form.codeword}}
 						</div>
 					</div>
-					<input type="hidden" id="latitude" name="latitude">
-					<input type="hidden" id="longitude" name="longitude">
-					<input type="hidden" id="accuracy" name="accuracy">
+					{% if form.errors.latitude %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.latitude}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{{form.latitude}}
+					{% if form.errors.longitude %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.longitude}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{{form.longitude}}
 					{%if profile.is_student%}
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="id_mark">Puntuaci&oacute;n:</label>
-							<div class="col-sm-10">
+						{% if form.errors.mark %}
+							<div class="row">
+								<div class="col-sm-10 col-sm-offset-1">
+									<div class="alert alert-danger">
+										{{form.errors.mark}}
+									</div>
+								</div>
+							</div>
+						{% endif %}
+						<div id="group_mark" class="form-group">
+							<label class="col-sm-4 control-label" for="id_mark">Puntuaci&oacute;n:</label>
+							<div class="col-sm-8">
 								{{form.mark}}
 							</div>
 						</div>
-
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="id_comment">Comentario:</label>
-							<div class="col-sm-10">
+						{% if form.errors.comment %}
+							<div class="row">
+								<div class="col-sm-10 col-sm-offset-1">
+									<div class="alert alert-danger">
+										{{form.errors.comment}}
+									</div>
+								</div>
+							</div>
+						{% endif %}
+						<div id="group_comment" class="form-group">
+							<label class="col-sm-4 control-label" for="id_comment">Comentario:</label>
+							<div class="col-sm-8">
 								{{form.comment}}
 							</div>
 						</div>
-					{%endif%}
+					{% else %}
+						<div id="group_n_students" class="form-group">
+							<label class="col-sm-4 control-label" for="n_students">
+								N&uacute;mero de estudiantes:
+							</label>
+							<div class="col-sm-8">
+								<input type="number" step="1" name="n_students" id="n_students" value="0">
+							</div>
+						</div>
+						<input id="id_mark" type="hidden" value="3" name="mark">
+					{% endif %}
+					{% if msg %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-{% if ok %}success{% else %}danger{% endif %}">
+									{{msg|safe}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
 					<button type="submit" class="btn btn-success btn-block" name="checkin_submit" >
 						<span class="glyphicon glyphicon-ok-circle"></span> Check In
 					</button>

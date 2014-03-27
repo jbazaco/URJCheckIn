@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, ReviewClassForm, SubjectForm, ExtraLessonForm, ProfileImageForm
+from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -102,47 +102,48 @@ def home(request):
 
 def process_checkin(request):
 	"""Procesa un formulario para hacer checkin y devuelve un diccionario con 'ok' = True 
-		si se realiza con exito o con 'error' = mensaje_de_error si hay errores"""
-	try:#TODO hacer form
-		form = request.POST
-		try:
-			idsubj = form.__getitem__("subject")
-		except ValueError:
-			return {'error': 'Informacion de la asignatura incorrecta.'}
-		try:
-			profile = UserProfile.objects.get(user=request.user)
-			subject = profile.subjects.get(id=idsubj)
-			lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
-												end_time__gte=timezone.now())
-		except UserProfile.DoesNotExist:
-			return {'error': 'No tienes un perfil creado.'}
-		except Subject.DoesNotExist:
-			return {'error': 'No estas matriculado en esa asignatura.'}
-		except Lesson.DoesNotExist:
-			return {'error': 'Ahora no hay ninguna clase de la asignatura ' + str(subject)}
-		except Lesson.MultipleObjectsReturned:
-			return {'error': 'Actualmente hay dos clases de ' + str(subject) + 
-								', por favor, contacte con un administrador'}
-		print form.__getitem__("longitude")
-		print form.__getitem__("latitude")
-		print form.__getitem__("accuracy")
-		print form.__getitem__("codeword")
-		try:
-			mark = form.__getitem__("id_mark")
-		except KeyError:
-			mark = 3
-		try:
-			comment = form.__getitem__("id_comment")
-		except KeyError:
-			comment = ""
-		checkin = CheckIn(user=request.user, lesson=lesson, mark=mark,comment=comment)
-	except KeyError:
-		return {'error': 'Formulario incorrecto.'}
+		si se realiza con exito o 'ok': False en caso contrario. Devuelve a veces un 'msg'
+		informativo de lo ocurrido y devuelve siempre 'form' = al checkinform"""
+	form = request.POST
 	try:
-		checkin.save()
-	except IntegrityError:
-		return {'error': 'Ya habias realizado el checkin para esta clase.'}
-	return {'ok': True}
+		idsubj = form.__getitem__("subject")
+	except (ValueError, MultiValueDictKeyError):
+		return {'msg': 'Informacion de la asignatura incorrecta.', 'form': CheckInForm(form)}
+	try:
+		profile = UserProfile.objects.get(user=request.user)
+		subject = profile.subjects.get(id=idsubj)
+		lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
+										end_time__gte=timezone.now())
+	except UserProfile.DoesNotExist:
+		return {'msg': 'No tienes un perfil creado.', 'form': CheckInForm(form), 'ok': False}
+	except Subject.DoesNotExist:
+		return {'msg': 'No estas matriculado en esa asignatura.', 'form': CheckInForm(form), 
+				'ok': False}
+	except Lesson.DoesNotExist:
+		return {'msg': 'Ahora no hay ninguna clase de la asignatura ' + str(subject),
+				'form': CheckInForm(form), 'ok': False}
+	except Lesson.MultipleObjectsReturned:
+		return {'msg': 'Actualmente hay dos clases de ' + str(subject) + 
+				', por favor, contacte con un administrador', 'form': CheckInForm(form), 'ok': False}
+	checkin = CheckIn(user=request.user, lesson=lesson)
+	cform = CheckInForm(form, instance=checkin)
+	if cform.is_valid():
+		try:
+			cform.save()
+		except IntegrityError:
+			return {'ok': False, 'msg': 'Ya has realizado el checkin de esta clase', 
+					'form': CheckInForm()}
+		if not profile.is_student:
+			try:
+				n_stud = form.__getitem__("n_students")
+				lesson.students_counted = int(n_stud)
+				lesson.save()
+			except (ValueError, MultiValueDictKeyError):
+				pass
+		return {'ok': True, 'form': CheckInForm(), 'msg': 'Checkin realizado con &eacute;xito'}
+	else:
+		return {'ok': False, 'form': cform}
+
 
 @login_required
 def checkin(request):
@@ -150,6 +151,10 @@ def checkin(request):
 	if request.method == "POST":
 		resp = process_checkin(request)
 		if request.is_ajax():
+			if not 'msg' in resp:
+				if not resp['ok']:
+					resp['errors'] = resp['form'].errors
+			del resp['form']
 			return HttpResponse(json.dumps(resp), content_type="application/json")
 	elif request.method != "GET":
 		return method_not_allowed(request)
@@ -160,11 +165,14 @@ def checkin(request):
 		return send_error_page(request, 'No tienes un perfil creado.')
 	
 	subjects = profile.subjects.all()
-	ctx = {'htmlname': 'checkin.html', 'form': ReviewClassForm(), 'profile':profile, 
-			'subjects':subjects}
+	ctx = {'htmlname': 'checkin.html', 'form': CheckInForm(), 'profile': profile, 'subjects': subjects}
 	if request.method == "POST":
-		if 'error' in resp:
-			ctx['error'] = resp['error']
+		ctx['form'] = resp['form']
+		if 'msg' in resp:
+			ctx['msg'] = resp['msg']
+		if 'ok' in resp:
+			ctx['ok'] = resp['ok']
+	#TODO informar de que se ha realizado con exito (en vez de "error" podria ser "message" )
 	return response_ajax_or_not(request, ctx)
 
 
