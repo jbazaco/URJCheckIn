@@ -143,6 +143,11 @@ textarea {
 /*end FORUM*/
 
 /*start CHECKIN*/
+
+#qr_input, #qr-canvas, #qr_uploader {
+    display: none;
+}
+
 #alert_checkin {
 	width: 60%;
 	text-align: center;

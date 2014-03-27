@@ -53,3 +53,25 @@ function geolocationError(error) {
 	alert("Error #" + error.code + " " + error.message);
 }
 
+/* funcion cogida de https://github.com/LazarSoft/jsqrcode */
+function handleFiles(f) {
+	var o=[];
+	for(var i =0;i<f.length;i++)
+	{
+	  var reader = new FileReader();
+
+      reader.onload = (function(theFile) {
+        return function(e) {
+          qrcode.decode(e.target.result);
+        };
+      })(f[i]);
+
+      // Read in the image file as a data URL.
+      reader.readAsDataURL(f[i]);	}
+}
+
+function setQRDecoder() {
+	$('#qr_uploader').show();
+	qrcode.callback = function(msg) { $('#id_codeword').val(msg); };
+}
+

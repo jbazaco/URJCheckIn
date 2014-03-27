@@ -17,6 +17,12 @@
 				{% csrf_token %}
 				<fieldset>
 					<legend>Check in</legend>
+					<div id="qr_uploader">
+						<label for="qr_input">
+							<img height="32" width="32"src="/img/qrcode_icon.png"/>
+							Leer c&oacute;digo
+						</label>
+					</div>
 					{% if form.non_field_errors %}
 						<div class="row">
 							<div class="col-sm-10 col-sm-offset-1">
@@ -134,5 +140,9 @@
 <div id="alert_checkin">
 </div>
 
+<!--Para leer los codigos qr-->
+<input id="qr_input" type="file" onchange="handleFiles(this.files)">
+<canvas id="qr-canvas" width="640" height="480"></canvas>
+<script>setQRDecoder();</script>
 
 
