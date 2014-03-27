@@ -551,7 +551,7 @@ def sign_in_seminar(request, subject, profile):
 
 
 @login_required
-def subject_attendance(request, idsubj):#TODO que no cuente las clases a las que no asistio el profesor
+def subject_attendance(request, idsubj):
 	"""Devuelve la pagina con la informacion de la asistencia de los alumnos a una asignatura"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
@@ -569,7 +569,7 @@ def subject_attendance(request, idsubj):#TODO que no cuente las clases a las que
 		return send_error_page(request, 'La asignatura con id ' + str(idsubj) + ' no existe.')
 	
 	students = subject.userprofile_set.filter(is_student=True)
-	lessons = subject.lesson_set.filter(end_time__lte = timezone.now())
+	lessons = subject.lesson_set.filter(done=True)
 	n_lessons = lessons.count()
 	checkins = CheckIn.objects.filter(lesson__in = lessons)
 	students_info = []
