@@ -58,7 +58,7 @@ class Subject(models.Model):
 	def percent_prof_attend(self):
 		n_lesson_done = self.lesson_set.filter(done=True).count()
 		n_lesson_past = self.lesson_set.filter(end_time__lt = timezone.now()).count()
-		if n_lesson_past < 0:
+		if n_lesson_past < 1:
 			return 0
 		return round(100.0*n_lesson_done/n_lesson_past, 2)
 
@@ -69,7 +69,7 @@ class Subject(models.Model):
 		n_div = self.n_students()*n_lessons_done
 		n_checks = CheckIn.objects.filter(user__userprofile__is_student=True, 
 					lesson__subject=self, lesson__done=True).count()
-		if n_div < 0:
+		if n_div < 1:
 			return 0
 		return round(100.0*n_checks/n_div,2)
 
