@@ -191,7 +191,6 @@ class Lesson(models.Model):
 
 	def avg_mark(self):
 		checkins = self.checkin_set.filter(user__userprofile__is_student=True)
-		print checkins
 		if not checkins:
 			return 3
 		mark = checkins.aggregate(Avg('mark'))['mark__avg']

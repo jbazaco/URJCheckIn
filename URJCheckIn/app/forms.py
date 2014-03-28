@@ -95,4 +95,10 @@ class ControlFilterForm(forms.Form):
 											('Sem', 'Seminario'),
 											('Subj', 'Asignatura'),
 									), required=False)
+	order = forms.ChoiceField(choices=(
+										('name', 'Nombre'),
+										('first_date', 'Fecha de inicio'),
+										('last_date', 'Fecha de fin'),
+									))
+	order_reverse = forms.BooleanField(required=False)
 

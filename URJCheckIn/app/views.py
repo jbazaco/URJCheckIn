@@ -703,7 +703,6 @@ def edit_class(request, idlesson):
 	
 	if request.method != 'POST':
 		lform = ExtraLessonForm(instance=lesson)
-	print lesson.is_extra
 	ctx = {'lesson': lesson, 'form': lform, 'htmlname': 'class_edit.html'}
 	return response_ajax_or_not(request, ctx)
 
@@ -712,7 +711,6 @@ def edit_class(request, idlesson):
 def control_attendance(request):#TODO solo para gente con permisos!!! y ponerles permisos para ver las asignaturas y las clases!(y los comentarios a profesores)((professor = not is_student or haspermision)
 #TODO crear los permisos
 #TODO mostrar link en la pagina de inicio encima del calendario a quien tenga permisos
-#TODO crear filtros, ordenes distintos...
 	"""Devuelve una pagina para comprobar si las clases se estan realizando"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
@@ -720,9 +718,8 @@ def control_attendance(request):#TODO solo para gente con permisos!!! y ponerles
 		#return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
 
 	form = ControlFilterForm(request.GET)
-	all_subj = control_filter(form)
-	#TODO all_subj = control_order(form) ORDENARLAS?
-	subjects = my_paginator(request, all_subj.order_by('name'), 1)#TODO poner 10 otra vez
+	all_subj = control_order(form, control_filter(form))
+	subjects = my_paginator(request, all_subj, 10)
 	subjects_wrap = []
 	for subject in subjects:
 		element =  {'professors': subject.userprofile_set.filter(is_student=False), 'subject': subject}
@@ -781,6 +778,17 @@ def control_filter(form):
 								userprofile__user__last_name__contains=f_prof_1).distinct()
 
 	return all_subj
+
+def control_order(form, subjects):
+	"""Ordena las asignaturas por nombre, fecha de inicio o fecha de finlaizacion"""
+	if form.is_valid():
+		data = form.cleaned_data
+		order = data['order']
+		if data['order_reverse']:
+			order = '-' + order
+	else:
+		order = 'name'
+	return subjects.order_by(order)
 
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #
