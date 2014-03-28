@@ -80,3 +80,19 @@ class ProfileImageForm(forms.ModelForm):
 		model = UserProfile
 		fields = ('photo',)
 
+#Formulario para filtrar las asignaturas mostradas en el control de asignaturas
+class ControlFilterForm(forms.Form):
+	subject = forms.CharField(required=False, widget=forms.TextInput(attrs={
+												'placeholder':'asignatura'}))
+	degree = forms.CharField(required=False, widget=forms.TextInput(attrs={
+												'placeholder':'grado'}))
+	professor_0 = forms.CharField(required=False, widget=forms.TextInput(attrs={
+												'placeholder':'nombre profesor'}))
+	professor_1 = forms.CharField(required=False, widget=forms.TextInput(attrs={
+												'placeholder':'apellido profesor'}))
+	subject_type = forms.ChoiceField(choices=(
+											('', 'Seminarios y asignaturas'),
+											('Sem', 'Seminario'),
+											('Subj', 'Asignatura'),
+									), required=False)
+

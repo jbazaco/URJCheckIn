@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm
+from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -718,18 +718,69 @@ def control_attendance(request):#TODO solo para gente con permisos!!! y ponerles
 		return method_not_allowed(request)
 	#TODO if not permission
 		#return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
-	subjects = my_paginator(request, Subject.objects.all().order_by('name'), 10)
+
+	form = ControlFilterForm(request.GET)
+	all_subj = control_filter(form)
+	#TODO all_subj = control_order(form) ORDENARLAS?
+	subjects = my_paginator(request, all_subj.order_by('name'), 1)#TODO poner 10 otra vez
 	subjects_wrap = []
 	for subject in subjects:
 		element =  {'professors': subject.userprofile_set.filter(is_student=False), 'subject': subject}
 		subjects_wrap.append(element)
-	#TODO con ajax, si tiene un parametro concreto pasar solo los nuevos elementos, sino la pagina
-	#correspondiente entera
-
-	ctx = {'rows': subjects_wrap, 'subjects': subjects, 'htmlname': 'control_attendance.html'}
+	url_page = prepare_url_pagination(request.get_full_path())
+	ctx = {'form': form, 'rows': subjects_wrap, 'subjects': subjects, 
+			'htmlname': 'control_attendance.html', 'url_page': url_page}
 	return response_ajax_or_not(request, ctx)
 
 	
+
+def prepare_url_pagination(full_url):
+	"""Devuelve la url lista para poner el numero de pagina manteniendo la querystring
+		en caso de que la hubiese"""
+	url = full_url
+	if 'page=' in full_url:
+		url= full_url[:full_url.index('page=')-1] #elimina '?page=X' o '&page=X'
+
+	if '?' in url:
+		url = url + '&page='
+	else:
+		url = url + '?page='
+
+	return url
+
+
+def control_filter(form):
+	"""Filtra las asignaturas por nombre, profesor y grado segun el form del tipo ControlFilterForm"""
+	all_subj = Subject.objects.all()
+	if not form.is_valid():
+		return all_subj
+	data = form.cleaned_data
+
+	f_type =data['subject_type']	
+	if f_type == 'Sem':
+		all_subj = all_subj.filter(is_seminar=True)
+	elif f_type == 'Subj':
+		all_subj = all_subj.filter(is_seminar=False)
+
+	f_subject = data['subject']
+	if len(f_subject) > 0:
+		all_subj = all_subj.filter(name__contains=f_subject)
+
+	f_degree = data['degree']
+	if len(f_degree) > 0:
+		all_subj = all_subj.filter(degrees__name__contains=f_degree).distinct()
+
+	f_prof_0 = data['professor_0']
+	if len(f_prof_0) > 0:
+		all_subj = all_subj.filter(userprofile__is_student=False,
+								userprofile__user__first_name__contains=f_prof_0).distinct()
+
+	f_prof_1 =data['professor_1']
+	if len(f_prof_1):
+		all_subj = all_subj.filter(userprofile__is_student=False,
+								userprofile__user__last_name__contains=f_prof_1).distinct()
+
+	return all_subj
 
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #

@@ -1,92 +1,130 @@
 <h2 id="maintitle">Revisa las estad&iacute;sticas de las asignaturas</h2>
 
 <div class="row">
-	<div class="panel panel-info control_attendance">
-		<div class="panel-heading">
-			<h3 class="panel-title">Porcentaje de asistencia</h3>
+	<div class="col-xs-12">
+		<div class="well">
+			<form name="control_filter" class="form-inline" id="control_filter"
+			 action="/control/attendance" method="GET">
+				<fieldset>
+					<legend>Filtrar</legend>
+					<div class="form-group">
+						<label class="sr-only" for="id_subject">Asignatura:</label>
+						{{form.subject}}
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="id_degree">Grado:</label>
+						{{form.degree}}
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="id_professor_0">Nombre profesor:</label>
+						{{form.professor_0}}
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="id_professor_0">Apellidos profesor:</label>
+						{{form.professor_1}}
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="id_subject_type">Tipo:</label>
+						{{form.subject_type}}
+					</div>
+				</fieldset>
+				<button type="submit" class="btn btn-info btn-block">
+					<span class="glyphicon glyphicon-filter"></span> Filtrar
+				</button>
+			</form>
 		</div>
-		<ul class="subjects_list list-group classes_list">
-			{% if rows %}
-				{% if subjects.has_previous %}
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="panel panel-info control_attendance">
+			<div class="panel-heading">
+				<h3 class="panel-title">Porcentaje de asistencia</h3>
+			</div>
+			<ul class="control_list list-group">
+				{% if rows %}
+					{% if subjects.has_previous %}
+						<div class="list-group-item">
+							<div class="row">
+								<!-- Solo para cuando estemos en otra pagina, si hemos llegado alli 
+									no ha sido con javascript-->
+								<a class="btn btn-primary btn-sm btn-block ajax" role="button"
+								 href="{{url_page}}{{subjects.previous_page_number}}">
+									<span class="glyphicon glyphicon-refresh"></span>
+									Anteriores
+								</a>
+							</div>
+						</div>
+					{% endif %}
+
+					<div class="list-group-item hidden-xs">
+						<div class="row">
+							<strong>
+								<div class="col-sm-3">Asignatura</div>
+								<div class="col-sm-3">Grado</div>
+								<div class="col-sm-3">Profesores</div>
+								<div class="col-sm-1">Asist. (prof.)</div>
+								<div class="col-sm-1">Asist. (alum.)</div>
+								<div class="col-sm-1">Valor. media</div>
+							</strong>
+						</div>
+					</div>
+
+				{% endif %}
+				{% for row in rows%}
 					<div class="list-group-item">
 						<div class="row">
-							<!-- Solo para cuando estemos en otra pagina, si hemos llegado alli 
-								no ha sido con javascript-->
-							<a class="btn btn-primary btn-sm btn-block" role="button"
-							 href="?page={{subjects.previous_page_number}}">
-								<span class="glyphicon glyphicon-refresh"></span>
-								Anteriores
-							</a>
+							<div class="visible-xs legend">Asignatura:</div>
+							<div class="col-sm-3"><a href="/subjects/{{row.subject.id}}" class="ajax">
+									{{row.subject.name}}
+							</a></div>
+							<div class="visible-xs legend">Grados:</div>
+							<div class="col-sm-3">
+								<ul>
+									{% for degree in row.subject.degrees.all %}
+										<li>{{degree.name}}</li>
+									{% empty %}
+										Ninguno
+									{% endfor %}
+								</ul>
+							</div>
+							<div class="visible-xs legend">Profesores:</div>
+							<div class="col-sm-3">
+								<ul>
+									{% for prof in row.professors %}
+										<li><a href="/profile/view/{{prof.user.id}}" class="ajax">
+											{{prof.user.first_name}} {{prof.user.last_name}}
+										</a></li>
+									{% empty %}
+										Ninguno
+									{% endfor %}
+								</ul>
+							</div>
+							<div class="visible-xs legend">Asistencia (profesores):</div>
+							<div class="col-sm-1">{{row.subject.percent_prof_attend}}%</div>
+							<div class="visible-xs legend">Asistencia (alumnos):</div>
+							<div class="col-sm-1">{{row.subject.percent_stud_attend}}%</div>
+							<div class="visible-xs legend">Valoraci&oacute;n media:</div>
+							<div class="col-sm-1">{{row.subject.avg_mark}}/5</div>
 						</div>
+					</div>
+				{% empty %}
+					<li class="list-group-item">No hay ninguna asignatura</li>
+				{% endfor %}
+			</ul>
+			<div class="panel-footer">
+				{% if subjects.has_next %}
+					<a id="ask_older" href="{{url_page}}{{subjects.next_page_number}}" 
+					 class="btn btn-primary btn-sm btn-block ajax" role="button">
+						<span class="glyphicon glyphicon-refresh"></span> Siguientes
+					</a>
+				{% else %}
+					<div class="btn btn-primary btn-sm btn-block disabled">
+						Has llegado al fin de la lista
 					</div>
 				{% endif %}
-
-				<div class="list-group-item hidden-xs">
-					<div class="row">
-						<strong>
-							<div class="col-sm-3">Asignatura</div>
-							<div class="col-sm-3">Grado</div>
-							<div class="col-sm-3">Profesores</div>
-							<div class="col-sm-1">Asist. (prof.)</div>
-							<div class="col-sm-1">Asist. (alum.)</div>
-							<div class="col-sm-1">Valor. media</div>
-						</strong>
-					</div>
-				</div>
-
-			{% endif %}
-			{% for row in rows%}
-				<div class="list-group-item">
-					<div class="row">
-						<div class="visible-xs legend">Asignatura:</div>
-						<div class="col-sm-3"><a href="/subjects/{{row.subject.id}}" class="ajax">
-								{{row.subject.name}}
-						</a></div>
-						<div class="visible-xs legend">Grados:</div>
-						<div class="col-sm-3">
-							<ul>
-								{% for degree in row.subject.degrees.all %}
-									<li>{{degree.name}}</li>
-								{% empty %}
-									Ninguno
-								{% endfor %}
-							</ul>
-						</div>
-						<div class="visible-xs legend">Profesores:</div>
-						<div class="col-sm-3">
-							<ul>
-								{% for prof in row.professors %}
-									<li><a href="/profile/view/{{prof.user.id}}" class="ajax">
-										{{prof.user.first_name}} {{prof.user.last_name}}
-									</a></li>
-								{% empty %}
-									Ninguno
-								{% endfor %}
-							</ul>
-						</div>
-						<div class="visible-xs legend">Asistencia (profesores):</div>
-						<div class="col-sm-1">{{row.subject.percent_prof_attend}}%</div>
-						<div class="visible-xs legend">Asistencia (alumnos):</div>
-						<div class="col-sm-1">{{row.subject.percent_stud_attend}}%</div>
-						<div class="visible-xs legend">Valoraci&oacute;n media:</div>
-						<div class="col-sm-1">{{row.subject.avg_mark}}/5</div>
-					</div>
-				</div>
-			{% empty %}
-				<li class="list-group-item">No hay ninguna asignatura</li>
-			{% endfor %}
-		</ul>
-		<div class="panel-footer">
-			{% if subjects.has_next %}
-				<a id="ask_older" href="?page={{subjects.next_page_number}}" 
-				 class="btn btn-primary btn-sm btn-block" role="button">
-					<span class="glyphicon glyphicon-refresh"></span> Siguientes
-				</a>
-			{% else %}
-				<div class="btn btn-primary btn-sm btn-block disabled">
-					Has llegado al fin de la lista
-				</div>
-			{% endif %}
+			</div>
 		</div>
 	</div>
 </div>

@@ -168,11 +168,19 @@ textarea {
 /*start CONTROL_ATTENDANCE*/
 .control_attendance ul {
 	word-wrap: break-word;
-	padding-left: 0;
+	padding-left: 1em;
 }
 
 .control_attendance .legend {
 	font-weight: bold;
+}
+
+#control_filter button {
+	margin-top: 1em;
+}
+
+.control_attendance .control_list {
+	padding-left: 0;
 }
 /*end CONTROL_ATTENDACE*/
 
