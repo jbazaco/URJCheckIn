@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$('#mainbody').delegate('#control_filter', 'submit', filterControl);
+	$('#mainbody').delegate('.filter_form', 'submit', filterControl);
 })
 
 /* Envia un GET al servidor para obtener la infromacion filtrada */

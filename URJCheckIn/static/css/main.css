@@ -184,3 +184,33 @@ textarea {
 }
 /*end CONTROL_ATTENDACE*/
 
+/*start CONTROL_CODES*/
+.panel_code .panel_date {
+	float: right;
+}
+
+.panel_code .time {
+	font-weight: bold;
+	font-size: 150%;
+}
+
+.panel_code .codeword {
+	font-weight: bold;
+	word-wrap: break-word;
+}
+
+.panel_code .subject {
+	font-weight: bold;
+}
+
+.panel_code .printed_tip {
+	display: none;
+}
+
+.panel_code .qrcode_codeword > img {
+	height: 12em;
+	width: 12em;
+	margin: auto;
+}
+/*end CONTROL_CODES*/
+

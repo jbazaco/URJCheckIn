@@ -1,0 +1,67 @@
+<link href="/css/print_codes.css" rel="stylesheet" type="text/css"/>
+
+<h2 id="maintitle">Accede a los c&oacute;digos</h2>
+
+<div class="row" id="filter_row">
+	<div class="col-xs-12">
+		<div class="well">
+			<form name="filter_lessons" class="form-inline filter_form" id="control_filter"
+			 action="/control/codes" method="GET">
+				<fieldset>
+					<legend>Filtrar</legend>
+					<div class="form-group">
+						<label for="id_day">C&oacute;digos del d&iacute;a:</label>
+						{{form.day}}
+					</div>
+					<div class="form-group">
+						<label for="id_building">Edificio:</label>
+						{{form.building}}
+					</div>
+					<div class="form-group">
+						<label for="id_room">Aula:</label>
+						{{form.room}}
+					</div>
+					<div class="form-group">
+						<label for="id_subject_type">Tipo:</label>
+						{{form.subject_type}}
+					</div>
+				</fieldset>
+				<button type="submit" class="btn btn-info btn-block">
+					<span class="glyphicon glyphicon-filter"></span> Obtener c&oacute;digos
+				</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% for lesson in lessons %}
+	<div class="panel panel-default panel_code">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				{{lesson.room}}<div class="panel_date">{{lesson.start_time|date:'d-m-Y'}}</div>
+			</h3>
+		</div>
+		<div class="panel-body">
+			<p>
+				Horario:
+				<span class="time">
+					{{lesson.start_time|date:'H:i'}}-{{lesson.end_time|date:'H:i'}}
+				</span>
+			</p>
+			<p>Asignatura: <span class="subject">{{lesson.subject}}</span></p>
+			<p>
+				C&oacute;digo: 
+				<span class="codeword">{{lesson.codeword}}</span>
+			</p>
+			<p>
+				<div id="qrcode_{{lesson.id}}" class="qrcode_codeword"></div>
+				<script>
+					new QRCode(document.getElementById("qrcode_{{lesson.id}}"), "{{lesson.codeword}}");
+				</script>
+			</p>
+			<p class="printed_tip">
+				Escanea el c&oacute;digo pinchando en <span>"Leer c&oacute;digo"</span> en el checkin
+			</p>
+		</div>
+	</div>
+{% endfor %}
+

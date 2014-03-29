@@ -1,5 +1,5 @@
 from django import forms
-from models import Degree, Subject, UserProfile, Lesson, CheckIn
+from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room
 from django.forms.util import to_current_timezone
 
 class MySplitDateTimeWidget(forms.MultiWidget):
@@ -51,10 +51,6 @@ class ExtraLessonForm(forms.ModelForm):
 		widgets = {
 			'start_time': MySplitDateTimeWidget(date_attrs={'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 'required': 'required', 'placeholder':'HH:MM'}),
 			'end_time': MySplitDateTimeWidget(date_attrs={'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 'required': 'required', 'placeholder':'HH:MM'}),
-			#'start_time': forms.TextInput(attrs={'type': 'datetime-local', 'required': 'required',
-			#							'placeholder':'AAAA-MM-DDTHH:MM'}),
-			#'end_time': forms.TextInput(attrs={'type': 'datetime-local', 'required': 'required',
-			#							 'placeholder':'AAAA-MM-DDTHH:MM'}),
 		}
 	
 #Formulario para crear un Subject (no incluye el campo is_seminar)
@@ -102,3 +98,18 @@ class ControlFilterForm(forms.Form):
 									))
 	order_reverse = forms.BooleanField(required=False)
 
+
+#Formulario para filtrar los codigos de las clases
+class CodesFilterForm(forms.Form):#TODO poner margen de horas
+	day = forms.DateField(widget=forms.TextInput(attrs={'placeholder':'AAAA-MM-DD',
+							'required':'required', 'type':'date'}))
+	building = forms.CharField(required=False, widget=forms.TextInput(attrs={
+							'placeholder':'edificio'}))
+	room = forms.ModelChoiceField(required=False, queryset=Room.objects.all(), 
+							empty_label="cualquiera")
+	subject_type = forms.ChoiceField(choices=(
+											('', 'Seminarios y asignaturas'),
+											('Sem', 'Seminario'),
+											('Subj', 'Asignatura'),
+									), required=False)
+	

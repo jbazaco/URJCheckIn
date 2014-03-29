@@ -95,7 +95,7 @@ class Room(models.Model):
 		unique_together = ("room", "building")
 
 	def __unicode__(self):
-		return u"Aula %i" % (self.id)
+		return u"Aula %s Edificio %s" % (self.room, self.building)
 
 
 def user_image_path(instance, filename):

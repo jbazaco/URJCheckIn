@@ -1,0 +1,38 @@
+@media print {
+
+	.panel_code {
+		page-break-after:always;
+	}
+
+	#menu_bar, #menu_bar_space, #maintitle, #filter_row {
+		display: none;
+	}
+
+	.panel_code .time, .panel_code .subject, .panel_code .panel-title  {
+		font-weight: bold;
+		font-size: 150%;
+	}
+
+	.panel_code .codeword {
+		font-weight: bold;
+		font-size: 350%;
+		letter-spacing: 0.4em;
+		word-wrap: break-word;
+	}
+
+	.panel_code .qrcode_codeword > img {
+		height: 30em;
+		width: 30em;
+	}
+
+	.panel_code .printed_tip {
+		display: block;
+		text-align: center;
+	}
+
+	.panel_code .printed_tip > span {
+		font-weight: bold;
+		font-size: 120%;
+	}
+
+}

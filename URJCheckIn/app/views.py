@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm
+from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -790,6 +790,51 @@ def control_order(form, subjects):
 		order = 'name'
 	return subjects.order_by(order)
 
+
+@login_required
+def show_codes(request):
+#TODO crear los permisos, mostrar solo a quien tenga permisos
+#TODO mostrar link en la pagina de inicio encima del calendario a quien tenga permisos
+	"""Devuelve una pagina con los codigos para hacer checkin"""
+	if request.method != 'GET':
+		return method_not_allowed(request)
+	#TODO if not permission
+		#return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
+	form = CodesFilterForm(request.GET)
+	all_lessons = codes_filter(form)
+	#TODO order
+	ctx = {'form': form, 'htmlname': 'control_codes.html', 'lessons': all_lessons}
+	return response_ajax_or_not(request, ctx)
+
+
+def codes_filter(form):
+	"""Filtra las clases por dia, aula, edificio y tipo de Subject segun el form del tipo 
+		CodesFilterForm"""
+	if not form.is_valid():
+		return {}
+	all_lessons = Lesson.objects.all()
+	data = form.cleaned_data
+
+	f_type = data['subject_type']	
+	if f_type == 'Sem':
+		all_lessons = all_lessons.filter(subject__is_seminar=True)
+	elif f_type == 'Subj':
+		all_lessons = all_lessons.filter(subject__is_seminar=False)
+	
+	f_date = data['day']
+	all_lessons = all_lessons.filter(start_time__year = f_date.year,
+									start_time__month = f_date.month,
+									start_time__day = f_date.day)
+	f_room = data['room']
+	f_building = data['building']
+	if f_room:
+		all_lessons = all_lessons.filter(room=f_room)
+	elif len(f_building) > 0:
+		all_lessons = all_lessons.filter(room__building__contains=f_building)#TODO cambiar por building
+
+	return all_lessons
+	
+	
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #
 ########################################################
