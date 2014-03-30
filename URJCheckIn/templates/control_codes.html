@@ -25,7 +25,25 @@
 						<label for="id_subject_type">Tipo:</label>
 						{{form.subject_type}}
 					</div>
+					<div class="form-group">
+						<label for="id_form_time">Desde las:</label>
+						{{form.from_time}}
+					</div>
+					<div class="form-group">
+						<label for="id_to_time">Hasta las:</label>
+						{{form.to_time}}
+					</div>
+					</br>
+					<div class="form-group">
+						<label for="id_order">Ordenar por:</label>
+						{{form.order}}
+					</div>
+					<div class="form-group">
+						{{form.order_reverse}}
+						<label for="id_order_reverse">orden inverso</label>
+					</div>
 				</fieldset>
+				<p>*Por defecto se mostrar&aacute;n las clases desde este momento hasta el final del d&iacute;a</p>
 				<button type="submit" class="btn btn-info btn-block">
 					<span class="glyphicon glyphicon-filter"></span> Obtener c&oacute;digos
 				</button>

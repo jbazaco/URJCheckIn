@@ -1,6 +1,7 @@
 from django import forms
 from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room
-from django.forms.util import to_current_timezone
+from django.forms.util import to_current_timezone, timezone
+import datetime
 
 class MySplitDateTimeWidget(forms.MultiWidget):
 	"""SplitDateTimeWidget pero permitiendo editar los attrs de DateInput y TimeInput por
@@ -101,9 +102,9 @@ class ControlFilterForm(forms.Form):
 
 #Formulario para filtrar los codigos de las clases
 class CodesFilterForm(forms.Form):#TODO poner margen de horas
-	day = forms.DateField(widget=forms.TextInput(attrs={'placeholder':'AAAA-MM-DD',
-							'required':'required', 'type':'date'}))
-	building = forms.CharField(required=False, widget=forms.TextInput(attrs={
+	day = forms.DateField(required=False, widget=forms.TextInput(attrs={'placeholder':'AAAA-MM-DD',
+							'type':'date'}))
+	building = forms.CharField(required=False, widget=forms.TextInput(attrs={#TODO cambiar
 							'placeholder':'edificio'}))
 	room = forms.ModelChoiceField(required=False, queryset=Room.objects.all(), 
 							empty_label="cualquiera")
@@ -112,4 +113,40 @@ class CodesFilterForm(forms.Form):#TODO poner margen de horas
 											('Sem', 'Seminario'),
 											('Subj', 'Asignatura'),
 									), required=False)
+	from_time =  forms.TimeField(widget=forms.TextInput(attrs={'placeholder':'HH:MM',
+							'type':'time'}), required=False)
+	to_time =  forms.TimeField(widget=forms.TextInput(attrs={'placeholder':'HH:MM',
+							'type':'time'}), required=False)
+	order = forms.ChoiceField(choices=(
+										('start_time', 'Hora de inicio'),
+										('room__room', 'Aula'),
+										('room__building', 'Edificio'),#TODO cambiar
+									))
+	order_reverse = forms.BooleanField(required=False)
+
+	def clean_day(self):
+		"""Si day esta vacio pone el dia de hoy"""
+		data = self.cleaned_data['day']
+		if data:
+			return data
+		else:
+			return datetime.date.today()
 	
+	def clean_from_time(self):
+		"""Si from_rime esta vacio pone la hora actual"""
+		data = self.cleaned_data['from_time']
+		if data:
+			return data
+		else:
+			now = timezone.now()
+			return datetime.time(now.hour, now.minute)
+
+	def clean_to_time(self):
+		"""Si to_time esta vacio pone la ultima hora del dia"""
+		data = self.cleaned_data['to_time']
+		if data:
+			return data
+		else:
+			return datetime.time.max
+
+

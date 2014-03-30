@@ -801,11 +801,22 @@ def show_codes(request):
 	#TODO if not permission
 		#return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
 	form = CodesFilterForm(request.GET)
-	all_lessons = codes_filter(form)
+	all_lessons = codes_order(form, codes_filter(form))
 	#TODO order
 	ctx = {'form': form, 'htmlname': 'control_codes.html', 'lessons': all_lessons}
 	return response_ajax_or_not(request, ctx)
 
+
+def codes_order(form, lessons):
+	"""Ordena las clases por fecha de inicio, aula o edificio"""
+	if not lessons or not form.is_valid:
+		return lessons
+	
+	data = form.cleaned_data
+	order = data['order']
+	if data['order_reverse']:
+		order = '-' + order
+	return lessons.order_by(order)
 
 def codes_filter(form):
 	"""Filtra las clases por dia, aula, edificio y tipo de Subject segun el form del tipo 
@@ -814,24 +825,27 @@ def codes_filter(form):
 		return {}
 	all_lessons = Lesson.objects.all()
 	data = form.cleaned_data
-
 	f_type = data['subject_type']	
 	if f_type == 'Sem':
 		all_lessons = all_lessons.filter(subject__is_seminar=True)
 	elif f_type == 'Subj':
 		all_lessons = all_lessons.filter(subject__is_seminar=False)
-	
+
 	f_date = data['day']
-	all_lessons = all_lessons.filter(start_time__year = f_date.year,
-									start_time__month = f_date.month,
-									start_time__day = f_date.day)
+	f_from = data['from_time']
+	f_to = data['to_time']
+	f_from_dt = datetime.datetime(f_date.year, f_date.month, f_date.day, f_from.hour, f_from.minute)
+	f_to_dt = datetime.datetime(f_date.year, f_date.month, f_date.day, f_to.hour, f_to.minute)
+	#TODO solucionar warnings
+	#TODO las horas estan bien pero al filtrar las cambia (les resta algunas horas por no tener timezone)
+	all_lessons = all_lessons.filter(start_time__lte = f_to_dt, start_time__gte = f_from_dt)
+
 	f_room = data['room']
 	f_building = data['building']
 	if f_room:
 		all_lessons = all_lessons.filter(room=f_room)
 	elif len(f_building) > 0:
 		all_lessons = all_lessons.filter(room__building__contains=f_building)#TODO cambiar por building
-
 	return all_lessons
 	
 	
