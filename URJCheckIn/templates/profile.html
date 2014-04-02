@@ -24,23 +24,31 @@
 			<dd id="desc_profile">{{profile.description}}</dd>
 			{% if profile.is_student %}
 				<dt>Estudia: </dt>
-				<dd>
-					{% for degree in profile.degrees.all %}
-						{% if not forloop.first %}
-							,
-						{% endif %}
-						{{degree.name}}
-					{% endfor %}
-				</dd>
 			{% else %}
 				<dt>Ense&ntilde;a: </dt>
-				<dd>
-					<ul id="degrees_list">
-						{% for degree in profile.degrees.all %}
-							<li class="degree">{{degree.name}}</li>
-						{% endfor %}
-					</ul>
-				</dd>
+			{% endif %}
+			<dd>
+				{% for degree in profile.degrees.all %}
+					{% if not forloop.first %}
+						,
+					{% endif %}
+					{{degree.name}}
+				{% endfor %}
+			</dd>
+			<dt>Asignaturas: </dt>
+			<dd>
+				{% for subject in profile.subjects.all %}
+					{% if not forloop.first %}
+						,
+					{% endif %}
+					<a href="/subjects/{{subject.id}}" class="ajax">
+						{{subject.name}}
+					</a>
+				{% endfor %}
+			</dd>
+			{% if profile.user.email %}
+				<dt>e-mail: </dt>
+				<dd>{{profile.user.email}}</dd>
 			{% endif %}
 			</div>
 		</dl>
