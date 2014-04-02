@@ -138,7 +138,7 @@ class CodesFilterForm(forms.Form):#TODO poner margen de horas
 		if data:
 			return data
 		else:
-			now = timezone.now()
+			now = to_current_timezone(timezone.now())
 			return datetime.time(now.hour, now.minute)
 
 	def clean_to_time(self):

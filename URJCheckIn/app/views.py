@@ -20,6 +20,7 @@ from django.contrib.auth.models import User
 import json
 from django.db import IntegrityError
 from django.core.files.storage import default_storage
+import pytz
 
 WEEK_DAYS_BUT_SUNDAY = ['Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado']
 
@@ -834,10 +835,13 @@ def codes_filter(form):
 	f_date = data['day']
 	f_from = data['from_time']
 	f_to = data['to_time']
+	#Las horas son naive, y estan relacionadas con la hora local del usuario que solicita los codigos
+	#por eso se las localiza con la timezone local
 	f_from_dt = datetime.datetime(f_date.year, f_date.month, f_date.day, f_from.hour, f_from.minute)
+	f_from_dt = pytz.timezone(str(timezone.get_current_timezone())).localize(f_from_dt, is_dst=None)
 	f_to_dt = datetime.datetime(f_date.year, f_date.month, f_date.day, f_to.hour, f_to.minute)
-	#TODO solucionar warnings
-	#TODO las horas estan bien pero al filtrar las cambia (les resta algunas horas por no tener timezone)
+	f_to_dt = pytz.timezone(str(timezone.get_current_timezone())).localize(f_to_dt, is_dst=None)
+	
 	all_lessons = all_lessons.filter(start_time__lte = f_to_dt, start_time__gte = f_from_dt)
 
 	f_room = data['room']
