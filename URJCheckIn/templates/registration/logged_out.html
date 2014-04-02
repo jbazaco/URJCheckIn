@@ -1,0 +1,27 @@
+{% extends "registration/no_logged_main.html" %}
+
+{% block mainbody %}
+	<div id="menu_bar" class="login_bar">
+		<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+		</header>
+	</div>
+	<div id="menu_bar_space">
+		<!--para dejar el espacio que ocupa la barra de menu-->
+	</div>
+	<h2 id="maintitle">
+		URJCheckIn
+	</h2>
+	<div class="container" id="logged:_out_box">
+		<div class="row text-center">
+			<div class="col-md-4 col-md-offset-4">
+				<div class="panel">
+					<h3>Sesi&oacute;n terminada.<br/>
+						<a href="/login">
+							<span class="glyphicon glyphicon-log-in"></span> Inicia sesi&oacute;n
+						</a>
+					</h3>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
