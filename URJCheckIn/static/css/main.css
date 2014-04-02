@@ -224,5 +224,9 @@ textarea {
 	margin: auto;
 	margin-top: 1em;
 }
+
+button.show_map {
+	display: none;
+}
 /*end CLASS_ATTENDANCE*/
 
