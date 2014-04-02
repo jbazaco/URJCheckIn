@@ -1,5 +1,5 @@
 from django import forms
-from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room
+from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room, Building
 from django.forms.util import to_current_timezone, timezone
 import datetime
 
@@ -101,11 +101,11 @@ class ControlFilterForm(forms.Form):
 
 
 #Formulario para filtrar los codigos de las clases
-class CodesFilterForm(forms.Form):#TODO poner margen de horas
+class CodesFilterForm(forms.Form):
 	day = forms.DateField(required=False, widget=forms.TextInput(attrs={'placeholder':'AAAA-MM-DD',
 							'type':'date'}))
-	building = forms.CharField(required=False, widget=forms.TextInput(attrs={#TODO cambiar
-							'placeholder':'edificio'}))
+	building = forms.ModelChoiceField(required=False, queryset=Building.objects.all(), 
+							empty_label="todos")
 	room = forms.ModelChoiceField(required=False, queryset=Room.objects.all(), 
 							empty_label="cualquiera")
 	subject_type = forms.ChoiceField(choices=(
@@ -120,7 +120,7 @@ class CodesFilterForm(forms.Form):#TODO poner margen de horas
 	order = forms.ChoiceField(choices=(
 										('start_time', 'Hora de inicio'),
 										('room__room', 'Aula'),
-										('room__building', 'Edificio'),#TODO cambiar
+										('room__building__building', 'Edificio'),
 									))
 	order_reverse = forms.BooleanField(required=False)
 

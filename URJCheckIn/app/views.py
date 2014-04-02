@@ -848,8 +848,8 @@ def codes_filter(form):
 	f_building = data['building']
 	if f_room:
 		all_lessons = all_lessons.filter(room=f_room)
-	elif len(f_building) > 0:
-		all_lessons = all_lessons.filter(room__building__contains=f_building)#TODO cambiar por building
+	elif f_building:
+		all_lessons = all_lessons.filter(room__building=f_building)
 	return all_lessons
 	
 	

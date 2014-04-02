@@ -83,9 +83,19 @@ class Subject(models.Model):
 		return round(mark/lessons.count(), 2)
 
 
+class Building(models.Model):
+	building = models.CharField(max_length=30, verbose_name='edificio', unique=True)
+
+	class Meta:
+		verbose_name='edificio'
+
+	def __unicode__(self):
+		return u"Edificio %s" % (self.building)
+
+
 class Room(models.Model):
 	room = models.CharField(max_length=20, verbose_name='aula')
-	building = models.CharField(max_length=20, verbose_name='edificio')
+	building = models.ForeignKey(Building, verbose_name='edificio')
 	centre_longitude = models.IntegerField(verbose_name='centro longitud')
 	centre_latitude = models.IntegerField(verbose_name='centro latitud')
 	radius = models.IntegerField(verbose_name='radio')
@@ -95,7 +105,7 @@ class Room(models.Model):
 		unique_together = ("room", "building")
 
 	def __unicode__(self):
-		return u"Aula %s Edificio %s" % (self.room, self.building)
+		return u"Aula %s, %s" % (self.room, self.building)
 
 
 def user_image_path(instance, filename):
