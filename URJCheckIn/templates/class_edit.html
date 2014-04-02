@@ -4,7 +4,7 @@
 			<form name="edit_class" class="form-horizontal edit_form" id="edit_class"
 			 action="/class/{{lesson.id}}/edit" method="POST">
 				<fieldset>
-					<legend>Crear clase de {{subject}}</legend>
+					<legend>Editar clase de {{lesson.subject}} [{{lesson}}]</legend>
 					{% csrf_token %}
 					{% if form.non_field_errors %}
 						<div class="row">

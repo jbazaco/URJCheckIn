@@ -4,6 +4,12 @@
 <div id="class_info" class="row"> 
 	<dl class="dl-horizontal col-md-10 col-md-offset-1 fields">
 		<div class="span2 well">
+			<dt>{% if lesson.subject.is_seminar %}Seminario{% else %}Asignatura{% endif %}: </dt>
+			<dd>
+				<a href="/subjects/{{subject.id}}" class="ajax">
+					{{lesson.subject.name}}
+				</a>
+			</dd>
 			<dt>Estado: </dt>
 			<dd>{{lesson_state|safe}}</dd>
 			<dt>N&uacute;mero de alumnos: </dt> <dd>{{subject.n_students}} </dd>
@@ -40,8 +46,6 @@
 			</dd>
 			<dt>Aula: </dt> 
 			<dd>{{lesson.room}}</dd>
-			<dt>More: </dt>
-			<dd>{more}</dd>
 		</div>
 	</dl>
 </div>
