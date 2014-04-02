@@ -165,7 +165,7 @@ class Lesson(models.Model):
 		verbose_name='clase'
 
 	def __unicode__(self):
-		return u"Clase de %s" % (self.subject)
+		return u"Clase de %s (%s)" % (self.subject, self.start_time)
 	
 	def clean(self):
 		super(Lesson, self).clean()
@@ -192,10 +192,13 @@ class Lesson(models.Model):
 			except (Subject.DoesNotExist, Room.DoesNotExist):
 				pass
 
+	def n_stud_checkin(self):
+		return self.checkin_set.filter(user__userprofile__is_student=True).count()
+
 	def checkin_percent(self):
 		n_students = self.subject.n_students()
 		if n_students > 0:
-			n_checkin = self.checkin_set.filter(user__userprofile__is_student=True).count()
+			n_checkin = self.n_stud_checkin()
 			return round(100.0*n_checkin/n_students,2)
 		else:
 			return 100

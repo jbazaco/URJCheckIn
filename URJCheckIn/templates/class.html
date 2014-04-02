@@ -6,12 +6,22 @@
 		<div class="span2 well">
 			<dt>Estado: </dt>
 			<dd>{{lesson_state|safe}}</dd>
-			{% ifequal lesson_state "sin realizar" %}
-				<dt>N&uacute;mero de alumnos: </dt> <dd>{{subject.n_students}} </dd>
-			{% else %}
-				<dt>Asistencia: </dt> <dd>{{lesson.checkin_percent}}%</dd>
-				<dt>Puntuaci&oacute;n media: </dt> <dd>{{lesson.avg_mark}}</dd>
-			{% endifequal %}
+			<dt>N&uacute;mero de alumnos: </dt> <dd>{{subject.n_students}} </dd>
+			{% if lesson_state != "sin realizar" %}
+				<dt>Asistencia: </dt>
+				{% if lesson.done %}
+					<dd>
+						{{lesson.checkin_percent}}%
+						{% if not profile.is_student %}
+							(hicieron checkin {{lesson.n_stud_checkin}} alumnos
+							de {{lesson.students_counted}} alumnos contados)
+						{% endif %}
+					</dd>
+					<dt>Puntuaci&oacute;n media: </dt> <dd>{{lesson.avg_mark}}</dd>
+				{% else %}
+					<dd>No asisti&oacute; el profesor</dd>
+				{% endif %}
+			{% endif %}
 			<dt>Fecha: </dt>
 			<dd>{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}</dd>
 			<dt>Profesor{{profesors|length|pluralize:"es"}}: </dt>
