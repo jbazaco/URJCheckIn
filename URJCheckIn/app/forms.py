@@ -23,8 +23,8 @@ class CheckInForm(forms.ModelForm):
 		model = CheckIn
 		fields = ('mark', 'comment', 'longitude', 'latitude', 'codeword')
 		widgets = {
-			'mark': forms.TextInput(attrs={'required':'required','type':'number', 'min':1, 
-											'max':'5', 'value':'3', 'step':'1'}),
+			'mark': forms.TextInput(attrs={'required':'required','type':'number', 'min':0, 
+								'max':'5', 'value':'3', 'step':'1', 'placeholder':'0-5'}),
 			'comment': forms.Textarea(attrs={'maxlength':'250', 'class': 'form-control', 
 												'rows': '3'}),
 			'longitude': forms.TextInput(attrs={'hidden': 'hidden'}),
