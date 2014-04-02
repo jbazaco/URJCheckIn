@@ -37,6 +37,11 @@
 					{%endfor%}
 				</ul>
 			</dd>
+			<dt>Estado: </dt>
+			<dd> {{classes_p|length}} clases pasadas y {{classes_f|length}} restantes</dd>
+			<dt>Valoraci&oacute;n media: </dt> <dd>{{subject.avg_mark}}/5</dd>
+			<dt>Asistencia profesor: </dt> <dd>{{subject.percent_prof_attend}}%</dd>
+			<dt>Asistencia alumnos: </dt> <dd>{{subject.percent_stud_attend}}%</dd>
 			{% if subject.is_seminar %}
 				<dt>Plazas ocupadas: </dt> 
 				<dd>
