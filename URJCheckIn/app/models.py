@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils import timezone, formats
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db.models import Avg
@@ -165,7 +165,8 @@ class Lesson(models.Model):
 		verbose_name='clase'
 
 	def __unicode__(self):
-		return u"Clase de %s (%s)" % (self.subject, self.start_time)
+		return u"Clase de %s (%s)" % (self.subject, 
+				formats.date_format(self.start_time, "SHORT_DATETIME_FORMAT"))
 	
 	def clean(self):
 		super(Lesson, self).clean()
