@@ -24,8 +24,8 @@ function hideElements(elems){
 	mensajes del array errors como texto */
 function alertBefore(errors, elem_id, class_id, alert_type) {
 	var error_msg = "";
-	for (error in errors)
-		error_msg += errors[error];
+	for (var i=0; i < errors.length; i++)
+		error_msg += errors[i];
 	elem = $(elem_id);
 	if (elem.length > 0) {
 		elem.before('<div class="row ' + class_id + '">' +
