@@ -34,15 +34,18 @@
 					</h3>
 				</div>
 				<div class="panel-body">
-					<p>Checkin con codeword: {% if checkin.codeword %}S&iacute;{% else %}No{% endif %}</p>
+					<p>
+						Checkin con c&oacute;digo: 
+						<span>{% if checkin.codeword %}S&iacute;{% else %}No{% endif %}<span>
+					</p>
 					<p>
 						Checkin con Localizaci&oacute;n: 
 						{% if checkin.longitude %} 
-							latitud {{checkin.latitude}}, longitud {{checkin.longitude}}
+							<span>latitud {{checkin.latitude}}, longitud {{checkin.longitude}}</span>
 							<button name="{{checkin.latitude|stringformat:'f'}},{{checkin.longitude|stringformat:'f'}}"
 							 class="show_map btn btn-info">Comparar</button>
 						{% else %}
-							No
+							<span>No</span>
 						{% endif %}
 					</p>
 				</div>

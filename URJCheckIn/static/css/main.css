@@ -215,7 +215,7 @@ textarea {
 /*end CONTROL_CODES*/
 
 /*start CLASS_ATTENDANCE*/
-#room_location p > span {
+#room_location p > span, .student_checkin p > span {
 	font-weight: bold;
 }
 
