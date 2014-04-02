@@ -19,8 +19,13 @@
 					<dd>
 						{{lesson.checkin_percent}}%
 						{% if not profile.is_student %}
-							(hicieron checkin {{lesson.n_stud_checkin}} alumnos
-							de {{lesson.students_counted}} alumnos contados)
+							<a href="/class/{{lesson.id}}/attendance" class="ajax">
+								(hi{{lesson.n_stud_checkin|pluralize:"zo,cieron" }}
+								checkin {{lesson.n_stud_checkin}} 
+								alumno{{lesson.n_stud_checkin|pluralize}}
+								de {{lesson.students_counted}} 
+								contado{{lesson.students_counted|pluralize}})
+							</a>
 						{% endif %}
 					</dd>
 					<dt>Puntuaci&oacute;n media: </dt> <dd>{{lesson.avg_mark}}</dd>

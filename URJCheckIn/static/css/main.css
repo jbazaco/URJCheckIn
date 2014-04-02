@@ -214,3 +214,15 @@ textarea {
 }
 /*end CONTROL_CODES*/
 
+/*start CLASS_ATTENDANCE*/
+#room_location p > span {
+	font-weight: bold;
+}
+
+.student_checkin .map {
+	display: block;
+	margin: auto;
+	margin-top: 1em;
+}
+/*end CLASS_ATTENDANCE*/
+

@@ -1,0 +1,53 @@
+
+<h2 id="maintitle">
+	{{lesson}} <br/>
+	<small>
+		Revisa los checkin de los alumnos.
+		Hi{{lesson.n_stud_checkin|pluralize:"zo,cieron" }} checkin {{lesson.n_stud_checkin}} 
+		alumno{{lesson.n_stud_checkin|pluralize}} de {{lesson.students_counted}} 
+		contado{{lesson.students_counted|pluralize}}.
+	</small>
+</h2>
+<div id="room_location" class="row">
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+		<div class="panel panel-info panel_code">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					{{lesson.room}} 
+				</h3>
+			</div>
+			<div class="panel-body">
+				<p>Longitud: <span id="room_longitude">{{lesson.room.centre_longitude}}</span></p>
+				<p>Latitud: <span id="room_latitude">{{lesson.room.centre_latitude}}</span></p>
+				<p>Radio: <span id="room_radius">{{lesson.room.radius}}</span></p>
+			</div>
+		</div>
+	</div>
+</div>
+{% for checkin in checkins %}
+	<div class="row student_checkin">
+		<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+			<div class="panel panel-default panel_code">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						{{checkin.user.first_name}} {{checkin.user.last_name}} 
+					</h3>
+				</div>
+				<div class="panel-body">
+					<p>Checkin con codeword: {% if checkin.codeword %}S&iacute;{% else %}No{% endif %}</p>
+					<p>
+						Checkin con Localizaci&oacute;n: 
+						{% if checkin.longitude %} 
+							latitud {{checkin.latitude}}, longitud {{checkin.longitude}}
+							<button name="{{checkin.latitude|stringformat:'f'}},{{checkin.longitude|stringformat:'f'}}"
+							 class="show_map btn btn-info">Comparar</button>
+						{% else %}
+							No
+						{% endif %}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+

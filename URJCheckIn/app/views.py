@@ -313,6 +313,26 @@ def process_class(request, idclass):
 
 
 @login_required
+def class_attendance(request, idlesson):
+	"""Procesa las peticiones sobre una clase y guarda un LessonComment si recibe un POST"""
+	if request.method != "GET":
+		return method_not_allowed(request)
+
+	try:
+		lesson = Lesson.objects.get(id=idlesson)
+		profile = lesson.subject.userprofile_set.get(user=request.user, is_student=False)
+	except Lesson.DoesNotExist:
+		return send_error_page(request, 'La clase a la que intentas acceder no existe.')
+	except UserProfile.DoesNotExist:
+		return send_error_page(request, 'Solo los profesores de la asignatura tienen acceso.')
+	
+	ctx = {'lesson':lesson, 
+			'checkins': lesson.checkin_set.filter(user__userprofile__is_student=True), 
+			'htmlname': 'class_attendance.html'}
+	return response_ajax_or_not(request, ctx)
+
+
+@login_required
 def save_lesson_comment(request, lesson):
 	"""Guarda un LessonComment con la informacion del formulario recibido para la clase lesson y 
 		el usuario request.user y devuelve un diccionario con un ok = True si la peticion no es ajax
