@@ -96,7 +96,7 @@ def home(request):
 								start_time__day = date.day
 							).order_by('start_time')
 					})
-	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=7),
+	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=6),
 			'previous':week-1, 'next': week+1, 'htmlname': 'home.html'}
 	return response_ajax_or_not(request, ctx)
 
