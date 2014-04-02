@@ -166,7 +166,7 @@ class Lesson(models.Model):
 
 	def __unicode__(self):
 		return u"Clase de %s (%s)" % (self.subject, 
-				formats.date_format(self.start_time, "SHORT_DATETIME_FORMAT"))
+				formats.date_format(timezone.localtime(self.start_time), "SHORT_DATETIME_FORMAT"))
 	
 	def clean(self):
 		super(Lesson, self).clean()
