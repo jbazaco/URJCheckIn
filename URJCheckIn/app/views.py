@@ -86,14 +86,17 @@ def home(request):
 	monday = today + datetime.timedelta(days= -today.weekday() + 7*week)
 	events = []
 	all_lessons = Lesson.objects.filter(subject__in=profile.subjects.all())
+	current_tz = str(timezone.get_current_timezone())
 	for day in WEEK_DAYS_BUT_SUNDAY:
 		date = monday + datetime.timedelta(days=WEEK_DAYS_BUT_SUNDAY.index(day))
+		init_date = pytz.timezone(current_tz).localize(datetime.datetime(\
+				date.year, date.month, date.day), is_dst=None)
+		end_date = init_date + datetime.timedelta(days=1)
 		events.append({
 						'day': day,
 						'events': all_lessons.filter(
-								start_time__year = date.year,
-								start_time__month = date.month,
-								start_time__day = date.day
+								start_time__gte = init_date,
+								start_time__lt = end_date 
 							).order_by('start_time')
 					})
 	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=6),
