@@ -183,6 +183,9 @@ class Lesson(models.Model):
 					).exclude(
 						id=self.id
 					)
+			if timezone.localtime(self.start_time).date() != timezone.localtime(self.end_time).date():
+				raise ValidationError('No se pueden crear clases que se desarrollen en más de un día')
+				
 			try:
 				if lesson_same_time.filter(subject=self.subject):
 					raise ValidationError('La clase no puede solaparse con otra ' +
