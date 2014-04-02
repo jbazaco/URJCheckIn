@@ -31,8 +31,8 @@ function checkinDone(data) {
 				'#group_'+error, checkin_alert_class, 'danger');
 	} else if (data.ok) {
 		$('#id_codeword').val('');
-		$('#id_longitude').val('');
-		$('#id_latitude').val('');
+		$('#id_longitude').attr('value', '');
+		$('#id_latitude').attr('value', '');
 		$('#id_comment').val('');
 		$('#id_mark').val('3');
 		$('#n_students').val('0');
