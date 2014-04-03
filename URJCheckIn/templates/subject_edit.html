@@ -3,7 +3,7 @@
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
 			<form name="edit_subject" class="form-horizontal edit_form" id="edit_subject"
-			 action="/subjects/{{subject.id}}/edit" method="POST">
+			 action="{% url 'subject_edit' subject.id %}" method="POST">
 				<fieldset>
 					<legend>Editar {{subject}}</legend>
 					{% csrf_token %}
@@ -117,7 +117,7 @@
 			</form>
 			<br/>
 			<form name="delete_subject" class="form-horizontal edit_form" id="delete_subject"
-			 action="/subjects/{{subject.id}}/edit" method="POST">
+			 action="{% url 'subject_edit' subject.id %}" method="POST">
 				<div col-xs-12>
 					{% csrf_token %}
 					<input name="action" value="delete" type="hidden">
@@ -130,6 +130,6 @@
 	</div>
 </div>
 
-<a id="back_to_subject" class="btn btn-danger btn-block ajax" href="/subjects/{{subject.id}}">
+<a id="back_to_subject" class="btn btn-danger btn-block ajax" href="{% url 'subject' subject.id %}">
 	<span class="glyphicon glyphicon-chevron-left"></span> Volver a {{subject}}
 </a>

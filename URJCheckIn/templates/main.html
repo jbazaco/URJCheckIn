@@ -54,29 +54,29 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a href="/" class="first navbar-brand ajax">
+						<a href="{% url 'home' %}" class="first navbar-brand ajax">
 							<span class="glyphicon glyphicon-home"></span> Inicio
 						</a>
 					</div>
 					<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
 						<ul class="nav navbar-nav">
 							<li>
-								<a href="/profile/view/{{request.user.id}}" class="ajax">
+								<a href="{% url 'profile' request.user.id %}" class="ajax">
 									<span class="glyphicon glyphicon-user"></span> Profile
 								</a>
 							</li>
 							<li>
-								<a href="/checkin" class="ajax">
+								<a href="{% url 'checkin' %}" class="ajax">
 									<span class="glyphicon glyphicon-map-marker"></span> Checkin
 								</a>
 							</li>
 							<li>
-								<a href="/forum" class="ajax">
+								<a href="{% url 'forum' %}" class="ajax">
 									<span class="glyphicon glyphicon-comment"></span> Foro
 								</a>
 							</li>
 							<li>
-								<a href="/subjects" class="ajax">
+								<a href="{% url 'subjects' %}" class="ajax">
 									<span class="glyphicon glyphicon-book"></span> Asignaturas
 								</a>
 							</li>
@@ -86,7 +86,7 @@
 							<ul class="nav pull-right">
 								<li>
 									<a onClick="ask_ajax_page('/logout', loadAjaxPage); return false;"
-									 href="/logout?next=/" class="logout">
+									 href="{% url 'my_logout' %}?next=/" class="logout">
 										Bienvenido, {{request.user.username}}.
 										<span class="glyphicon glyphicon-off"></span>
 										Salir

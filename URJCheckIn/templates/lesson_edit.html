@@ -2,7 +2,7 @@
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
 			<form name="edit_lesson" class="form-horizontal edit_form" id="edit_lesson"
-			 action="/lesson/{{lesson.id}}/edit" method="POST">
+			 action="{% url 'edit_lesson' lesson.id %}" method="POST">
 				<fieldset>
 					<legend>Editar clase de {{lesson.subject}} [{{lesson}}]</legend>
 					{% csrf_token %}
@@ -68,7 +68,7 @@
 			{% if lesson.is_extra %}
 				</br>
 				<form name="delete_lesson" class="form-horizontal edit_form" id="delete_lesson"
-				 action="/lesson/{{lesson.id}}/edit" method="POST">
+				 action="{% url 'edit_lesson' lesson.id %}" method="POST">
 					<div col-xs-12>
 						{% csrf_token %}
 						<input name="action" value="delete" type="hidden">
@@ -82,6 +82,6 @@
 	</div>
 </div>
 
-<a id="back_to_subject" class="btn btn-danger btn-block ajax" href="/lesson/{{lesson.id}}">
+<a id="back_to_subject" class="btn btn-danger btn-block ajax" href="{% url 'process_lesson' lesson.id %}">
 	<span class="glyphicon glyphicon-chevron-left"></span> Volver a {{lesson}}
 </a>

@@ -41,7 +41,7 @@
 					{% if not forloop.first %}
 						,
 					{% endif %}
-					<a href="/subjects/{{subject.id}}" class="ajax">
+					<a href="{% url 'subject' subject.id %}" class="ajax">
 						{{subject.name}}
 					</a>
 				{% endfor %}
@@ -68,7 +68,7 @@
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
-					 action="/profile/img/edit" class="unsetted_form">
+					 action="{% url 'change_profile_img' 'edit' %}" class="unsetted_form">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Imagen de perfil</legend>
@@ -81,7 +81,8 @@
 						</button>
 					</form>
 					<br/>
-					<form name="delete_prof_img" id="delete_prof_img" action="/profile/img/delete"
+					<form name="delete_prof_img" id="delete_prof_img"
+					 action="{% url 'change_profile_img' 'delete' %}"
 					 method="POST">
 						<div col-xs-12>
 							{% csrf_token %}
@@ -100,7 +101,7 @@
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
 					<form name="profile_form" class="form-horizontal" id="profile_form"
-					 action="/profile/view/{{request.user.id}}" method="POST">
+					 action="{% url 'profile' request.user.id %}" method="POST">
 						{% csrf_token %}
 						<fieldset>
 							<legend>Informaci&oacute;n del perfil</legend>

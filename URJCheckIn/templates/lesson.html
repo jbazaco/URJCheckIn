@@ -6,7 +6,7 @@
 		<div class="span2 well">
 			<dt>{% if lesson.subject.is_seminar %}Seminario{% else %}Asignatura{% endif %}: </dt>
 			<dd>
-				<a href="/subjects/{{subject.id}}" class="ajax">
+				<a href="{% url 'subject' subject.id %}" class="ajax">
 					{{lesson.subject.name}}
 				</a>
 			</dd>
@@ -19,7 +19,7 @@
 					<dd>
 						{{lesson.checkin_percent}}%
 						{% if not profile.is_student %}
-							<a href="/lesson/{{lesson.id}}/attendance" class="ajax">
+							<a href="{% url 'lesson_attendance' lesson.id %}" class="ajax">
 								(hi{{lesson.n_stud_checkin|pluralize:"zo,cieron" }}
 								checkin {{lesson.n_stud_checkin}} 
 								alumno{{lesson.n_stud_checkin|pluralize}}
@@ -40,7 +40,7 @@
 				<ul id="profesor_list">
 					{% for prof in profesors %}
 						<li>
-							<a class="ajax" href="/profile/view/{{prof.user.id}}">
+							<a class="ajax" href="{% url 'profile' prof.user.id %}">
 								{{prof.user.first_name}} {{prof.user.last_name}}
 							</a>
 						</li>
@@ -64,8 +64,8 @@
 			<ul class="list-group">
 				{%if not profile.is_student%}<!--no se todavia si solo comenta el profesor o todos-->
 					<li class="list-group-item">
-						<form name="comment_form" id="comment_form" action="/lesson/{{lesson.id}}"
-						 method="POST">
+						<form name="comment_form" id="comment_form" 
+						action="{% url 'process_lesson' lesson.id %}" method="POST">
 							{% csrf_token %}
 							<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
 							<div class="row">				
@@ -122,7 +122,7 @@
 		<div class="col-md-10 col-md-offset-1">
 			{%ifequal lesson_state "sin realizar"%}
 				<a id="edit_lesson_button" class="btn btn-warning btn-block ajax"
-				 href="/lesson/{{lesson.id}}/edit">
+				 href="{% url 'edit_lesson' lesson.id %}">
 					<span class="glyphicon glyphicon-pencil"></span> Editar clase
 				</a>
 			{% else %}

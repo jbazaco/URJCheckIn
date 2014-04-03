@@ -13,8 +13,8 @@
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
-			<form name="create_seminar" class="form-horizontal" id="create_seminar" action="/seminars"
-			 method="POST">
+			<form name="create_seminar" class="form-horizontal" id="create_seminar"
+			 action="{% url 'seminars' %}" method="POST">
 				{% csrf_token %}
 				<fieldset>
 					<legend>Nuevo Seminario</legend>
@@ -140,7 +140,7 @@
 				</div>
 				<ul class="seminars_list list-group">
 					{% for seminar in seminars %}
-						<a href="/subjects/{{seminar.id}}" class="list-group-item ajax">
+						<a href="{% url 'subject' seminar.id %}" class="list-group-item ajax">
 							{{seminar.name}}<br/>
 							<em>{{seminar.first_date|date:'d-m-Y'}}/{{seminar.last_date|date:'d-m-Y'}}</em>
 						</a>

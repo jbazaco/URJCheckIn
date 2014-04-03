@@ -3,7 +3,7 @@
 	<div class="col-md-8 col-md-offset-2">
 		<div class="well">
 			<form name="new_lesson" class="form-horizontal" id="new_lesson"
-			 action="/subjects/{{subject.id}}/new_lesson" method="POST">
+			 action="{% url 'create_lesson' subject.id %}" method="POST">
 				<fieldset>
 					<legend>Crear clase de {{subject}}</legend>
 					{% csrf_token %}
@@ -70,6 +70,6 @@
 	</div>
 </div>
 
-<a id="back_to_subject" class="btn btn-danger btn-block ajax" href="/subjects/{{subject.id}}">
+<a id="back_to_subject" class="btn btn-danger btn-block ajax" href="{% url 'subject' subject.id %}">
 	<span class="glyphicon glyphicon-chevron-left"></span> Volver a {{subject}}
 </a>

@@ -29,7 +29,7 @@
 				<ul id="profesor_list">
 					{%for prof in profesors%}
 						<li id="professor_{{prof.user.id}}">
-							<a href="/profile/view/{{prof.user.id}}" class="ajax">
+							<a href="{% url 'profile' prof.user.id %}" class="ajax">
 								{{prof.user.first_name}} {{prof.user.last_name}}
 							</a>
 						</li>
@@ -68,8 +68,8 @@
 					{% if profile.is_student %}
 						{% if signed %}
 							<div class="row">
-								<form name="sign_seminar" action="/subjects/{{subject.id}}" method="POST"
-								 id="sign_seminar" class="sign_seminar">
+								<form name="sign_seminar" action="{% url 'subject' subject.id %}"
+								 method="POST" id="sign_seminar" class="sign_seminar">
 									{% csrf_token %}
 									<button id="sign_button" class="btn btn-danger btn-block">
 										<span class="glyphicon glyphicon-remove-circle"></span> Desapuntarme
@@ -78,8 +78,8 @@
 							</div>
 						{% elif subject.n_students < subject.max_students %}			
 							<div class="row">
-								<form name="sign_seminar" action="/subjects/{{subject.id}}" method="POST"
-								 id="sign_seminar" class="sign_seminar">
+								<form name="sign_seminar" action="{% url 'subject' subject.id %}"
+								 method="POST" id="sign_seminar" class="sign_seminar">
 									{% csrf_token %}
 									<button id="sign_button" class="btn btn-success btn-block">
 										<span class="glyphicon glyphicon-ok-circle"></span> Apuntarme
@@ -89,8 +89,8 @@
 						{% endif %}
 					{% else %}
 						<div class="row">
-							<form name="sign_seminar" action="/subjects/{{subject.id}}" method="POST" 
-							 id="sign_seminar" class="sign_seminar">
+							<form name="sign_seminar" action="{% url 'subject' subject.id %}"
+							 method="POST" id="sign_seminar" class="sign_seminar">
 								{% csrf_token %}
 								{% if signed %}
 									<button id="sign_button" class="btn btn-danger btn-block">
@@ -114,18 +114,18 @@
 {% if not profile.is_student %}
 	<div class="row" id="professor_options" {% if not signed %} hidden {% endif %}>
 		<div class="col-xs-12 col-md-6" id="check_attendance">
-			<a href="{{subject.id}}/attendance" class="btn btn-info btn-block ajax">
+			<a href="{% url 'subject_attendance' subject.id %}" class="btn btn-info btn-block ajax">
 				<span class="glyphicon glyphicon-user"></span> Comprobar asistencia
 			</a>
 		</div>
 		<div class="col-xs-12 col-md-6" id="new_subject">
-			<a href="{{subject.id}}/new_lesson" class="btn btn-warning btn-block ajax">
+			<a href="{% url 'create_lesson' subject.id %}" class="btn btn-warning btn-block ajax">
 				<span class="glyphicon glyphicon-cog"></span> Crear clases
 			</a>
 		</div>
 		{% if request.user == subject.creator %}
 			<div class="col-xs-12 col-md-6" id="config_subject">
-				<a href="{{subject.id}}/edit" class="btn btn-warning btn-block ajax">
+				<a href="{% url 'subject_edit' subject.id %}" class="btn btn-warning btn-block ajax">
 					<span class="glyphicon glyphicon-pencil"></span> Gesti&oacute;n 
 					{% if subject.is_seminar %}del seminario{% else %}de la asignatura{% endif %}
 				</a>
@@ -146,7 +146,7 @@
 				</div>
 				<ul class="subjects_list list-group lessons_list">
 					{% for lesson in lessons_n %}
-						<a href="/lessons/{{lesson.id}}" class="list-group-item ajax">
+						<a href="{% url 'process_lesson' lesson.id %}" class="list-group-item ajax">
 							{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 						</a>
 					{% endfor %}
@@ -174,7 +174,7 @@
 				{% endif %}
 				<ul id="future_lessons" class="list-group lessons_list">
 					{% for lesson in lessons_f%}
-						<a href="/lessons/{{lesson.id}}" class="list-group-item ajax">
+						<a href="{% url 'process_lesson' lesson.id %}" class="list-group-item ajax">
 							{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 							 dentro de {{ lesson.start_time|timeuntil }}
 						</a>
@@ -216,7 +216,7 @@
 				{% endif %}
 				<ul id="past_lessons" class="list-group lessons_list">
 					{% for lesson in lessons_p %}
-						<a href="/lesson/{{lesson.id}}" class="list-group-item ajax">
+						<a href="{% url 'process_lesson' lesson.id %}" class="list-group-item ajax">
 							{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 						</a>
 					{%empty%}

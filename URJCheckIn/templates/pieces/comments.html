@@ -11,7 +11,7 @@
 				/>
 			</div>
 				<div class="col-xs-10 col-md-11">
-				<a href="/profile/view/{{comment.user.id}}" class="ajax">
+				<a href="{% url 'profile' comment.user.id %}" class="ajax">
 					{{comment.user.first_name}} {{comment.user.last_name}}
 				</a>
 				<div class="mic-info">

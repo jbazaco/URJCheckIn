@@ -26,7 +26,8 @@
 					<h2 id="maintitle">Sesi&oacute;n iniciada<br/>
 						<small>Registrado como {{request.user.username}}</small>
 					</h2>
-					<a class="btn btn-danger btn-block" href="/logout" onClick="logout(); return false;">
+					<a class="btn btn-danger btn-block" href="{% url 'my_logout' %}"
+					 onClick="logout(); return false;">
 						<span class="glyphicon glyphicon-off"></span>
 						Logout
 					</a>

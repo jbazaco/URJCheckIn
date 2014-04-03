@@ -14,7 +14,7 @@
 <div class="row">
 	<div class="col-md-10 col-md-offset-1">
 		<div id="comment_box" class="panel panel-default">
-			<form name="comment_form" id="comment_form" action="/forum" method="POST">
+			<form name="comment_form" id="comment_form" action="{% url 'forum' %}" method="POST">
 				{% csrf_token %}
 				<textarea rows="3" maxlength="150" placeholder="Escribe un comentario..." required  id="comment_field" name="comment" class="form-control"></textarea>
 				<div class="row">				
