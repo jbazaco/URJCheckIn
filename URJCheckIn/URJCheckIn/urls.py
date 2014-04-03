@@ -44,7 +44,7 @@ urlpatterns = patterns('',
 	url(r'^password_reset/$', 'django.contrib.auth.views.password_reset'),
 	url(r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
 	url(r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
-		'django.contrib.auth.views.password_reset_confirm'),#TODO error, email no configurado
+		'django.contrib.auth.views.password_reset_confirm'),
 	url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
 	url(r'^.*$', 'app.views.not_found'),
 )

@@ -171,3 +171,7 @@ LOGGING = {
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_URL = "/"
+
+#Para probar el envio de correos python -m smtpd -n -c DebuggingServer localhost:1026
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1026
