@@ -329,8 +329,8 @@ def lesson_attendance(request, idlesson):
 	except UserProfile.DoesNotExist:
 		return send_error_page(request, 'Solo los profesores de la asignatura tienen acceso.')
 	
-	ctx = {'lesson':lesson, 
-			'checkins': lesson.checkin_set.filter(user__userprofile__is_student=True), 
+	ctx = {'lesson':lesson,
+			'checkins': lesson.checkin_set.all().order_by('user__userprofile__is_student'),
 			'htmlname': 'lesson_attendance.html'}
 	return response_ajax_or_not(request, ctx)
 

@@ -24,13 +24,17 @@
 		</div>
 	</div>
 </div>
+
 {% for checkin in checkins %}
 	<div class="row student_checkin">
 		<div class="col-xs-12 col-sm-8 col-sm-offset-2">
-			<div class="panel panel-default panel_code">
+			<div class="panel panel_code
+			 panel-{% if checkin.user.userprofile.is_student %}default{% else %}warning{% endif %}">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						{{checkin.user.first_name}} {{checkin.user.last_name}} 
+						<a href="{% url 'profile' checkin.user.id %}" class="ajax">
+							{{checkin.user.first_name}} {{checkin.user.last_name}} 
+						</a>
 					</h3>
 				</div>
 				<div class="panel-body">
