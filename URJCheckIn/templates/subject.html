@@ -38,6 +38,8 @@
 					{%endfor%}
 				</ul>
 			</dd>
+			<dt>Fecha inicio/fin: </dt>
+			<dd>{{subject.first_date|date:'d-m-Y'}}/{{subject.last_date|date:'d-m-Y'}}</dd>
 			<dt>Estado: </dt>
 			<dd> {{lessons_p|length}} clases pasadas y {{lessons_f|length}} restantes</dd>
 			<dt>Valoraci&oacute;n media: </dt> <dd>{{subject.avg_mark}}/5</dd>
