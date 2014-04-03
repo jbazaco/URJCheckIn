@@ -1,5 +1,5 @@
 {% for lesson in lessons %}
-	<a href="/class/{{lesson.id}}" class="list-group-item ajax">
+	<a href="/lesson/{{lesson.id}}" class="list-group-item ajax">
 		{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 		{% if future %}
 			dentro de {{ lesson.start_time|timeuntil }}

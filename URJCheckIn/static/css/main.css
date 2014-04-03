@@ -100,7 +100,7 @@ textarea {
 /*end SUBJECTS*/
 
 /*start SUBJECT*/
-#classes {
+#lessons {
 	text-align:center;
 }
 
@@ -214,7 +214,7 @@ textarea {
 }
 /*end CONTROL_CODES*/
 
-/*start CLASS_ATTENDANCE*/
+/*start LESSON_ATTENDANCE*/
 #room_location p > span, .student_checkin p > span {
 	font-weight: bold;
 }
@@ -228,5 +228,5 @@ textarea {
 button.show_map {
 	display: none;
 }
-/*end CLASS_ATTENDANCE*/
+/*end LESSON_ATTENDANCE*/
 

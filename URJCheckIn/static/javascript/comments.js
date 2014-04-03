@@ -6,7 +6,7 @@ $(document).ready(function() {
 })
 
 /* Envia el comentario de la clase con un POST, bloquea el boton hasta recibir respuesta */
-function sendClassComment(idclass) {
+function sendLessonComment() {//TODO ver si sobra
 	disableButtons(['#comment_button']);
 	$.post(window.location.href, $('#comment_form').serialize(), commentSaved);
 }
@@ -43,7 +43,7 @@ function askComments(idcomment, idlesson, newer) {
 	$.getJSON(path, commentsReceived);
 }
 
-/* Coloca los mensajes recibidos en su sitio (en las paginas /forum o /class/id */
+/* Coloca los mensajes recibidos en su sitio (en las paginas /forum o /lesson/id */
 function commentsReceived(data) {
 	//TODO una vez hecha funcion que los pida solos, si hay mensajes almacenados tambien se introducen
 	if (data.idcomment == 0) {

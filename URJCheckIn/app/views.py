@@ -273,13 +273,13 @@ def change_profile_img(request, action):
 
 
 @login_required
-def process_class(request, idclass):
+def process_lesson(request, idlesson):
 	"""Procesa las peticiones sobre una clase y guarda un LessonComment si recibe un POST"""
 	if request.method != "GET" and request.method != "POST":
 		return method_not_allowed(request)
 
 	try:
-		lesson = Lesson.objects.get(id=idclass)
+		lesson = Lesson.objects.get(id=idlesson)
 		profile = lesson.subject.userprofile_set.get(user=request.user)
 	except Lesson.DoesNotExist:
 		return send_error_page(request, 'La clase a la que intentas acceder no existe.')
@@ -308,7 +308,7 @@ def process_class(request, idclass):
 	profesors = lesson.subject.userprofile_set.filter(is_student=False)
 	
 	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 'lesson_state':lesson_state,
-			'profesors':profesors, 'subject': lesson.subject, 'htmlname': 'class.html'}
+			'profesors':profesors, 'subject': lesson.subject, 'htmlname': 'lesson.html'}
 	if not profile.is_student and lesson_state != "sin realizar":
 		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
 		ctx['opinions'] = opinions
@@ -316,7 +316,7 @@ def process_class(request, idclass):
 
 
 @login_required
-def class_attendance(request, idlesson):
+def lesson_attendance(request, idlesson):
 	"""Procesa las peticiones sobre una clase y guarda un LessonComment si recibe un POST"""
 	if request.method != "GET":
 		return method_not_allowed(request)
@@ -331,7 +331,7 @@ def class_attendance(request, idlesson):
 	
 	ctx = {'lesson':lesson, 
 			'checkins': lesson.checkin_set.filter(user__userprofile__is_student=True), 
-			'htmlname': 'class_attendance.html'}
+			'htmlname': 'lesson_attendance.html'}
 	return response_ajax_or_not(request, ctx)
 
 
@@ -528,14 +528,14 @@ def subject(request, idsubj):
 	now = timezone.now()
 	today = datetime.date(now.year, now.month, now.day)
 	started = subject.first_date < today#Si ha empezado True
-	classes_f = my_paginator(request, 
+	lessons_f = my_paginator(request, 
 				lessons.filter(start_time__gte=timezone.now()).order_by('end_time'),
 				10)
-	classes_p = my_paginator(request,
+	lessons_p = my_paginator(request,
 				lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
 				10)
-	ctx = {'classes_f': classes_f, 'classes_p': classes_p,
-			'classes_n': lessons.filter(end_time__gt=timezone.now(), 
+	ctx = {'lessons_f': lessons_f, 'lessons_p': lessons_p,
+			'lessons_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject, 'profile':profile,
 			'signed': signed, 'started': started, 'htmlname': 'subject.html'}
@@ -649,7 +649,7 @@ def subject_edit(request, idsubj):
 
 
 @login_required
-def create_class(request, idsubj):
+def create_lesson(request, idsubj):
 	"""Devuelve la pagina para crear una clase"""
 	if request.method != 'GET' and request.method != 'POST':
 		return method_not_allowed(request)
@@ -674,17 +674,17 @@ def create_class(request, idsubj):
 		else:
 			lesson = lform.save()
 			if request.is_ajax():
-				return HttpResponse(json.dumps({'ok': True, 'redirect': '/class/' + str(lesson.id)}), 
+				return HttpResponse(json.dumps({'ok': True, 'redirect': '/lesson/' + str(lesson.id)}), 
 									content_type="application/json")
-			return HttpResponseRedirect('/class/' + str(lesson.id))
+			return HttpResponseRedirect('/lesson/' + str(lesson.id))
 	
 	if request.method != 'POST':
 		lform = ExtraLessonForm()
-	ctx = {'subject': subject, 'form': lform, 'htmlname': 'new_class.html'}
+	ctx = {'subject': subject, 'form': lform, 'htmlname': 'new_lesson.html'}
 	return response_ajax_or_not(request, ctx)
 
 
-def edit_class(request, idlesson):
+def edit_lesson(request, idlesson):
 	"""Devuelve la pagina para editar o eliminar una clase"""
 	if request.method != 'GET' and request.method != 'POST':
 		return method_not_allowed(request)
@@ -727,7 +727,7 @@ def edit_class(request, idlesson):
 	
 	if request.method != 'POST':
 		lform = ExtraLessonForm(instance=lesson)
-	ctx = {'lesson': lesson, 'form': lform, 'htmlname': 'class_edit.html'}
+	ctx = {'lesson': lesson, 'form': lform, 'htmlname': 'lesson_edit.html'}
 	return response_ajax_or_not(request, ctx)
 
 

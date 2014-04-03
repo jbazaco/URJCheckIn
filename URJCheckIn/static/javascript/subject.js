@@ -1,7 +1,7 @@
 
 $(document).ready(function() {
 	$('#mainbody').delegate('form.edit_form', 'submit', editObject);
-	$('#mainbody').delegate('#new_class', 'submit', createLesson);
+	$('#mainbody').delegate('#new_lesson', 'submit', createLesson);
 	$('#mainbody').delegate('form.sign_seminar', 'submit', changeSignSeminar);
 })
 

@@ -39,7 +39,7 @@
 				</ul>
 			</dd>
 			<dt>Estado: </dt>
-			<dd> {{classes_p|length}} clases pasadas y {{classes_f|length}} restantes</dd>
+			<dd> {{lessons_p|length}} clases pasadas y {{lessons_f|length}} restantes</dd>
 			<dt>Valoraci&oacute;n media: </dt> <dd>{{subject.avg_mark}}/5</dd>
 			<dt>Asistencia profesor: </dt> <dd>{{subject.percent_prof_attend}}%</dd>
 			<dt>Asistencia alumnos: </dt> <dd>{{subject.percent_stud_attend}}%</dd>
@@ -119,7 +119,7 @@
 			</a>
 		</div>
 		<div class="col-xs-12 col-md-6" id="new_subject">
-			<a href="{{subject.id}}/new_class" class="btn btn-warning btn-block ajax">
+			<a href="{{subject.id}}/new_lesson" class="btn btn-warning btn-block ajax">
 				<span class="glyphicon glyphicon-cog"></span> Crear clases
 			</a>
 		</div>
@@ -135,8 +135,8 @@
 {% endif %}
 
 <!-- Clases de la asignatura o seminario -->
-<div id="classes">
-	{%if classes_n%}
+<div id="lessons">
+	{% if lessons_n %}
 	<!-- Clases realizandose en este momento -->
 	<div class="row">
 		<div class="col-xs-12">
@@ -144,17 +144,17 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Clases imparti&eacute;ndose</h3>
 				</div>
-				<ul class="subjects_list list-group classes_list">
-					{% for class in classes_n %}
-						<a href="/class/{{class.id}}" class="list-group-item ajax">
-							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+				<ul class="subjects_list list-group lessons_list">
+					{% for lesson in lessons_n %}
+						<a href="/lessons/{{lesson.id}}" class="list-group-item ajax">
+							{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 						</a>
 					{% endfor %}
 				</ul>
 			</div>
 		</div>
 	</div>
-	{%endif%}
+	{% endif %}
 
 	<div class="row">
 		<!-- Clases que aun no se han realizado -->
@@ -163,31 +163,31 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Pr&oacute;ximas clases</h3>
 				</div>
-				{% if classes_f.has_previous %}
+				{% if lessons_f.has_previous %}
 					<!-- Solo para cuando estemos en otra pagina, si hemos llegado alli 
 						no ha sido con javascript-->
 					<a class="btn btn-primary btn-sm btn-block" role="button"
-						href="?page={{classes_f.previous_page_number}}">
+						href="?page={{lessons_f.previous_page_number}}">
 						<span class="glyphicon glyphicon-refresh"></span>
 						Clases m&aacute;s cercanas
 					</a>
 				{% endif %}
-				<ul id="future_lessons" class="list-group classes_list">
-					{% for class in classes_f%}
-						<a href="/class/{{class.id}}" class="list-group-item ajax">
-							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
-							 dentro de {{ class.start_time|timeuntil }}
+				<ul id="future_lessons" class="list-group lessons_list">
+					{% for lesson in lessons_f%}
+						<a href="/lessons/{{lesson.id}}" class="list-group-item ajax">
+							{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
+							 dentro de {{ lesson.start_time|timeuntil }}
 						</a>
 					{%empty%}
 						<li class="list-group-item">No hay clases programadas</li>
 					{% endfor %}
 				</ul>
 				<div class="panel-footer">
-					{% if classes_f.has_next %}
-						<a id="ask_newer" href="?page={{classes_f.next_page_number}}" 
+					{% if lessons_f.has_next %}
+						<a id="ask_newer" href="?page={{lessons_f.next_page_number}}" 
 							class="btn btn-primary btn-sm btn-block" role="button"
-							{% with classes_f|last as last_class %}
-								onClick="askLessons({{last_class.id}}, true); return false;">
+							{% with lessons_f|last as last_lesson %}
+								onClick="askLessons({{last_lesson.id}}, true); return false;">
 							{% endwith %}
 							<span class="glyphicon glyphicon-refresh"></span> Siguientes clases
 						</a>
@@ -205,30 +205,30 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">&Uacute;ltimas clases</h3>
 				</div>
-				{% if classes_p.has_previous %}
+				{% if lessons_p.has_previous %}
 					<!-- Solo para cuando estemos en otra pagina, si hemos llegado alli 
 						no ha sido con javascript-->
 					<a class="btn btn-primary btn-sm btn-block" role="button"
-						href="?page={{classes_p.previous_page_number}}">
+						href="?page={{lessons_p.previous_page_number}}">
 						<span class="glyphicon glyphicon-refresh"></span>
 						Clases m&aacute;s recientes
 					</a>
 				{% endif %}
-				<ul id="past_lessons" class="list-group classes_list">
-					{% for class in classes_p %}
-						<a href="/class/{{class.id}}" class="list-group-item ajax">
-							{{class.start_time|date:'d-m-Y H:i'}}/{{class.end_time|date:'H:i'}}
+				<ul id="past_lessons" class="list-group lessons_list">
+					{% for lesson in lessons_p %}
+						<a href="/lesson/{{lesson.id}}" class="list-group-item ajax">
+							{{lesson.start_time|date:'d-m-Y H:i'}}/{{lesson.end_time|date:'H:i'}}
 						</a>
 					{%empty%}
 						<li class="list-group-item">Todav&iacute;a no ha habido clases</li>
 					{% endfor %}
 				</ul>
 				<div class="panel-footer">
-					{% if classes_p.has_next %}
-						<a id="ask_older" href="?page={{classes_p.next_page_number}}" 
+					{% if lessons_p.has_next %}
+						<a id="ask_older" href="?page={{lessons_p.next_page_number}}" 
 							class="btn btn-primary btn-sm btn-block" role="button"
-							{% with classes_p|last as last_class %}
-								onClick="askLessons({{last_class.id}}, false); return false;">
+							{% with lessons_p|last as last_lesson %}
+								onClick="askLessons({{last_lesson.id}}, false); return false;">
 							{% endwith %}
 							<span class="glyphicon glyphicon-refresh"></span> Clases anteriores
 						</a>

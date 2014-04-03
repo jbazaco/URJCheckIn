@@ -33,9 +33,9 @@
 					<div class="panel-heading">
 						<h3 class="panel-title">{{day.day|safe}}</h3>
 					</div>
-					<ul class="list-group classes_list events">
+					<ul class="list-group lessons_list events">
 						{% for event in day.events %}
-							<a href="/class/{{event.id}}" class="list-group-item ajax">
+							<a href="/lesson/{{event.id}}" class="list-group-item ajax">
 								<strong>{{event.subject}}</strong><br/>
 								{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
 							</a>
