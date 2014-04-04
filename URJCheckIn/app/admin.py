@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 import datetime
 
+
+########
+# User #
+########
 admin.site.unregister(User)
 
 class UserProfileInline(admin.StackedInline):
@@ -22,6 +26,9 @@ class MyUserAdmin(UserAdmin):
 
 admin.site.register(User, MyUserAdmin)
 
+###########
+# Subject #
+###########
 class SubjectStateFilter(admin.SimpleListFilter):
 	"""Para filtrar las asignaturas segun sean antiguas, actuales o futuras"""
 	title = 'estado'
@@ -47,13 +54,18 @@ class SubjectStateFilter(admin.SimpleListFilter):
 class SubjectAdmin(admin.ModelAdmin):
 	fieldsets = [
 		(None , {'fields': ['name', 'degrees', 'first_date', 'last_date', 'creator']}),
-		('Seminario', {'fields': ['is_seminar', 'max_students', 'description']}),
+		('Seminario', {'fields': ['is_seminar', 'max_students', 'description'], 'classes':['collapse']}),
 	 ]
 	list_display = ('name', 'first_date', 'last_date', 'subject_state')
 	list_filter = ['is_seminar', SubjectStateFilter, 'degrees']
 	search_fields = ['name', 'degrees__name', 'userprofile__user__first_name', 
 					'userprofile__user__last_name']
 
+admin.site.register(Subject, SubjectAdmin)
+
+############
+# Building #
+############
 class RoomInline(admin.TabularInline):
 	model = Room
 	extra = 3
@@ -62,13 +74,12 @@ class BuildingAdmin(admin.ModelAdmin):
 	inlines = [
 		RoomInline,
 	]
+admin.site.register(Building, BuildingAdmin)
 
 admin.site.register(Degree)
-admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Room)
 admin.site.register(Lesson)
 admin.site.register(CheckIn)
 admin.site.register(ForumComment)#TODO no deberian poder poner nuevos o modificarlos, solo borrarlos
 admin.site.register(Timetable)
 admin.site.register(LessonComment)
-admin.site.register(Building, BuildingAdmin)
