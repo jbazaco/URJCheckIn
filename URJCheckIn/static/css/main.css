@@ -230,3 +230,38 @@ button.show_map {
 }
 /*end LESSON_ATTENDANCE*/
 
+/*start ADMIN*/
+.module h2, .module caption, .inline-group h2 {
+	background: none;
+	background-color: #DF0101;
+	background: -webkit-linear-gradient(#FF3636, #A61212);
+	background: -o-linear-gradient(#FF3636, #A61212);
+	background: -moz-linear-gradient(#FF3636, #A61212);
+	background: linear-gradient(#FF3636, #A61212);
+}
+
+#menu_bar.admin header {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	margin-bottom: 0;
+}
+
+.admin h1 {
+	color: black;
+	font-weight: normal;
+}
+
+.breadcrumbs > a {
+	color: red;
+}
+
+a.forgot_password {
+	color: white;
+}
+
+#menu_bar.admin a.first {
+	padding: 1em;
+}
+/*end ADMIN*/
+
