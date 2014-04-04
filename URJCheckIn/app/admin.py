@@ -1,6 +1,26 @@
 from django.contrib import admin
 from models import Degree, Subject, Room, UserProfile, Lesson, CheckIn, ForumComment, Timetable, LessonComment, Building
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 import datetime
+
+admin.site.unregister(User)
+
+class UserProfileInline(admin.StackedInline):
+	model = UserProfile
+
+class MyUserAdmin(UserAdmin):
+	list_display = UserAdmin.list_display + ('profile_is_student',)
+	list_filter = UserAdmin.list_filter + ('userprofile__is_student', 'userprofile__degrees')
+	search_fields = UserAdmin.search_fields + ('userprofile__subjects__name',
+					'userprofile__degrees__name', 'userprofile__dni')
+	inlines = [UserProfileInline,]
+	
+	def profile_is_student(self, object):
+		return object.userprofile.is_student
+	profile_is_student.short_description = "es estudiante"
+
+admin.site.register(User, MyUserAdmin)
 
 class SubjectStateFilter(admin.SimpleListFilter):
 	"""Para filtrar las asignaturas segun sean antiguas, actuales o futuras"""
@@ -30,7 +50,7 @@ class SubjectAdmin(admin.ModelAdmin):
 		('Seminario', {'fields': ['is_seminar', 'max_students', 'description']}),
 	 ]
 	list_display = ('name', 'first_date', 'last_date', 'subject_state')
-	list_filter = ['is_seminar', SubjectStateFilter]
+	list_filter = ['is_seminar', SubjectStateFilter, 'degrees']
 	search_fields = ['name', 'degrees__name', 'userprofile__user__first_name', 
 					'userprofile__user__last_name']
 
@@ -46,7 +66,6 @@ class BuildingAdmin(admin.ModelAdmin):
 admin.site.register(Degree)
 admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Room)
-admin.site.register(UserProfile)
 admin.site.register(Lesson)
 admin.site.register(CheckIn)
 admin.site.register(ForumComment)#TODO no deberian poder poner nuevos o modificarlos, solo borrarlos
