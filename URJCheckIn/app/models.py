@@ -8,6 +8,7 @@ from django.db.models import Avg
 from django.conf import settings
 import os
 from django.db.models.signals import post_save
+import datetime
 
 WEEK_DAYS = (
 	('Mon', 'Lunes'),
@@ -83,6 +84,20 @@ class Subject(models.Model):
 			mark += lesson.avg_mark()
 		return round(mark/lessons.count(), 2)
 
+	def subject_state(self):
+		"""Devuelve un string 'actual', 'antigua', 'futura' en suncion de si es una asignatura que 
+		se esta impartiendo ahora, ya se ha impartido o se impartira en el futuro, respectivamente"""
+		today = datetime.date.today()
+		if self.last_date < today:
+			return 'antigua'
+		elif self.first_date > today:
+			return 'futura'
+		else:
+			return 'actual'
+	subject_state.short_description = 'estado'
+	
+			
+
 
 class Building(models.Model):
 	building = models.CharField(max_length=30, verbose_name='edificio', unique=True)
@@ -136,7 +151,7 @@ class UserProfile(models.Model):
 	is_student = models.BooleanField(default=True, verbose_name='es alumno')
 	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
-	dni = models.CharField(max_length=20, verbose_name='DNI (o similar)')
+	dni = models.CharField(max_length=20, verbose_name='DNI (o similar)')	
 
 	class Meta:
 		verbose_name='perfil de usuario'
@@ -144,6 +159,7 @@ class UserProfile(models.Model):
 	
 	def __unicode__(self):
 		return u"Perfil de %s" % (self.user)
+
 
 
 def get_rand_string():
