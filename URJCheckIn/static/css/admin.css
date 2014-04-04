@@ -1,0 +1,45 @@
+/*start ADMIN*/
+.module h2, .module caption, .inline-group h2 {
+	background: none;
+	background-color: #DF0101;
+	background: -webkit-linear-gradient(#FF3636, #A61212);
+	background: -o-linear-gradient(#FF3636, #A61212);
+	background: -moz-linear-gradient(#FF3636, #A61212);
+	background: linear-gradient(#FF3636, #A61212);
+}
+
+#menu_bar {
+	background-color: #DF0101;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	margin-bottom: 0;
+}
+
+#menu_bar a {
+	color: white;
+}
+
+#menu_bar .navbar-header {
+	padding: 1em;
+	font-size: 130%;
+	font-weight: bold;
+}
+
+.admin h1 {
+	color: black;
+	font-weight: normal;
+}
+
+.breadcrumbs > a {
+	color: red;
+}
+
+a.forgot_password {
+	color: white;
+}
+
+#menu_bar.admin a.first {
+	padding: 1em;
+}
+/*end ADMIN*/
