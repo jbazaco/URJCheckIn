@@ -90,7 +90,7 @@ admin.site.register(Degree, DegreeAdmin)
 class CheckInAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'user',)
 	search_fields = ['lesson__subject__name', 'lesson__subject__degrees__name',
-			'lesson__subject__degrees__code', 'user__username', 'user__userprofile__dni']
+			'lesson__subject__degrees__code', 'user__first_name', 'user__last_name']
 	
 admin.site.register(CheckIn, CheckInAdmin)
 
