@@ -76,7 +76,14 @@ class BuildingAdmin(admin.ModelAdmin):
 	]
 admin.site.register(Building, BuildingAdmin)
 
-admin.site.register(Degree)
+##########
+# Degree #
+##########
+class DegreeAdmin(admin.ModelAdmin):
+	list_display = ('name', 'code')
+	search_fields = ['name', 'code']
+admin.site.register(Degree, DegreeAdmin)
+
 admin.site.register(Room)
 admin.site.register(Lesson)
 admin.site.register(CheckIn)
