@@ -121,7 +121,7 @@ function editObject(event) {
 function objectEdited(data) {
 	if (data.errors) {
 		for (error in data.errors)
-			alertBefore(data.errors[error], '#group_'+error, 'object_alert', 'danger');
+			alertBefore(data.errors[error], '#group_'+error, 'object_alert', 'danger', 'form.edit_form');
 	} else if (data.deleted) {
 		$.getJSON(data.redirect, loadAjaxPage);
 	}
@@ -141,10 +141,9 @@ function createLesson(event) {
 /*Si recibe errores los imprime en su lugar correspondiente y si recibe un ok
 	carga la pagina en data.redirect*/
 function lessonCreated(data) {
-	//TODO poner otros errores arriba
 	if (data.errors) {
 		for (error in data.errors)
-			alertBefore(data.errors[error], '#group_'+error, 'lesson_alert', 'danger');
+			alertBefore(data.errors[error], '#group_'+error, 'lesson_alert', 'danger', '#new_lesson');
 	} else if (data.ok) {
 		$.getJSON(data.redirect, loadAjaxPage);
 	}

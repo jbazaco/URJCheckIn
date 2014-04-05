@@ -28,7 +28,7 @@ function checkinDone(data) {
 	if (data.errors) {
 		for (error in data.errors)
 			alertBefore(data.errors[error], 
-				'#group_'+error, checkin_alert_class, 'danger');
+				'#group_'+error, checkin_alert_class, 'danger', '#checkinbox');
 	} else if (data.ok) {
 		$('#id_codeword').val('');
 		$('#id_longitude').attr('value', '');

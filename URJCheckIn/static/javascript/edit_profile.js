@@ -82,11 +82,11 @@ function restartButtons() {
 }
 
 /* Cuando se recibe una confirmacion de los cambios realizados*/
-function infoSaved(data) {//TODO hace otra cosa!!!
+function infoSaved(data) {
 	if(data.errors) {
 		for (error in data.errors)
 			alertBefore(data.errors[error], '#group_'+error, 
-						'profile_alert', 'danger');
+						'profile_alert', 'danger', '#profile_form');
 		enableButtons(['button']);
 	} else {
 		restartButtons();
@@ -137,25 +137,15 @@ function passwordChanged(data) {
 	if(data.errors) {
 		for (error in data.errors)
 			alertBefore(data.errors[error], 
-				'#group_'+error, alert_class, 'danger');
+				'#group_'+error, alert_class, 'danger', '#password_form');
 	} else {
 		alertBefore(['Contrase&ntilde;a cambiada con &eacute;xito'], 
-				'#password_button', alert_class, 'success');
+				'#password_button', alert_class, 'success', '#password_form');
 	}
 	emptyPasswords();
 	$('#loading_page').hide();
 	enableButtons(['button']);
 }
 
-/* Envia una nueva foto de perfil 
-function uploadImage(iduser) {
-	disableButtons(['button']);
-	$('#loading_page').show();
-	var form = $('#photo_form');
-	$.post(form.attr('action'), form.serialize(), function() {
-		$('#loading_page').hide();
-		loadAjaxPage('/profile/view/' + iduser);	
-	});
-}*/
 
 

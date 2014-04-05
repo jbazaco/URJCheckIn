@@ -21,7 +21,7 @@ function seminarCreated(data) {
 		//TODO HAY OTROS ERRORES!!
 		for (error in data.errors)
 			alertBefore(data.errors[error], 
-				'#group_'+error, alert_class, 'danger');
+				'#group_'+error, alert_class, 'danger', '#create_seminar');
 	} else if (data.idsubj) {
 		ask_ajax_page('/subjects/' + data.idsubj, loadAjaxPage);
 	} else {
