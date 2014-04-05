@@ -3,7 +3,24 @@ from models import Degree, Subject, Room, UserProfile, Lesson, CheckIn, ForumCom
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 import datetime
+from django.utils import timezone
 
+class TimeStateFilter(admin.SimpleListFilter):
+	"""Para filtrar un modelo segun su momento de inicio y fin, clasificando los objectos en 
+		antiguos, actuales o futuros"""
+	title = 'estado'
+	# Parameter for the filter that will be used in the URL query.
+	parameter_name = 'status'
+
+	def lookups(self, request, model_admin):
+		return (
+			('old', 'Anterior'),
+			('now', 'Actual'),
+			('fut', 'Futuro'),
+		)
+
+	class Meta:
+		abstract = True
 
 ########
 # User #
@@ -29,19 +46,8 @@ admin.site.register(User, MyUserAdmin)
 ###########
 # Subject #
 ###########
-class SubjectStateFilter(admin.SimpleListFilter):
+class SubjectStateFilter(TimeStateFilter):
 	"""Para filtrar las asignaturas segun sean antiguas, actuales o futuras"""
-	title = 'estado'
-	# Parameter for the filter that will be used in the URL query.
-	parameter_name = 'status'
-
-	def lookups(self, request, model_admin):
-		return (
-			('old', 'Antigua'),
-			('now', 'Actual'),
-			('fut', 'Futura'),
-		)
-
 	def queryset(self, request, queryset):
 		today = datetime.date.today()
 		if self.value() == 'old':
@@ -94,8 +100,28 @@ class CheckInAdmin(admin.ModelAdmin):
 	
 admin.site.register(CheckIn, CheckInAdmin)
 
+##########
+# Lesson #
+##########
+class LessonStateFilter(TimeStateFilter):
+	"""Para filtrar las clases segun sean antiguas, actuales o futuras"""
+	def queryset(self, request, queryset):
+		now = timezone.now()
+		if self.value() == 'old':
+			return queryset.filter(end_time__lt = now)
+		if self.value() == 'now':
+			return queryset.filter(end_time__gte = now, start_time__lte = now)
+		if self.value() == 'fut':
+			return queryset.filter(start_time__gt = now)
+
+class LessonAdmin(admin.ModelAdmin):
+	list_display = ('__unicode__', 'start_time', 'end_time', 'done', 'is_extra')
+	list_filter = ['done', 'is_extra', LessonStateFilter]
+	search_fields = ['subject__name', 'subject__degrees__name', 'subject__degrees__code']
+
+admin.site.register(Lesson, LessonAdmin)
+
 admin.site.register(Room)
-admin.site.register(Lesson)
 admin.site.register(ForumComment)#TODO no deberian poder poner nuevos o modificarlos, solo borrarlos
 admin.site.register(Timetable)
 admin.site.register(LessonComment)
