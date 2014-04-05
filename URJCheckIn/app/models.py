@@ -273,7 +273,7 @@ class LessonComment(models.Model):
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
 	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
 	comment = models.TextField(max_length=250, verbose_name='comentario')
-	is_extra = models.BooleanField(verbose_name='clase extra', default=False)
+	is_extra = models.BooleanField(verbose_name='clase extra', default=False)#TODO Quitar
 	
 	class Meta:
 		verbose_name='comentario en clase'

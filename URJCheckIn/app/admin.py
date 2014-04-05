@@ -121,7 +121,28 @@ class LessonAdmin(admin.ModelAdmin):
 
 admin.site.register(Lesson, LessonAdmin)
 
+################
+# ForumComment #
+################
+class CommentAdmin(admin.ModelAdmin):
+	list_display = ('__unicode__', 'date', 'user')
+	list_filter = ['date']
+	search_fields = ['comment', 'user__first_name', 'user__last_name', 'user__username']
+
+	def has_add_permission(self, request):
+		return False
+
+admin.site.register(ForumComment, CommentAdmin)
+
+#################
+# LessonComment #
+#################
+class LessonCommentAdmin(CommentAdmin):
+	list_display = CommentAdmin.list_display + ('lesson',)
+	search_fields = CommentAdmin.search_fields + ['lesson__subject__name',]
+
+admin.site.register(LessonComment, LessonCommentAdmin)
+
+
 admin.site.register(Room)
-admin.site.register(ForumComment)#TODO no deberian poder poner nuevos o modificarlos, solo borrarlos
 admin.site.register(Timetable)
-admin.site.register(LessonComment)
