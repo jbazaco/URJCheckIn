@@ -145,6 +145,15 @@ class LessonCommentAdmin(CommentAdmin):
 
 admin.site.register(LessonComment, LessonCommentAdmin)
 
+#############
+# Timetable #
+#############
+class TimetableAdmin(admin.ModelAdmin):
+	list_display = ('__unicode__', 'subject', 'room', 'day', 'start_time', 'end_time')
+	list_filter = ('day',)
+	search_fields = ('subject__name', 'subject__degrees__name', 'subject__degrees__code')
+
+admin.site.register(Timetable, TimetableAdmin)
 
 admin.site.register(Room)
-admin.site.register(Timetable)
+
