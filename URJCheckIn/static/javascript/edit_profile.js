@@ -64,7 +64,7 @@ function setForm() {
 }
 
 /* Oculta el formulario y muestra y modifica el perfil con los nuevos datos del usuario */
-function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
+function unsetForm(user) {
 	$('#name_profile').html($('#id_name').val());
 	$('#age_profile').html(user.age);
 	$('#desc_profile').html(user.description);

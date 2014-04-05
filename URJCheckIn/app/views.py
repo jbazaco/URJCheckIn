@@ -176,7 +176,7 @@ def checkin(request):
 			ctx['msg'] = resp['msg']
 		if 'ok' in resp:
 			ctx['ok'] = resp['ok']
-	#TODO informar de que se ha realizado con exito (en vez de "error" podria ser "message" )
+
 	return response_ajax_or_not(request, ctx)
 
 
@@ -356,12 +356,12 @@ def save_lesson_comment(request, lesson):
 	
 
 
-def lesson_str_state(lesson, user):#TODO poner tambien si no fue el profesor
+def lesson_str_state(lesson, user):
 	"""Devuelve un string indicando el estado de la clase o si asististe o no si ya
 		se ha realizado la clase"""
-	if (lesson.start_time > timezone.now()):
+	if lesson.start_time > timezone.now():
 		return 'sin realizar'
-	elif (lesson.end_time < timezone.now()):
+	elif lesson.end_time < timezone.now():
 		try:
 			lesson.checkin_set.get(user=user)
 			return 'asististe'

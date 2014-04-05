@@ -18,7 +18,6 @@ function seminarCreated(data) {
 	$('#loading_page').hide();
 	enableButtons(['button']);
 	if(data.errors) {
-		//TODO HAY OTROS ERRORES!!
 		for (error in data.errors)
 			alertBefore(data.errors[error], 
 				'#group_'+error, alert_class, 'danger', '#create_seminar');
