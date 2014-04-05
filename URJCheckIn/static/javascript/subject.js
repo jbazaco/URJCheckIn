@@ -61,7 +61,7 @@ function signedSeminarChanged(data) {
 										data['error'] + '</div>');
 	}
 
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 	enableButtons(['button']);
 }
 
@@ -125,7 +125,7 @@ function objectEdited(data) {
 	} else if (data.deleted) {
 		$.getJSON(data.redirect, loadAjaxPage);
 	}
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 	enableButtons(['button']);
 }
 
@@ -148,7 +148,7 @@ function lessonCreated(data) {
 	} else if (data.ok) {
 		$.getJSON(data.redirect, loadAjaxPage);
 	}
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 	enableButtons(['button']);
 }
 

@@ -69,7 +69,8 @@ function unsetForm(user) {//TODO que coja los datos de la respuesta mejor
 	$('#age_profile').html(user.age);
 	$('#desc_profile').html(user.description);
 	//TODO hacerlo con el resto de propiedades
-	hideElements(['#profile_form', '#photo_form']);
+	$('#profile_form').hide();
+	$('#photo_form').hide();
 	$('#profile').show();
 }
 
@@ -92,7 +93,7 @@ function infoSaved(data) {//TODO hace otra cosa!!!
 		emptyPasswords();
 		unsetForm(data.user);
 	}
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 }
 
 /* Envia un POST al servidor para que actualice el perfil del usuario con la 
@@ -107,7 +108,8 @@ function sendChanges(event) {
 
 /* Quita el formulario y vuelve a mostrar el perfil */
 function cancelEditProfile() {
-	hideElements(['#profile_form', '#photo_form']);
+	$('#profile_form').hide();
+	$('#photo_form').hide();
 	emptyPasswords();
 	$('#profile').show();
 	restartButtons();
@@ -141,7 +143,7 @@ function passwordChanged(data) {
 				'#password_button', alert_class, 'success');
 	}
 	emptyPasswords();
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 	enableButtons(['button']);
 }
 

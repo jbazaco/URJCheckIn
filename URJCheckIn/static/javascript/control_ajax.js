@@ -14,7 +14,7 @@ $(document).ready(function() {
 function loadAjaxPage(data) {
 	/*echarle un ojo a lo de onpopstate*/
 	window.history.pushState({/*datos para window.onpopstate*/}, "URJCheckin", data.url);
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 	insertHtml(data);		
 }
 

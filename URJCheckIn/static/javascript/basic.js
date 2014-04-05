@@ -12,13 +12,6 @@ function enableButtons(butts) {
 	});
 }
 
-/* Oculta los elementos que recibe en un array, indicados para obtenerse con $() */
-function hideElements(elems){
-	elems.forEach(function(elem) {
-		$(elem).css('display', 'none'); 
-	});
-}
-
 /* Pone un elemento de la clase alert del tipo alert_type antes del 
 	elemento con id elem_id, poniendole la clase class_id y los 
 	mensajes del array errors como texto */

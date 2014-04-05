@@ -15,7 +15,7 @@ function createSeminar(event) {
 /* Reactiva los botones y 'recarga' indica el resultado del cambio de password*/
 function seminarCreated(data) {
 	var alert_class = 'seminar_alert';
-	hideElements(['#loading_page']);
+	$('#loading_page').hide();
 	enableButtons(['button']);
 	if(data.errors) {
 		//TODO HAY OTROS ERRORES!!
