@@ -5,12 +5,6 @@ $(document).ready(function() {
 	$('#mainbody').delegate('#comment_form', 'submit', sendComment);
 })
 
-/* Envia el comentario de la clase con un POST, bloquea el boton hasta recibir respuesta */
-function sendLessonComment() {//TODO ver si sobra
-	disableButtons(['#comment_button']);
-	$.post(window.location.href, $('#comment_form').serialize(), commentSaved);
-}
-
 
 /* Envia el comentario con un POST, bloquea el boton hasta recibir respuesta */
 function sendComment(event) {
