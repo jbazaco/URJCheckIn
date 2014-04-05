@@ -35,7 +35,9 @@ class MyUserAdmin(UserAdmin):
 	list_filter = UserAdmin.list_filter + ('userprofile__is_student', 'userprofile__degrees')
 	search_fields = UserAdmin.search_fields + ('userprofile__subjects__name',
 					'userprofile__degrees__name', 'userprofile__dni')
-	inlines = [UserProfileInline,]
+	inlines = [
+		UserProfileInline,
+	]
 	
 	def profile_is_student(self, object):
 		return object.userprofile.is_student
@@ -59,13 +61,13 @@ class SubjectStateFilter(TimeStateFilter):
 
 class SubjectAdmin(admin.ModelAdmin):
 	fieldsets = [
-		(None , {'fields': ['name', 'degrees', 'first_date', 'last_date', 'creator']}),
-		('Seminario', {'fields': ['is_seminar', 'max_students', 'description'], 'classes':['collapse']}),
+		(None , {'fields': ('name', 'degrees', 'first_date', 'last_date', 'creator')}),
+		('Seminario', {'fields': ('is_seminar', 'max_students', 'description'), 'classes':['collapse']}),
 	 ]
 	list_display = ('name', 'first_date', 'last_date', 'subject_state')
-	list_filter = ['is_seminar', SubjectStateFilter, 'degrees']
-	search_fields = ['name', 'degrees__name', 'userprofile__user__first_name', 
-					'userprofile__user__last_name']
+	list_filter = ('is_seminar', SubjectStateFilter, 'degrees')
+	search_fields = ('name', 'degrees__name', 'userprofile__user__first_name', 
+					'userprofile__user__last_name')
 
 admin.site.register(Subject, SubjectAdmin)
 
@@ -87,7 +89,7 @@ admin.site.register(Building, BuildingAdmin)
 ##########
 class DegreeAdmin(admin.ModelAdmin):
 	list_display = ('name', 'code')
-	search_fields = ['name', 'code']
+	search_fields = ('name', 'code')
 admin.site.register(Degree, DegreeAdmin)
 
 ###########
@@ -95,8 +97,8 @@ admin.site.register(Degree, DegreeAdmin)
 ###########
 class CheckInAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'user',)
-	search_fields = ['lesson__subject__name', 'lesson__subject__degrees__name',
-			'lesson__subject__degrees__code', 'user__first_name', 'user__last_name']
+	search_fields = ('lesson__subject__name', 'lesson__subject__degrees__name',
+			'lesson__subject__degrees__code', 'user__first_name', 'user__last_name')
 	
 admin.site.register(CheckIn, CheckInAdmin)
 
@@ -116,8 +118,8 @@ class LessonStateFilter(TimeStateFilter):
 
 class LessonAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'start_time', 'end_time', 'done', 'is_extra')
-	list_filter = ['done', 'is_extra', LessonStateFilter]
-	search_fields = ['subject__name', 'subject__degrees__name', 'subject__degrees__code']
+	list_filter = ('done', 'is_extra', LessonStateFilter)
+	search_fields = ('subject__name', 'subject__degrees__name', 'subject__degrees__code')
 
 admin.site.register(Lesson, LessonAdmin)
 
@@ -126,8 +128,8 @@ admin.site.register(Lesson, LessonAdmin)
 ################
 class CommentAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'date', 'user')
-	list_filter = ['date']
-	search_fields = ['comment', 'user__first_name', 'user__last_name', 'user__username']
+	list_filter = ('date',)
+	search_fields = ('comment', 'user__first_name', 'user__last_name', 'user__username')
 
 	def has_add_permission(self, request):
 		return False
@@ -139,7 +141,7 @@ admin.site.register(ForumComment, CommentAdmin)
 #################
 class LessonCommentAdmin(CommentAdmin):
 	list_display = CommentAdmin.list_display + ('lesson',)
-	search_fields = CommentAdmin.search_fields + ['lesson__subject__name',]
+	search_fields = CommentAdmin.search_fields + ('lesson__subject__name',)
 
 admin.site.register(LessonComment, LessonCommentAdmin)
 
