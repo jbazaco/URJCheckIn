@@ -125,8 +125,8 @@ class LessonStateFilter(TimeStateFilter):
 			return queryset.filter(start_time__gt = now)
 
 class LessonAdmin(admin.ModelAdmin):
-	list_display = ('__unicode__', 'start_time', 'end_time', 'done', 'is_extra')
-	list_filter = ('done', 'is_extra', LessonStateFilter)
+	list_display = ('__unicode__', 'start_time', 'end_time', 'done', 'is_extra', 'room')
+	list_filter = ('done', 'is_extra', LessonStateFilter, 'room__building')
 	search_fields = ('subject__name', 'subject__degrees__name', 'subject__degrees__code')
 
 admin.site.register(Lesson, LessonAdmin)
