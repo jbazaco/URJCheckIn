@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.utils import timezone, formats
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
@@ -11,6 +11,7 @@ from django.db.models.signals import post_save, pre_save
 import datetime
 import random
 import pytz
+from django.contrib.contenttypes.models import ContentType
 
 WEEK_DAYS = (
 	('0', 'Lunes'),
@@ -114,8 +115,8 @@ class Building(models.Model):
 class Room(models.Model):
 	room = models.CharField(max_length=20, verbose_name='aula')
 	building = models.ForeignKey(Building, verbose_name='edificio')
-	centre_longitude = models.IntegerField(verbose_name='centro longitud')
-	centre_latitude = models.IntegerField(verbose_name='centro latitud')
+	centre_longitude = models.FloatField(verbose_name='centro longitud')
+	centre_latitude = models.FloatField(verbose_name='centro latitud')
 	radius = models.IntegerField(verbose_name='radio')
 
 	class Meta:
@@ -154,10 +155,13 @@ class UserProfile(models.Model):
 	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
 	dni = models.CharField(max_length=20, verbose_name='DNI (o similar)')	
+	show_email = models.BooleanField(default=False, verbose_name='mostrar email')
 
 	class Meta:
 		verbose_name='perfil de usuario'
 		verbose_name_plural='perfiles de usuario'
+		permissions = (('can_see_statistics', 'Can see statistics'),
+						('can_see_codes', 'Can see codes'),) 
 	
 	def __unicode__(self):
 		return u"Perfil de %s" % (self.user)
@@ -232,6 +236,20 @@ class Lesson(models.Model):
 		mark = checkins.aggregate(Avg('mark'))['mark__avg']
 		return round(mark,2)
 
+class AdminTask(models.Model):
+	user = models.ForeignKey(User, verbose_name='usuario')
+	comment = models.TextField(max_length=500, verbose_name='petición')
+	url = models.TextField(max_length=200, verbose_name='url del problema', blank=True)
+	time = models.DateTimeField(default=timezone.now, verbose_name='hora')
+	done = models.BooleanField(verbose_name='realizada', default=False)
+	solver = models.ForeignKey(User, verbose_name='solucionada por', blank=True, null=True,  related_name='solved_task')
+
+	class Meta:
+		verbose_name='tarea de administración'
+		verbose_name_plural='tareas de administración'
+
+	def __unicode__(self):
+		return u"Petición de %s %s" % (self.user.first_name, self.user.last_name)
 
 class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
@@ -241,6 +259,7 @@ class CheckIn(models.Model):
 	latitude = models.FloatField(verbose_name='latitud', blank=True, null=True)
 	codeword = models.CharField(max_length=20, verbose_name='codigo', blank=True)
 	comment = models.TextField(max_length=250, verbose_name='comentario', blank=True)
+	time = models.DateTimeField(default=timezone.now, verbose_name='hora')
 
 	class Meta:
 		unique_together = ("user", "lesson")
@@ -275,7 +294,6 @@ class LessonComment(models.Model):
 	lesson = models.ForeignKey(Lesson, verbose_name='clase')
 	date =  models.DateTimeField(default=timezone.now, verbose_name='hora')
 	comment = models.TextField(max_length=250, verbose_name='comentario')
-	is_extra = models.BooleanField(verbose_name='clase extra', default=False)#TODO Quitar
 	
 	class Meta:
 		verbose_name='comentario en clase'
@@ -426,7 +444,7 @@ def get_free_room(start_time, end_time, building):
 		if not room.lesson_set.filter(start_time__lte = end_time,
 									end_time__gte = start_time).exists():
 			return room
-	return None	
+	return None
 
 	
 
