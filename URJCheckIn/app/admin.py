@@ -162,18 +162,17 @@ admin.site.register(Room)
 # AdminTask #
 #############
 class SolverFilter(admin.SimpleListFilter):
-	"""Para filtrar un modelo segun su momento de inicio y fin, clasificando los objectos en 
-		antiguos, actuales o futuros"""
+	"""Para filtrar las AdminTask que ha resuelto el usuario que lo solicita"""
 	title = 'resuelto por'
-	# Parameter for the filter that will be used in the URL query.
-	parameter_name = 'resueltos por'
+
+	parameter_name = 'resolver'
 
 	def lookups(self, request, model_admin):
 		return (
-			('mine', 'Resueltos por mi'),
+			('me', 'Resueltos por mi'),
 		)
 	def queryset(self, request, queryset):
-		if self.value() == 'mine':
+		if self.value() == 'me':
 			return queryset.filter(solver = request.user)
 
 class AdminTaskAdmin(admin.ModelAdmin):
