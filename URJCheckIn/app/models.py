@@ -9,15 +9,17 @@ from django.conf import settings
 import os
 from django.db.models.signals import post_save
 import datetime
+import random
+import pytz
 
 WEEK_DAYS = (
-	('Mon', 'Lunes'),
-	('Tue', 'Martes'),
-	('Wed', 'Miércoles'),
-	('Thu', 'Jueves'),
-	('Fri', 'Viernes'),
-	('Sat', 'Sábado'),
-	('Sun', 'Domingo')
+	('0', 'Lunes'),
+	('1', 'Martes'),
+	('2', 'Miércoles'),
+	('3', 'Jueves'),
+	('4', 'Viernes'),
+	('5', 'Sábado'),
+	('6', 'Domingo')
 )
 FIRST_ADMIN_ID = 1
 
@@ -335,7 +337,80 @@ class Timetable(models.Model):
 											'en la misma aula')
 			except (Subject.DoesNotExist, Room.DoesNotExist):
 				pass
-	#TODO despues de guardar hay que crear las clases
 
 
+def get_first_lesson_date(timetable):
+	"""Devuelve el primer dia de clase de una asignatura para un horario dado"""
+	first_date = timetable.subject.first_date # se va calculando aqui el dia a partir
+											# del cual se crean clases
+	today = datetime.date.today()
+	if first_date < today:
+		first_date = today
+	first_dayweek = first_date.weekday()
+	dayweek = int(timetable.day)
+	if first_dayweek > dayweek:#TODO cuidado caso mismo dia pero ya ha pasado la hora
+		first_date += datetime.timedelta(days=7)
+	return first_date + datetime.timedelta(days=(dayweek-first_dayweek))#dia de la primera clase
+
+def create_lesson(start_datetime, end_datetime, room, subject):
+	"""Crea una clase para la asignatura subject desde start_datetime hasta end_datetime
+		En caso de existir ya una clase de la asignatura en esa franja horaria no se creara
+		En caso de estar ocupada el aula se buscara otra en ese edificio y si no la hay no se creara"""
+	lessons_now = Lesson.objects.filter(start_time__lte = end_datetime, 
+											end_time__gte = start_datetime)
+	if lessons_now.filter(subject = subject).exists():#ya hay una clase de la asignatura
+		pass
+	if lessons_now.filter(room = room).exists(): #ya hay una clase en ese aula
+												#busca otro aula en el edificio
+		new_room = get_free_room(start_datetime, end_datetime, room.building)
+		if new_room:#si no hay aula libre a esa hora no se crea la clase 
+			Lesson(start_time=start_datetime, end_time = end_datetime, subject = subject,
+				room = new_room).save()
+	else:
+		Lesson(start_time=start_datetime, end_time = end_datetime, subject = subject,
+				room = room).save()
+
+def create_timetable_lessons(sender, instance, **kwargs):#TODO probar
+														#TODO revisar codigo
+	#TODO eliminar y modificar---->post_____.connect()
+	"""Crea clases de la asignatura instance.subject en los dias instance.day durante
+		el periodo de la asignatuta
+		Funcion pensada para ser llamada despues de guardar un Timetable"""
+	date = get_first_lesson_date(instance)
+	
+	last_date = instance.subject.last_date
+	current_tz = str(timezone.get_current_timezone())
+	start_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.start_time.hour,
+					instance.start_time.minute)
+	start_datetime = pytz.timezone(current_tz).localize(start_datetime_n, is_dst=None)
+	end_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.end_time.hour,
+					instance.end_time.minute)
+	end_datetime = pytz.timezone(current_tz).localize(end_datetime_n, is_dst=None)
+	room = instance.room
+	subject = instance.subject
+	while start_datetime.date() <= last_date:
+		create_lesson(start_datetime, end_datetime, room, subject)
+		start_datetime += datetime.timedelta(days=7)
+		end_datetime += datetime.timedelta(days=7)
+	
+post_save.connect(create_timetable_lessons, sender=Timetable)
+
+
+def get_free_room(start_time, end_time, building):#TODO probar
+	"""Devuelve un aula libre en el edificio building desde start_time hasta
+		end_time"""
+	rooms = Building.room_set.all()
+	n_rooms = rooms.count()
+	#Para no recorrerlas en orden, ya que si fuesen en orden se irian ocupando las primeras
+	#y a medida que aumentasen las clases creadas habria que recorrer muchas hasta dar con 
+	#un aula libre
+	rand_pos = random.sample(range(n_rooms), n_rooms)
+	for i in rand_pos:
+		room = rooms[i]
+		if not room.lesson_set.filter(start_time__lte = end_time,
+									end_time__gte = start_time).exists():
+			return room
+	return None	
+
+	
 
