@@ -249,7 +249,7 @@ class AdminTask(models.Model):
 		verbose_name_plural='tareas de administración'
 
 	def __unicode__(self):
-		return u"Petición de %s %s" % (self.user.first_name, self.user.last_name)
+		return u"Petición de %s" % (self.user)
 
 class CheckIn(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')

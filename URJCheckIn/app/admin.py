@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Degree, Subject, Room, UserProfile, Lesson, CheckIn, ForumComment, Timetable, LessonComment, Building
+from models import Degree, Subject, Room, UserProfile, Lesson, CheckIn, ForumComment, Timetable, LessonComment, Building, AdminTask
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 import datetime
@@ -157,4 +157,29 @@ admin.site.register(LessonComment, LessonCommentAdmin)
 # Room #
 ########
 admin.site.register(Room)
+
+#############
+# AdminTask #
+#############
+class SolverFilter(admin.SimpleListFilter):
+	"""Para filtrar un modelo segun su momento de inicio y fin, clasificando los objectos en 
+		antiguos, actuales o futuros"""
+	title = 'resuelto por'
+	# Parameter for the filter that will be used in the URL query.
+	parameter_name = 'resueltos por'
+
+	def lookups(self, request, model_admin):
+		return (
+			('mine', 'Resueltos por mi'),
+		)
+	def queryset(self, request, queryset):
+		if self.value() == 'mine':
+			return queryset.filter(solver = request.user)
+
+class AdminTaskAdmin(admin.ModelAdmin):
+	list_display = ('time', 'done', 'user', 'solver')
+	list_filter = ('done',  'time', SolverFilter)
+	search_fields = ('user__username', 'solver__username')
+
+admin.site.register(AdminTask, AdminTaskAdmin)
 
