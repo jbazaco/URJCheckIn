@@ -340,15 +340,21 @@ class Timetable(models.Model):
 
 
 def get_first_lesson_date(timetable):
-	"""Devuelve el primer dia de clase de una asignatura para un horario dado"""
+	"""Devuelve el primer dia de clase de una asignatura para un horario dado
+		El primer dia sera el menor dia que cumpla las siguientes condiciones:
+		- El dia de la semana debe ser el indicado en el timetable
+		- El dia es mayor que hoy
+		- El dia es mayor o igual que el dia en que comienza la asignatuta 
+	"""
 	first_date = timetable.subject.first_date # se va calculando aqui el dia a partir
 											# del cual se crean clases
 	today = datetime.date.today()
-	if first_date < today:
-		first_date = today
+	if first_date <= today:
+		first_date = today + datetime.delta(days=1)
 	first_dayweek = first_date.weekday()
 	dayweek = int(timetable.day)
-	if first_dayweek > dayweek:#TODO cuidado caso mismo dia pero ya ha pasado la hora
+
+	if first_dayweek > dayweek:
 		first_date += datetime.timedelta(days=7)
 	return first_date + datetime.timedelta(days=(dayweek-first_dayweek))#dia de la primera clase
 
