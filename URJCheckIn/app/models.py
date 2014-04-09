@@ -332,7 +332,7 @@ class Timetable(models.Model):
 				if timetables_same_time.filter(subject=self.subject):
 					raise ValidationError('El horario no puede solaparse con otro ' +
 											'de la misma asignatura')
-				if timetables_same_time.filter(room=self.room):
+				if timetables_same_time.filter(room=self.room):#TODO comprobar si se solapan las fechas de las asignaturas
 					raise ValidationError('El horario no puede solaparse con otro ' +
 											'en la misma aula')
 			except (Subject.DoesNotExist, Room.DoesNotExist):
@@ -350,7 +350,7 @@ def get_first_lesson_date(timetable):
 											# del cual se crean clases
 	today = datetime.date.today()
 	if first_date <= today:
-		first_date = today + datetime.delta(days=1)
+		first_date = today + datetime.timedelta(days=1)
 	first_dayweek = first_date.weekday()
 	dayweek = int(timetable.day)
 
@@ -361,7 +361,8 @@ def get_first_lesson_date(timetable):
 def create_lesson(start_datetime, end_datetime, room, subject):
 	"""Crea una clase para la asignatura subject desde start_datetime hasta end_datetime
 		En caso de existir ya una clase de la asignatura en esa franja horaria no se creara
-		En caso de estar ocupada el aula se buscara otra en ese edificio y si no la hay no se creara"""
+		En caso de estar ocupada el aula se buscara una libre en ese edificio y si no la hay 
+		no se creara"""
 	lessons_now = Lesson.objects.filter(start_time__lte = end_datetime, 
 											end_time__gte = start_datetime)
 	if lessons_now.filter(subject = subject).exists():#ya hay una clase de la asignatura
@@ -376,8 +377,7 @@ def create_lesson(start_datetime, end_datetime, room, subject):
 		Lesson(start_time=start_datetime, end_time = end_datetime, subject = subject,
 				room = room).save()
 
-def create_timetable_lessons(sender, instance, **kwargs):#TODO probar
-														#TODO revisar codigo
+def create_timetable_lessons(sender, instance, **kwargs):
 	#TODO eliminar y modificar---->post_____.connect()
 	"""Crea clases de la asignatura instance.subject en los dias instance.day durante
 		el periodo de la asignatuta
@@ -386,12 +386,10 @@ def create_timetable_lessons(sender, instance, **kwargs):#TODO probar
 	
 	last_date = instance.subject.last_date
 	current_tz = str(timezone.get_current_timezone())
-	start_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.start_time.hour,
-					instance.start_time.minute)
-	start_datetime = pytz.timezone(current_tz).localize(start_datetime_n, is_dst=None)
-	end_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.end_time.hour,
-					instance.end_time.minute)
-	end_datetime = pytz.timezone(current_tz).localize(end_datetime_n, is_dst=None)
+	start_datetime = datetime.datetime(date.year, date.month, date.day, instance.start_time.hour,
+					instance.start_time.minute, tzinfo=instance.start_time.tzinfo)
+	end_datetime = datetime.datetime(date.year, date.month, date.day, instance.end_time.hour,
+					instance.end_time.minute, tzinfo=instance.end_time.tzinfo)
 	room = instance.room
 	subject = instance.subject
 	while start_datetime.date() <= last_date:
@@ -402,10 +400,10 @@ def create_timetable_lessons(sender, instance, **kwargs):#TODO probar
 post_save.connect(create_timetable_lessons, sender=Timetable)
 
 
-def get_free_room(start_time, end_time, building):#TODO probar
+def get_free_room(start_time, end_time, building):
 	"""Devuelve un aula libre en el edificio building desde start_time hasta
 		end_time"""
-	rooms = Building.room_set.all()
+	rooms = Room.objects.filter(building=building)
 	n_rooms = rooms.count()
 	#Para no recorrerlas en orden, ya que si fuesen en orden se irian ocupando las primeras
 	#y a medida que aumentasen las clases creadas habria que recorrer muchas hasta dar con 
