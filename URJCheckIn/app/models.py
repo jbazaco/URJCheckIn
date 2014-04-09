@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Avg
 from django.conf import settings
 import os
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 import datetime
 import random
 import pytz
@@ -386,10 +386,13 @@ def create_timetable_lessons(sender, instance, **kwargs):
 	
 	last_date = instance.subject.last_date
 	current_tz = str(timezone.get_current_timezone())
-	start_datetime = datetime.datetime(date.year, date.month, date.day, instance.start_time.hour,
-					instance.start_time.minute, tzinfo=instance.start_time.tzinfo)
-	end_datetime = datetime.datetime(date.year, date.month, date.day, instance.end_time.hour,
-					instance.end_time.minute, tzinfo=instance.end_time.tzinfo)
+	start_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.start_time.hour,
+					instance.start_time.minute)
+	start_datetime = pytz.timezone(current_tz).localize(start_datetime_n, is_dst=None)
+	end_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.end_time.hour,
+					instance.end_time.minute)
+	end_datetime = pytz.timezone(current_tz).localize(end_datetime_n, is_dst=None)
+
 	room = instance.room
 	subject = instance.subject
 	while start_datetime.date() <= last_date:
@@ -397,7 +400,7 @@ def create_timetable_lessons(sender, instance, **kwargs):
 		start_datetime += datetime.timedelta(days=7)
 		end_datetime += datetime.timedelta(days=7)
 	
-post_save.connect(create_timetable_lessons, sender=Timetable)
+pre_save.connect(create_timetable_lessons, sender=Timetable)
 
 
 def get_free_room(start_time, end_time, building):
