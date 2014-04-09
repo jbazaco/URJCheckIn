@@ -376,6 +376,12 @@ def create_lesson(start_datetime, end_datetime, room, subject):
 	else:
 		Lesson(start_time=start_datetime, end_time = end_datetime, subject = subject,
 				room = room).save()
+#TODO def delete_timetable_lessons(timetable):
+#	"""Elimina las clases posteriores al momento actual que coincidan exactamente con el
+#		horario del timetable recibido"""
+#	lessons = Lesson.objects.filter(subject=timetable.subject, start_time__gte=timezone.now())
+#	print lessons[0].start_time.hour
+#	print timetable.start_time
 
 def create_timetable_lessons(sender, instance, **kwargs):
 	#TODO eliminar y modificar---->post_____.connect()
@@ -383,7 +389,10 @@ def create_timetable_lessons(sender, instance, **kwargs):
 		el periodo de la asignatuta
 		Funcion pensada para ser llamada despues de guardar un Timetable"""
 	date = get_first_lesson_date(instance)
-	
+	#TODO if instance.pk:
+	#	old_timetable = Timetable.objects.get(id=instance.id)
+	#	delete_timetable_lessons(old_timetable)
+
 	last_date = instance.subject.last_date
 	current_tz = str(timezone.get_current_timezone())
 	start_datetime_n = datetime.datetime(date.year, date.month, date.day, instance.start_time.hour,
