@@ -594,16 +594,19 @@ def subject_attendance(request, idsubj):
 		return method_not_allowed(request)
 
 	try:
-		profile = request.user.userprofile
-		if profile.is_student:
-			return send_error_page(request, 'Solo los profesores tienen acceso.')
 		subject = Subject.objects.get(id=idsubj)
-		if not subject in profile.subjects.all():
-			return send_error_page(request, 'No tienes acceso a esta informaci&oacute;n.')
-	except UserProfile.DoesNotExist:
-		return send_error_page(request, 'No tienes un perfil creado.')
 	except Subject.DoesNotExist:
 		return send_error_page(request, 'La asignatura con id ' + str(idsubj) + ' no existe.')
+
+	if not request.user.has_perm('app.can_see_statistics'):
+		try:
+			profile = request.user.userprofile
+		except UserProfile.DoesNotExist:
+			return send_error_page(request, 'No tienes un perfil creado.')
+		if profile.is_student:
+			return send_error_page(request, 'Solo los profesores tienen acceso.')
+		if not subject in profile.subjects.all():
+			return send_error_page(request, 'No tienes acceso a esta informaci&oacute;n.')
 	
 	students = subject.userprofile_set.filter(is_student=True)
 	lessons = subject.lesson_set.filter(done=True)
