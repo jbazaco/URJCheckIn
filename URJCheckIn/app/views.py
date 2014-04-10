@@ -340,7 +340,8 @@ def lesson_attendance(request, idlesson):
 	except Lesson.DoesNotExist:
 		return send_error_page(request, 'La clase a la que intentas acceder no existe.')
 	except UserProfile.DoesNotExist:
-		return send_error_page(request, 'Solo los profesores de la asignatura tienen acceso.')
+		if not request.user.has_perm('app.can_see_statistics'):
+			return send_error_page(request, 'Solo los profesores de la asignatura tienen acceso.')
 	
 	ctx = {'lesson':lesson,
 			'checkins': lesson.checkin_set.all().order_by('user__userprofile__is_student'),
@@ -753,8 +754,7 @@ def edit_lesson(request, idlesson):
 
 
 @login_required
-def control_attendance(request):#TODO solo para gente con permisos!!! y ponerles permisos para ver las asignaturas y las clases!(y los comentarios a profesores)((professor = not is_student or haspermision)
-#TODO mostrar link en la pagina de inicio encima del calendario a quien tenga permisos
+def control_attendance(request):
 	"""Devuelve una pagina para comprobar si las clases se estan realizando"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
@@ -837,8 +837,6 @@ def control_order(form, subjects):
 
 @login_required
 def show_codes(request):
-#TODO crear los permisos, mostrar solo a quien tenga permisos
-#TODO mostrar link en la pagina de inicio encima del calendario a quien tenga permisos
 	"""Devuelve una pagina con los codigos para hacer checkin"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
@@ -846,7 +844,7 @@ def show_codes(request):
 		return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
 	form = CodesFilterForm(request.GET)
 	all_lessons = codes_order(form, codes_filter(form))
-	#TODO order
+
 	ctx = {'form': form, 'htmlname': 'control_codes.html', 'lessons': all_lessons}
 	return response_ajax_or_not(request, ctx)
 
