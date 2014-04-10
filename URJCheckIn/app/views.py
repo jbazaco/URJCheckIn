@@ -499,12 +499,15 @@ def subject(request, idsubj):
 		return method_not_allowed(request)
 
 	try:
-		profile = UserProfile.objects.get(user=request.user)
 		subject = Subject.objects.get(id=idsubj)
-	except UserProfile.DoesNotExist:
-		return send_error_page(request, 'No tienes un perfil creado.')
+		profile = UserProfile.objects.get(user=request.user)
 	except Subject.DoesNotExist:
 		return send_error_page(request, '#404 La asignatura a la que intentas acceder no existe.')
+	except UserProfile.DoesNotExist:
+		if request.user.has_perm('app.can_see_statistics'):#Si controla las estadisticas tiene acceso
+			profile = None
+		else:
+			return send_error_page(request, 'No tienes un perfil creado.')
 
 	error = False
 	if request.method == 'POST':
@@ -522,14 +525,16 @@ def subject(request, idsubj):
 									request.GET.get('newer') == 'true')
 			except ValueError:
 				pass
-
-	if subject in profile.subjects.all():
-		signed = True
-	else:
+	if profile:
+		if subject in profile.subjects.all():
+			signed = True
+		else:
+			signed = False
+			#Solo pueden ver las asignaturas en las que estan matriculados
+			if not subject.is_seminar:
+				return send_error_page(request, 'No est&aacutes matriculado en ' + str(subject))
+	else:#Es el caso en el que tiene permisos can_see_statistics pero sin perfil
 		signed = False
-		#Solo pueden ver las asignaturas en las que estan matriculados
-		if not subject.is_seminar:
-			return send_error_page(request, 'No est&aacutes matriculado en ' + str(subject))
 		
 	lessons = subject.lesson_set.all()
 	profesors = subject.userprofile_set.filter(is_student=False)
