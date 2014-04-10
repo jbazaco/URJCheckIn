@@ -62,7 +62,7 @@
 				<span class="glyphicon glyphicon-comment"></span> Comentarios de{{profesors|length|pluralize:"l, los"}} profesor{{profesors|length|pluralize:"es"}}
 			</div>
 			<ul class="list-group">
-				{%if not profile.is_student%}<!--no se todavia si solo comenta el profesor o todos-->
+				{%if profile and not profile.is_student%}
 					<li class="list-group-item">
 						<form name="comment_form" id="comment_form" 
 						action="{% url 'process_lesson' lesson.id %}" method="POST">
@@ -121,10 +121,12 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 			{%ifequal lesson_state "sin realizar"%}
-				<a id="edit_lesson_button" class="btn btn-warning btn-block ajax"
-				 href="{% url 'edit_lesson' lesson.id %}">
-					<span class="glyphicon glyphicon-pencil"></span> Editar clase
-				</a>
+				{% if profile %}
+					<a id="edit_lesson_button" class="btn btn-warning btn-block ajax"
+					 href="{% url 'edit_lesson' lesson.id %}">
+						<span class="glyphicon glyphicon-pencil"></span> Editar clase
+					</a>
+				{% endif %}
 			{% else %}
 				<div class="panel panel-default comments">
 					<div class="panel-heading">

@@ -292,9 +292,12 @@ def process_lesson(request, idlesson):
 	except Lesson.DoesNotExist:
 		return send_error_page(request, 'La clase a la que intentas acceder no existe.')
 	except UserProfile.DoesNotExist:
-		return send_error_page(request, 'No est&aacutes matriculado en ' + str(lesson.subject))
+		if request.user.has_perm('app.can_see_statistics'):#Si tiene el permiso puede ver las clases
+			profile = None
+		else:
+			return send_error_page(request, 'No est&aacutes matriculado en ' + str(lesson.subject))
 
-	if request.method == "POST":
+	if request.method == "POST" and profile:
 		if profile.is_student:
 			return send_error_page(request, 'Solo los profesores pueden comentar en las clases')
 		resp = save_lesson_comment(request, lesson)
@@ -317,9 +320,11 @@ def process_lesson(request, idlesson):
 	
 	ctx = {'lesson':lesson, 'comments':comments, 'profile':profile, 'lesson_state':lesson_state,
 			'profesors':profesors, 'subject': lesson.subject, 'htmlname': 'lesson.html'}
-	if not profile.is_student and lesson_state != "sin realizar":
-		opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
-		ctx['opinions'] = opinions
+	if lesson_state != "sin realizar":
+		show_opinions = True if (not profile) else (not profile.is_student)
+		if show_opinions: 
+			opinions = lesson.checkin_set.filter(user__userprofile__is_student=True)
+			ctx['opinions'] = opinions
 	return response_ajax_or_not(request, ctx)
 
 
@@ -921,9 +926,13 @@ def more_comments(request, current, newer, idlesson):
 			if not lesson.subject in profile.subjects.all():
 				resp = {'comments': [], 'idcomment': 0, 'newer': True}
 				return HttpResponse(json.dumps(resp), content_type="application/json")
-		except (ForumComment.DoesNotExist, Lesson.DoesNotExist, UserProfile.DoesNotExist):
+		except (ForumComment.DoesNotExist, Lesson.DoesNotExist):
 			resp = {'comments': [], 'idcomment': 0, 'newer': True}
 			return HttpResponse(json.dumps(resp), content_type="application/json")
+		except UserProfile.DoesNotExist:
+			if not request.user.has_perm('app.can_see_statistics'):
+				resp = {'comments': [], 'idcomment': 0, 'newer': True}
+				return HttpResponse(json.dumps(resp), content_type="application/json")
 		all_comments = LessonComment.objects.filter(lesson=lesson)
 	else:
 		all_comments = ForumComment.objects.all()
