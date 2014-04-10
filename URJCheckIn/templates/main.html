@@ -62,22 +62,56 @@
 						<ul class="nav navbar-nav">
 							<li>
 								<a href="{% url 'profile' request.user.id %}" class="ajax">
-									<span class="glyphicon glyphicon-user"></span> Profile
+									<span class="glyphicon glyphicon-user"></span> Perfil
 								</a>
 							</li>
-							<li>
-								<a href="{% url 'checkin' %}" class="ajax">
-									<span class="glyphicon glyphicon-map-marker"></span> Checkin
-								</a>
-							</li>
+							{% if request.user.userprofile %}
+								<li>
+									<a href="{% url 'checkin' %}" class="ajax">
+										<span class="glyphicon glyphicon-map-marker"></span> Checkin
+									</a>
+								</li>
+								<li>
+									<a href="{% url 'subjects' %}" class="ajax">
+										<span class="glyphicon glyphicon-book"></span> Asignaturas
+									</a>
+								</li>
+							{% else %}
+								<!--Para no sobrecargar la barra de menu solo muestras estas opciones
+									si no tiene perfil. Tiene acceso a estas paginas desde la pagian de
+									inicio. Aunque es mejor no crear usuarios que tengan este tipo de
+									permisos y sean alumnos y profesores, mejor asignarles dos cuentas
+									diferentes-->
+								{% if perms.app %}
+									{% if perms.app.can_see_statistics %}
+										<li>
+											<a href="{% url 'control_attendance' %}" class="ajax">
+												<span class="glyphicon glyphicon-stats"></span>
+												Control
+											</a>
+										</li>
+									{% endif %}
+									{% if perms.app.can_see_codes %}
+										<li>
+											<a href="{% url 'show_codes' %}" class="ajax">
+												<span class="glyphicon glyphicon-qrcode"></span>
+												C&oacute;digos
+											</a>
+										</li>
+									{% endif %}
+								{% endif %}
+								{% if request.user.is_staff %}
+									<li>
+										<a href="/admin/">
+											<span class="glyphicon glyphicon-list-alt"></span>
+											Admin
+										</a>
+									</li>
+								{% endif %}
+							{% endif %}
 							<li>
 								<a href="{% url 'forum' %}" class="ajax">
 									<span class="glyphicon glyphicon-comment"></span> Foro
-								</a>
-							</li>
-							<li>
-								<a href="{% url 'subjects' %}" class="ajax">
-									<span class="glyphicon glyphicon-book"></span> Asignaturas
 								</a>
 							</li>
 						</ul>

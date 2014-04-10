@@ -194,7 +194,9 @@ def profile(request, iduser):
 
 	try:
 		profile = UserProfile.objects.get(user=iduser)
-	except UserProfile.DoesNotExist:			
+	except UserProfile.DoesNotExist:
+		if str(request.user.id) == iduser:#mostrara el formulario para cambiar la password
+			return response_ajax_or_not(request, {'htmlname': 'profile.html'})
 		return send_error_page(request, 'El usuario con id ' + iduser + ' no tiene perfil')
 
 	if request.method == "POST":

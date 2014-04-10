@@ -1,166 +1,172 @@
+<!--Si no hay perfil lo unico que se muestra es el forumlario para cabiar la password
+	en caso de estar visitandose la pagina del propio usuario -->
+{% if profile %}
+	<h2 id="maintitle">
+		Perfil de {{profile.user.first_name}} {{profile.user.last_name}}
+	</h2>
 
-<h2 id="maintitle">
-	Perfil de {{profile.user.first_name}} {{profile.user.last_name}}
-</h2>
-
-<div class="row">
-	<div id="profile">
-		<div class="col-xs-6 col-xs-offset-3 col-sm-2 col-sm-offset-1">
-			<img alt="foto de perfil" class="img-rounded img-responsive" id="profile_img"
-				{% if profile.photo %}
-					src="{{profile.photo.url}}"
-				{% else %}
-					src="/img/default_profile_img.png"
-				{% endif %}
-			 >
-		</div>
-		<dl class="dl-horizontal fields col-xs-12 col-sm-8 col-sm-offset-0">
-			<div class="span2 well">
-			<dt>Nombre: </dt>
-			<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}</dd>
-			<dt>Edad: </dt>
-			<dd id="age_profile">{{profile.age}}</dd>
-			<dt>Descripci&oacute;n: </dt>
-			<dd id="desc_profile">{{profile.description}}</dd>
-			{% if profile.is_student %}
-				<dt>Estudia: </dt>
-			{% else %}
-				<dt>Ense&ntilde;a: </dt>
-			{% endif %}
-			<dd>
-				{% for degree in profile.degrees.all %}
-					{% if not forloop.first %}
-						,
-					{% endif %}
-					{{degree.name}}
-				{% endfor %}
-			</dd>
-			<dt>Asignaturas: </dt>
-			<dd>
-				{% for subject in profile.subjects.all %}
-					{% if not forloop.first %}
-						,
-					{% endif %}
-					<a href="{% url 'subject' subject.id %}" class="ajax">
-						{{subject.name}}
-					</a>
-				{% endfor %}
-			</dd>
-			{% if profile.user.email %}
-				<dt>e-mail: </dt>
-				<dd>{{profile.user.email}}</dd>
-			{% endif %}
-			</div>
-		</dl>
-	</div>
-</div>
-
-{%if request.user == profile.user %}
 	<div class="row">
-		<div class="col-sm-10 col-sm-offset-1"> 
-			<button name="show_form" class="btn btn-primary btn-block hidden" id="show_form">
-				<span class="glyphicon glyphicon-pencil"></span> Editar perfil
-			</button>
+		<div id="profile">
+			<div class="col-xs-6 col-xs-offset-3 col-sm-2 col-sm-offset-1">
+				<img alt="foto de perfil" class="img-rounded img-responsive" id="profile_img"
+					{% if profile.photo %}
+						src="{{profile.photo.url}}"
+					{% else %}
+						src="/img/default_profile_img.png"
+					{% endif %}
+				 >
+			</div>
+			<dl class="dl-horizontal fields col-xs-12 col-sm-8 col-sm-offset-0">
+				<div class="span2 well">
+				<dt>Nombre: </dt>
+				<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}</dd>
+				<dt>Edad: </dt>
+				<dd id="age_profile">{{profile.age}}</dd>
+				<dt>Descripci&oacute;n: </dt>
+				<dd id="desc_profile">{{profile.description}}</dd>
+				{% if profile.is_student %}
+					<dt>Estudia: </dt>
+				{% else %}
+					<dt>Ense&ntilde;a: </dt>
+				{% endif %}
+				<dd>
+					{% for degree in profile.degrees.all %}
+						{% if not forloop.first %}
+							,
+						{% endif %}
+						{{degree.name}}
+					{% endfor %}
+				</dd>
+				<dt>Asignaturas: </dt>
+				<dd>
+					{% for subject in profile.subjects.all %}
+						{% if not forloop.first %}
+							,
+						{% endif %}
+						<a href="{% url 'subject' subject.id %}" class="ajax">
+							{{subject.name}}
+						</a>
+					{% endfor %}
+				</dd>
+				{% if profile.user.email %}
+					<dt>e-mail: </dt>
+					<dd>{{profile.user.email}}</dd>
+				{% endif %}
+				</div>
+			</dl>
 		</div>
 	</div>
-	<div id="editing_profile">
+{% endif %}
+
+{% url 'profile' request.user.id as the_user_url %}
+{%if the_user_url == request.path %}
+	{% if profile %}
 		<div class="row">
-			<div class="col-md-8 col-md-offset-2">
-				<div class="span2 well">
-					<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
-					 action="{% url 'change_profile_img' 'edit' %}" class="unsetted_form">
-						{% csrf_token %}
-						<fieldset>
-							<legend>Imagen de perfil</legend>
-							{{form_img.photo}}
-						</fieldset>
-						<br/>
-						<button type="submit" name="checkin_submit" id="save_image" 
-								class="btn btn-success btn-block">
-							<span class="glyphicon glyphicon-save"></span> Cambiar foto
-						</button>
-					</form>
-					<br/>
-					<form name="delete_prof_img" id="delete_prof_img"
-					 action="{% url 'change_profile_img' 'delete' %}"
-					 method="POST">
-						<div col-xs-12>
+			<div class="col-sm-10 col-sm-offset-1"> 
+				<button name="show_form" class="btn btn-primary btn-block hidden" id="show_form">
+					<span class="glyphicon glyphicon-pencil"></span> Editar perfil
+				</button>
+			</div>
+		</div>
+		<div id="editing_profile">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<div class="span2 well">
+						<form name="photo_form" id="photo_form" method="POST" enctype="multipart/form-data"
+						 action="{% url 'change_profile_img' 'edit' %}" class="unsetted_form">
 							{% csrf_token %}
-							<input name="action" value="delete" type="hidden">
-							<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
-								<span class="glyphicon glyphicon-remove"></span>
-								Eliminar mi foto de perfil
+							<fieldset>
+								<legend>Imagen de perfil</legend>
+								{{form_img.photo}}
+							</fieldset>
+							<br/>
+							<button type="submit" name="checkin_submit" id="save_image" 
+									class="btn btn-success btn-block">
+								<span class="glyphicon glyphicon-save"></span> Cambiar foto
 							</button>
-						</div>
-					</form>
+						</form>
+						<br/>
+						<form name="delete_prof_img" id="delete_prof_img"
+						 action="{% url 'change_profile_img' 'delete' %}"
+						 method="POST">
+							<div col-xs-12>
+								{% csrf_token %}
+								<input name="action" value="delete" type="hidden">
+								<button type="submit" class="btn btn-danger btn-block" name="delete_submit" >
+									<span class="glyphicon glyphicon-remove"></span>
+									Eliminar mi foto de perfil
+								</button>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div>
-		</div>
 	
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2">
-				<div class="span2 well">
-					<form name="profile_form" class="form-horizontal" id="profile_form"
-					 action="{% url 'profile' request.user.id %}" method="POST">
-						{% csrf_token %}
-						<fieldset>
-							<legend>Informaci&oacute;n del perfil</legend>
-							{% if form.non_field_errors %}
-								<div class="row">
-									<div class="col-sm-10 col-sm-offset-1">
-										<div class="alert alert-danger">
-											{{form.non_field_errors}}
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<div class="span2 well">
+						<form name="profile_form" class="form-horizontal" id="profile_form"
+						 action="{% url 'profile' request.user.id %}" method="POST">
+							{% csrf_token %}
+							<fieldset>
+								<legend>Informaci&oacute;n del perfil</legend>
+								{% if form.non_field_errors %}
+									<div class="row">
+										<div class="col-sm-10 col-sm-offset-1">
+											<div class="alert alert-danger">
+												{{form.non_field_errors}}
+											</div>
 										</div>
 									</div>
-								</div>
-							{% endif %}
-							<div class="form-group">
-								<label for="id_name" class="col-sm-2 control-label">Nombre:</label>
-								<div class="col-sm-10">
-									<input id="id_name" type="text" name="name" maxlength="30"
-									 disabled="disabled" 
-									value="{{profile.user.first_name}} {{profile.user.last_name}}">
-								</div>
-							</div>
-							{% if form.errors.age %}
-								<div class="row">
-									<div class="col-sm-10 col-sm-offset-1">
-										<div class="alert alert-danger">
-											{{form.errors.age}}
-										</div>
+								{% endif %}
+								<div class="form-group">
+									<label for="id_name" class="col-sm-2 control-label">Nombre:</label>
+									<div class="col-sm-10">
+										<input id="id_name" type="text" name="name" maxlength="30"
+										 disabled="disabled" 
+										value="{{profile.user.first_name}} {{profile.user.last_name}}">
 									</div>
 								</div>
-							{% endif %}
-							<div id="group_age" class="form-group">
-								<label for="id_age" class="col-sm-2 control-label">Edad:</label>
-								<div class="col-sm-10">
-									{{form.age}}
-								</div>
-							</div>
-							{% if form.errors.description %}
-								<div class="row">
-									<div class="col-sm-10 col-sm-offset-1">
-										<div class="alert alert-danger">
-											{{form.errors.description}}
+								{% if form.errors.age %}
+									<div class="row">
+										<div class="col-sm-10 col-sm-offset-1">
+											<div class="alert alert-danger">
+												{{form.errors.age}}
+											</div>
 										</div>
 									</div>
+								{% endif %}
+								<div id="group_age" class="form-group">
+									<label for="id_age" class="col-sm-2 control-label">Edad:</label>
+									<div class="col-sm-10">
+										{{form.age}}
+									</div>
 								</div>
-							{% endif %}
-							<div id="group_description" class="form-group">
-								<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
-								<div class="col-sm-10">
-									{{form.description}}
+								{% if form.errors.description %}
+									<div class="row">
+										<div class="col-sm-10 col-sm-offset-1">
+											<div class="alert alert-danger">
+												{{form.errors.description}}
+											</div>
+										</div>
+									</div>
+								{% endif %}
+								<div id="group_description" class="form-group">
+									<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
+									<div class="col-sm-10">
+										{{form.description}}
+									</div>
 								</div>
-							</div>
-						</fieldset>
-						<button type="submit" name="checkin_submit" id="save_changes" 
-								class="btn btn-success btn-block">
-							<span class="glyphicon glyphicon-save"></span>Guardar Cambios
-						</button>
-					</form>
+							</fieldset>
+							<button type="submit" name="checkin_submit" id="save_changes" 
+									class="btn btn-success btn-block">
+								<span class="glyphicon glyphicon-save"></span>Guardar Cambios
+							</button>
+						</form>
+					</div>
 				</div>
 			</div>
-		</div>
+		{% endif %}
 
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
@@ -205,20 +211,18 @@
 				</div>
 			</div>
 		</div>
-		<button name="hide_form" class="btn btn-danger btn-block" id="hide_form">
-				<span class="glyphicon glyphicon-remove"></span> Cancelar y volver al perfil
-		</button>
-	</div>
-	<!--
-	<script src='/jscript/basic.js' type='text/javascript'script>
-	<script src='/jscript/edit_profile.js' type='text/javascript'script>
-	-->
-	<br/>
+	{% if profile %}
+			<button name="hide_form" class="btn btn-danger btn-block" id="hide_form">
+					<span class="glyphicon glyphicon-remove"></span> Cancelar y volver al perfil
+			</button>
+		</div>
+		<br/>
 
-	<!-- si hay javascript esconde la edicion de perfil, que se podra mostrar
-		pulsando el boton, en caso contrario se mostrara -->
-	<script>
-		cancelEditProfile('{{profile.user.id}}');
-	</script>
+		<!-- si hay javascript esconde la edicion de perfil, que se podra mostrar
+			pulsando el boton, en caso contrario se mostrara directamente -->
+		<script>
+			cancelEditProfile('{{profile.user.id}}');
+		</script>
+	{% endif %}
 {%endif%}
 
