@@ -733,13 +733,12 @@ def edit_lesson(request, idlesson):
 
 @login_required
 def control_attendance(request):#TODO solo para gente con permisos!!! y ponerles permisos para ver las asignaturas y las clases!(y los comentarios a profesores)((professor = not is_student or haspermision)
-#TODO crear los permisos
 #TODO mostrar link en la pagina de inicio encima del calendario a quien tenga permisos
 	"""Devuelve una pagina para comprobar si las clases se estan realizando"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
-	#TODO if not permission
-		#return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
+	if not request.user.has_perm('app.can_see_statistics'):
+		return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
 
 	form = ControlFilterForm(request.GET)
 	all_subj = control_order(form, control_filter(form))
@@ -822,8 +821,8 @@ def show_codes(request):
 	"""Devuelve una pagina con los codigos para hacer checkin"""
 	if request.method != 'GET':
 		return method_not_allowed(request)
-	#TODO if not permission
-		#return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
+	if not request.user.has_perm('app.can_see_codes'):
+		return send_error_page(request, 'No tienes permisos para ver esta informaci&oacute;n.')
 	form = CodesFilterForm(request.GET)
 	all_lessons = codes_order(form, codes_filter(form))
 	#TODO order
