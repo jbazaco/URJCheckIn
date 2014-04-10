@@ -969,15 +969,17 @@ def more_lessons(request, current, newer):
 		lesson = Lesson.objects.get(id=current)
 		subject = lesson.subject
 	except Lesson.DoesNotExist:
-		return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+		resp = {'lessons': [], 'newer': newer, 'idlesson': 0}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
 	#no tiene acceso a asignaturas que no tiene
 	if not subject.is_seminar:
 		try:
 			profile = request.user.userprofile
 		except UserProfile.DoesNotExist:
-			return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+			resp = {'lessons': [], 'newer': newer, 'idlesson': 0}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
 		if not subject in profile.subjects.all():
-			return simplejson.dumps({'lessons': [], 'newer': newer, 'idlesson': 0})
+			resp = {'lessons': [], 'newer': newer, 'idlesson': 0}
 
 	all_lessons = Lesson.objects.filter(subject=subject.id)
 	if newer:
