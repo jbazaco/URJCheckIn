@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.debug import sensitive_post_parameters
-from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists
+from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists, AdminTask
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
 from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm
@@ -72,15 +72,21 @@ def home(request):
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
 		return method_not_allowed(request)
-	try:
-		week = int(request.GET.get('page'))
-	except (TypeError, ValueError):
-		week = 0
+
+	if request.user.is_staff:
+		tasks = AdminTask.objects.filter(done=False).order_by('time')[0:15]
+	else:
+		tasks = None
 
 	try:
 		profile = request.user.userprofile
 	except UserProfile.DoesNotExist:
-		return send_error_page(request, 'No tienes un perfil creado.')
+		return response_ajax_or_not(request, {'tasks': tasks, 'htmlname': 'home.html'})
+
+	try:
+		week = int(request.GET.get('page'))
+	except (TypeError, ValueError):
+		week = 0
 
 	today = datetime.date.today()
 	monday = today + datetime.timedelta(days= -today.weekday() + 7*week)
@@ -100,7 +106,7 @@ def home(request):
 							).order_by('start_time')
 					})
 	ctx = {'events': events, 'firstday':monday, 'lastday':monday + datetime.timedelta(days=6),
-			'previous':week-1, 'next': week+1, 'htmlname': 'home.html'}
+				'previous':week-1, 'next': week+1, 'tasks': tasks, 'htmlname': 'home.html'}
 	return response_ajax_or_not(request, ctx)
 
 

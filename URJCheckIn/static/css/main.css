@@ -29,6 +29,10 @@
 .calendar .events {
 	list-style:none;
 }
+
+#tasks {
+	word-wrap: break-word;
+}
 /*end HOME */
 
 /*start MENU_BAR*/

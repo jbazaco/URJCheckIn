@@ -4,48 +4,109 @@
 	<small>Bienvenido a la p&aacute;gina</small>
 </h2>
 
-<div class="panel panel-default calendar">
-	<div class="panel-heading">
+{% if perms.app %}
+	{% if perms.app.can_see_statistics %}
 		<div class="row">
-			<div class="previous_week col-xs-2">
-		  		<a href="?page={{previous}}" class="btn btn-default btn-block ajax">
-					&laquo;
+			<div class="col-md-8 col-md-offset-2">
+				<a href="{% url 'control_attendance' %}" class="btn btn-info btn-block ajax">
+					<span class="glyphicon glyphicon-stats"></span> Comprobar estadisticas
 				</a>
-			</div>
-			<div class="title col-xs-8">Calendario</div>
-			<div class="next_week col-xs-2">
-				<a href="?page={{next}}" class="btn btn-default btn-block ajax">
-					&raquo;
-				</a>
+				<br/>
 			</div>
 		</div>
+	{% endif %}
+	{% if perms.app.can_see_codes %}
 		<div class="row">
-			<div class="date">
-				<span id="first_day_week">{{firstday|date:'d-m-Y'}}</span> /
-				<span id="last_day_week">{{lastday|date:'d-m-Y'}}</span>
+			<div class="col-md-8 col-md-offset-2">
+				<a href="{% url 'show_codes' %}" class="btn btn-info btn-block ajax">
+					<span class="glyphicon glyphicon-qrcode"></span> Ver c&oacute;digos de las clases
+				</a>
+				<br/>
 			</div>
+		</div>
+	{% endif %}
+{% endif %}
+
+{% if request.user.is_staff %}
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<a href="/admin/" class="btn btn-info btn-block">
+				<span class="glyphicon glyphicon-list-alt"></span> Sitio de administraci&oacute;n
+			</a>
+			<br/>
 		</div>
 	</div>
-	<div class="panel-body">
-		{% for day in events %}
-			<div class="col-sm-2 dia">
-				<div class="panel panel-danger">
-					<div class="panel-heading">
-						<h3 class="panel-title">{{day.day|safe}}</h3>
-					</div>
-					<ul class="list-group lessons_list events">
-						{% for event in day.events %}
-							<a href="{% url 'process_lesson' event.id %}" class="list-group-item ajax">
-								<strong>{{event.subject}}</strong><br/>
-								{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
-							</a>
-						{% empty %}
-							<li>No hay eventos este d&iacute;a</li>
-						{% endfor %}
-					</ul>
+
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Tareas pendientes [ {{tasks.count}} ]</h3>
+				</div>
+				<ul id="tasks" class="list-group lessons_list">
+					{% for task in tasks%}
+						<a href="/admin/app/admintask/{{task.id}}/" class="list-group-item">
+							<p>{{task}} <em>solicitada hace {{task.time|timesince}}</em></p>
+							<p>{{task.comment|truncatechars:80}}</p>
+						</a>
+					{%empty%}
+						<li class="list-group-item">No hay tareas pendientes</li>
+					{% endfor %}
+				</ul>
+				<div class="panel-footer">
+					<a href="/admin/app/admintask/?done__exact=0" class="btn btn-primary btn-sm btn-block">
+						Ver todas las tareas pendientes
+					</a>
 				</div>
 			</div>
-		{% endfor %}
+		</div>
 	</div>
-</div>
+{% endif %}
+
+{% if request.user.userprofile %}
+	<div class="panel panel-default calendar">
+		<div class="panel-heading">
+			<div class="row">
+				<div class="previous_week col-xs-2">
+			  		<a href="?page={{previous}}" class="btn btn-default btn-block ajax">
+						&laquo;
+					</a>
+				</div>
+				<div class="title col-xs-8">Calendario</div>
+				<div class="next_week col-xs-2">
+					<a href="?page={{next}}" class="btn btn-default btn-block ajax">
+						&raquo;
+					</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="date">
+					<span id="first_day_week">{{firstday|date:'d-m-Y'}}</span> /
+					<span id="last_day_week">{{lastday|date:'d-m-Y'}}</span>
+				</div>
+			</div>
+		</div>
+		<div class="panel-body">
+			{% for day in events %}
+				<div class="col-sm-2 dia">
+					<div class="panel panel-danger">
+						<div class="panel-heading">
+							<h3 class="panel-title">{{day.day|safe}}</h3>
+						</div>
+						<ul class="list-group lessons_list events">
+							{% for event in day.events %}
+								<a href="{% url 'process_lesson' event.id %}" class="list-group-item ajax">
+									<strong>{{event.subject}}</strong><br/>
+									{{event.start_time|date:'H:i'}}-{{event.end_time|date:'H:i'}}
+								</a>
+							{% empty %}
+								<li>No hay eventos este d&iacute;a</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endif %}
 
