@@ -971,8 +971,8 @@ def more_lessons(request, current, newer):
 	except Lesson.DoesNotExist:
 		resp = {'lessons': [], 'newer': newer, 'idlesson': 0}
 		return HttpResponse(json.dumps(resp), content_type="application/json")
-	#no tiene acceso a asignaturas que no tiene
-	if not subject.is_seminar:
+	#no tiene acceso a asignaturas que no tiene (a no ser que tenga permiso can_see_statistics)
+	if not (request.user.has_perm('app.can_see_statistics') or subject.is_seminar):
 		try:
 			profile = request.user.userprofile
 		except UserProfile.DoesNotExist:
