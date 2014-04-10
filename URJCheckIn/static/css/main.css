@@ -230,4 +230,20 @@ button.show_map {
 }
 /*end LESSON_ATTENDANCE*/
 
+/*start FOOTER*/
+html {
+	position: relative;
+	min-height: 100%;
+}
+#over_footer {
+	padding-bottom: 4em;
+}
+footer .navbar-fixed-bottom{
+	position: absolute;
+	background-color: #EEEAEA;
+}
+footer {
+	text-align: center;
+}
+/*end FOOTER*/
 
