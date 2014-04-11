@@ -238,11 +238,13 @@ class Lesson(models.Model):
 
 class AdminTask(models.Model):
 	user = models.ForeignKey(User, verbose_name='usuario')
-	comment = models.TextField(max_length=500, verbose_name='petición')
+	ask = models.TextField(max_length=500, verbose_name='petición')
 	url = models.TextField(max_length=200, verbose_name='url del problema', blank=True)
 	time = models.DateTimeField(default=timezone.now, verbose_name='hora')
-	done = models.BooleanField(verbose_name='realizada', default=False)
-	solver = models.ForeignKey(User, verbose_name='solucionada por', blank=True, null=True,  related_name='solved_task')
+	done = models.BooleanField(verbose_name='gestionada', default=False)
+	solver = models.ForeignKey(User, verbose_name='gestionada por', blank=True, null=True, 
+								related_name='solved_task', limit_choices_to={'is_staff': True})
+	answer = models.TextField(max_length=500, verbose_name='respuesta', blank=True)
 
 	class Meta:
 		verbose_name='tarea de administración'
