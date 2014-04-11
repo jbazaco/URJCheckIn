@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists, AdminTask
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm
+from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm, ReportForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -752,6 +752,32 @@ def edit_lesson(request, idlesson):
 	ctx = {'lesson': lesson, 'form': lform, 'htmlname': 'lesson_edit.html'}
 	return response_ajax_or_not(request, ctx)
 
+@login_required
+def reports(request):
+	"""Devuelve una pagina con un formulario para reportar un problema a los administradores
+		y muestra el estado de los ultimos reportes del usuario"""#TODO
+	if request.method != 'GET' and request.method != 'POST':
+		return method_not_allowed(request)
+
+	if request.method == 'POST':
+		report = AdminTask(user=request.user)
+		form = ReportForm(request.POST, instance=report)
+		if not form.is_valid():
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'errors': lform.errors}), 
+									content_type="application/json")
+		else:
+			form.save()
+			if request.is_ajax():
+				return HttpResponse(json.dumps({'ok': True}), content_type="application/json")
+			else:
+				form = ReportForm()
+	#TODO paginator
+	if request.method != 'POST':
+		form = ReportForm()
+	reports = AdminTask.objects.filter(user=request.user).order_by('-time')[0:10]
+	ctx = {'form': form, 'reports': reports, 'htmlname': 'reports.html'}
+	return response_ajax_or_not(request, ctx)
 
 @login_required
 def control_attendance(request):

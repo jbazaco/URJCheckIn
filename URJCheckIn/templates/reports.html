@@ -1,0 +1,100 @@
+<h2 id="maintitle">
+	Reporte de problemas
+</h2>
+
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<div class="well">
+			<form name="report_problem" class="form-horizontal" id="report_problem"
+			 action="{% url 'reports' %}" method="POST">
+				{% csrf_token %}
+				<fieldset>
+					<legend>Reportar problema</legend>
+					{% if form.non_field_errors %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.non_field_errors}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% if form.errors.url %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.url}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_url" class="form-group">
+						<label class="col-sm-2 control-label" for="id_url">Url:</label>
+						<div class="col-sm-10">
+							{{form.url}}
+						</div>
+					</div>
+					{% if form.errors.ask %}
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<div class="alert alert-danger">
+									{{form.errors.ask}}
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					<div id="group_ask" class="form-group">
+						<label class="col-sm-2 control-label" for="id_ask">Problema:</label>
+						<div class="col-sm-10">
+							{{form.ask}}
+						</div>
+					</div>
+					
+					<button type="submit" class="btn btn-primary btn-block" name="seminar_submit" >
+						<span class="glyphicon glyphicon-send"></span> Enviar
+					</button>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<div id="my_reports">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">Mis &uacute;ltimos reportes</h3>
+				</div>
+				<ul class="reports_list list-group">
+					{% for report in reports %}
+						<li class="list-group-item">
+							ID: #{{report.id}}
+							<dl class="dl-horizontal fields">
+								<dt>Estado:</dt>
+								<dd>
+									{% if report.done %}atendida{% else %}pendiente{% endif %}
+									 [ <em>solicitado hace {{report.time|timesince}}</em> ]
+								</dd>
+								{% if report.url %}
+									<dt>Url:</dt><dd>{{report.url}}</dd>
+								{% endif %}
+								<dt>Problema:</dt><dd>{{report.ask}}</dd>
+								{% if report.solver %}
+									<dt>Gestionada por:</dt><dd>{{report.solver}}</dd>
+								{% endif %}
+								{% if report.answer %}
+									<dt>Respuesta:</dt><dd>{{report.answer}}</dd>
+								{% endif %}
+							</dl>
+						</li>
+					{% empty %}
+						<li class="list-group-item">
+							No has reportado ning&uacute;n problema.
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>

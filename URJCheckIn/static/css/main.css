@@ -247,3 +247,9 @@ footer {
 }
 /*end FOOTER*/
 
+/*start REPORTS*/
+#my_reports {
+	word-wrap: break-word;
+}
+/*end reports*/
+

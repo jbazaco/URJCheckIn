@@ -1,5 +1,5 @@
 from django import forms
-from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room, Building
+from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room, Building, AdminTask
 from django.forms.util import to_current_timezone, timezone
 import datetime
 
@@ -76,6 +76,17 @@ class ProfileImageForm(forms.ModelForm):
 	class Meta:
 		model = UserProfile
 		fields = ('photo',)
+
+#Formulario para reportar un problema
+class ReportForm(forms.ModelForm):
+	class Meta:
+		model = AdminTask
+		fields = ('ask', 'url')
+		widgets = {
+			'ask':  forms.Textarea(attrs={'maxlength':'500', 'class': 'form-control',
+												 'rows': '4', 'required':'required'}),
+			'url': forms.TextInput(attrs={'placeholder': 'url afectada (opcional)'})
+		}
 
 #Formulario para filtrar las asignaturas mostradas en el control de asignaturas
 class ControlFilterForm(forms.Form):
