@@ -46,8 +46,9 @@
 				<ul id="tasks" class="list-group lessons_list">
 					{% for task in tasks%}
 						<a href="/admin/app/admintask/{{task.id}}/" class="list-group-item">
-							<p>{{task}} <em>solicitada hace {{task.time|timesince}}</em></p>
-							<p>{{task.comment|truncatechars:80}}</p>
+							<p>#{{task.id}} {{task}} <em>solicitada hace {{task.time|timesince}}</em></p>
+							{% if task.url %}<p>Url {{task.url}}</p>{% endif %}
+							<p>{{task.ask|truncatechars:80}}</p>
 						</a>
 					{%empty%}
 						<li class="list-group-item">No hay tareas pendientes</li>
