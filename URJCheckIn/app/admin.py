@@ -176,9 +176,9 @@ class SolverFilter(admin.SimpleListFilter):
 			return queryset.filter(solver = request.user)
 
 class AdminTaskAdmin(admin.ModelAdmin):
-	list_display = ('time', 'done', 'user', 'solver')
+	list_display = ('id', 'time', 'done', 'user', 'solver')
 	list_filter = ('done',  'time', SolverFilter)
-	search_fields = ('user__username', 'solver__username')
+	search_fields = ('user__username', 'solver__username', 'id')
 
 admin.site.register(AdminTask, AdminTaskAdmin)
 
