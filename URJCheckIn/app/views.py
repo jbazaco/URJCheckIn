@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists, AdminTask
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm, ReportForm
+from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm, ReportForm, ChangeEmailForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -196,7 +196,8 @@ def profile(request, iduser):
 		profile = UserProfile.objects.get(user=iduser)
 	except UserProfile.DoesNotExist:
 		if str(request.user.id) == iduser:#mostrara el formulario para cambiar la password
-			return response_ajax_or_not(request, {'htmlname': 'profile.html'})
+			return response_ajax_or_not(request, {'htmlname': 'profile.html', 
+										'email_form': ChangeEmailForm(instance=request.user)})
 		return send_error_page(request, 'El usuario con id ' + iduser + ' no tiene perfil')
 
 	if request.method == "POST":
@@ -213,15 +214,16 @@ def profile(request, iduser):
 			else:
 				pform.save()
 				if request.is_ajax():
-					resp = {'user': {'age': profile.age, 'description': profile.description}}
+					resp = {'user': {'age': profile.age, 'description': profile.description, 
+							'email': profile.user.email, 'show_email': profile.show_email}}
 					return HttpResponse(json.dumps(resp), content_type="application/json")
 		else:
 			return send_error_page(request, 
 						'Est&aacute;s intentando cambiar un perfil distinto del tuyo')
 	if request.method != "POST":#si es un POST coge el form que ha recibido
 		pform = ProfileEditionForm(instance=profile)
-
-	ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html', 'form_img': ProfileImageForm()}
+	ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html', 'form_img': ProfileImageForm(),
+			'email_form': ChangeEmailForm(instance=request.user)}
 	return response_ajax_or_not(request, ctx)
 
 
@@ -924,6 +926,22 @@ def codes_filter(form):
 		all_lessons = all_lessons.filter(room__building=f_building)
 	return all_lessons
 	
+@login_required
+def email_change(request):
+	if request.method != 'POST':
+		return method_not_allowed(request)
+	eform = ChangeEmailForm(request.POST, instance=request.user)
+	if eform.is_valid():
+		eform.save()
+		if request.is_ajax():
+			resp = {'ok': True, 'email': request.user.email}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+	else:
+		if request.is_ajax():
+			resp = {'ok': False, 'errors': eform.errors}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
+	return HttpResponseRedirect('/profile/view/' + str(request.user.id))
+
 	
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #
@@ -1028,6 +1046,9 @@ def more_lessons(request, current, newer):
 @login_required
 @ajax_required
 def more_reports(request, current, newer):
+	"""Si newer = True devuelve un fragmento html con los 10 reportes mas recientes que el reporte
+		current ordenados de mas reciente a mas antiguo. Si newer = False los anteriores a current.
+		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)"""
 	current = int(current)
 	newer = (newer == 'true')
 	try:

@@ -2,6 +2,7 @@ from django import forms
 from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room, Building, AdminTask
 from django.forms.util import to_current_timezone, timezone
 import datetime
+from django.contrib.auth.models import User
 
 class MySplitDateTimeWidget(forms.MultiWidget):
 	"""SplitDateTimeWidget pero permitiendo editar los attrs de DateInput y TimeInput por
@@ -33,16 +34,20 @@ class CheckInForm(forms.ModelForm):
 
 
 class ProfileEditionForm(forms.ModelForm):
-	#TODO poner el resto de campos
 	class Meta:
 		model = UserProfile
-		fields = ('age', 'description')
+		fields = ('age', 'description', 'show_email')
 		widgets = {
 			'age': forms.TextInput(attrs={'required':'required','type':'number', 
 											'min':17, 'max':'100', 'step':'1'}),
 			'description': forms.Textarea(attrs={'maxlength':'200', 'class': 'form-control', 
 												'rows': '3'}),
 		}
+
+class ChangeEmailForm(forms.ModelForm):
+	class Meta:
+		model = User
+		fields = ('email',)
 
 #Formulario para que un profesor cree una Lesson
 class ExtraLessonForm(forms.ModelForm):

@@ -48,9 +48,9 @@
 						</a>
 					{% endfor %}
 				</dd>
-				{% if profile.user.email %}
-					<dt>e-mail: </dt>
-					<dd>{{profile.user.email}}</dd>
+				{% if profile.user.email and profile.show_email %}
+					<dt class="email_profile">e-mail: </dt>
+					<dd class="email_profile">{{profile.user.email}}</dd>
 				{% endif %}
 				</div>
 			</dl>
@@ -152,9 +152,28 @@
 									</div>
 								{% endif %}
 								<div id="group_description" class="form-group">
-									<label for="id_description" class="col-sm-2 control-label">Descripci&oacute;n:</label>
+									<label for="id_description" class="col-sm-2 control-label">
+										Descripci&oacute;n:
+									</label>
 									<div class="col-sm-10">
 										{{form.description}}
+									</div>
+								</div>
+								{% if form.errors.show_email %}
+									<div class="row">
+										<div class="col-sm-10 col-sm-offset-1">
+											<div class="alert alert-danger">
+												{{form.errors.show_email}}
+											</div>
+										</div>
+									</div>
+								{% endif %}
+								<div id="group_show_email" class="form-group">
+									<label for="id_show_email" class="col-sm-2 control-label">
+										e-mail p&uacute;blico:
+									</label>
+									<div class="col-sm-10">
+										{{form.show_email}}
 									</div>
 								</div>
 							</fieldset>
@@ -167,7 +186,31 @@
 				</div>
 			</div>
 		{% endif %}
-
+<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="span2 well">
+					<form name="email_form" class="form-horizontal" id="email_form"
+					 action="{% url 'email_change' %}" method="POST">
+						{% csrf_token %}
+						<fieldset>
+							<legend>Cambiar e-mail</legend>
+							<div id="group_email" class="form-group">
+								<label class="col-sm-3 control-label" for="id_email">
+									e-mail:
+								</label>
+								<div class="col-sm-9">
+									{{email_form.email}}
+								</div>
+							</div>
+						</fieldset>
+						<button type="submit" name="email_submit" id="change_email_button" 
+								class="btn btn-success btn-block">
+							<span class="glyphicon glyphicon-save"></span> Cambiar e-mail
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<div class="span2 well">
@@ -203,7 +246,7 @@
 								</div>
 							</div>
 						</fieldset>
-						<button type="submit" name="checkin_submit" id="password_button" 
+						<button type="submit" name="password_submit" id="password_button" 
 								class="btn btn-success btn-block">
 							<span class="glyphicon glyphicon-save"></span> Cambiar contrase&ntilde;a
 						</button>
