@@ -4,6 +4,49 @@
 	<small>Bienvenido a la p&aacute;gina</small>
 </h2>
 
+<!--Botones del menu en el cuerpo principal, para usuarios sin javascript desde el movil, ya que no
+ pueden desplegar el menu-->
+<div id="menu_block" class="visible-xs">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-5 col-xs-offset-7">
+				<a href="{% url 'my_logout' %}?next=/" class="btn btn-danger btn-block">
+					<span class="glyphicon glyphicon-off"></span> Salir
+				</a>
+				<br/>
+			</div>
+		</div>
+		<div class="row">
+			<a href="{% url 'profile' request.user.id %}" class="btn btn-info btn-block">
+				<span class="glyphicon glyphicon-user"></span> Perfil
+			</a>
+			<br/>
+		</div>
+		{% if request.user.userprofile %}
+			<div class="row">
+				<a href="{% url 'checkin' %}" class="btn btn-info btn-block ajax">
+					<span class="glyphicon glyphicon-map-marker"></span> CheckIn
+				</a>
+				<br/>
+			</div>
+			<div class="row">
+				<a href="{% url 'subjects' %}" class="btn btn-info btn-block ajax">
+					<span class="glyphicon glyphicon-book"></span> Asignaturas
+				</a>
+				<br/>
+			</div>
+		{% endif %}
+		<div class="row">
+			<a href="{% url 'forum' %}" class="btn btn-info btn-block">
+				<span class="glyphicon glyphicon-comment"></span> Foro
+			</a>
+			<br/>
+		</div>
+	</div>
+</div>
+<script>var menu_block = $('#menu_block').removeClass('visible-xs').hide();</script>
+
+
 {% if perms.app %}
 	{% if perms.app.can_see_statistics %}
 		<div class="row">
