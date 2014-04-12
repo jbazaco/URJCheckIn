@@ -13,70 +13,78 @@
 	</header>
 </div>
 
-<div id="menu_bar_space">
-	<!--para dejar el espacio que ocupa la barra de menu-->
-</div>
-<h2 id="maintitle">
-	URJCheckIn
-</h2>
-<div class="container" id="logger_box">
-	<div class="row">
-		<div class="col-md-4 col-md-offset-4">
-			<div class="panel">
-				{% if request.user.is_authenticated %}
-					<h2 id="maintitle">Sesi&oacute;n iniciada<br/>
-						<small>Registrado como {{request.user.username}}</small>
-					</h2>
-					<a class="btn btn-danger btn-block" href="{% url 'my_logout' %}"
-					 onClick="logout(); return false;">
-						<span class="glyphicon glyphicon-off"></span>
-						Logout
-					</a>
-				{% else %}
-					<form name="login" action="/login" method="POST"
-					 class="form-horizontal" id="loggin_form">
-						<fieldset>
-							<legend class="text-center">Inicia Sesi&oacute;n:</legend>
-							{% csrf_token %}
-							<div class="alert alert-danger text-center" id="login_error"
-							 {% if not form.errors %} hidden {% endif %}>
-								Usuario o contrase&ntilde;a inv&aacute;lidos
-							</div>
-							<div class="form-group">
-								<label class="col-sm-5 control-label" for="id_username">
-									Usuario:
-								</label>
-								<div class="col-sm-7">
-									<input id="id_username" type="text" 
-										name="username" maxlength="30"/>
+<div id="over_footer">
+	<div id="menu_bar_space">
+		<!--para dejar el espacio que ocupa la barra de menu-->
+	</div>
+	<h2 id="maintitle">
+		URJCheckIn
+	</h2>
+	<div class="container" id="logger_box">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+				<div class="panel">
+					{% if request.user.is_authenticated %}
+						<h2 id="maintitle">Sesi&oacute;n iniciada<br/>
+							<small>Registrado como {{request.user.username}}</small>
+						</h2>
+						<a class="btn btn-danger btn-block" href="{% url 'my_logout' %}"
+						 onClick="logout(); return false;">
+							<span class="glyphicon glyphicon-off"></span>
+							Logout
+						</a>
+					{% else %}
+						<form name="login" action="/login" method="POST"
+						 class="form-horizontal" id="loggin_form">
+							<fieldset>
+								<legend class="text-center">Inicia Sesi&oacute;n:</legend>
+								{% csrf_token %}
+								<div class="alert alert-danger text-center" id="login_error"
+								 {% if not form.errors %} hidden {% endif %}>
+									Usuario o contrase&ntilde;a inv&aacute;lidos
 								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-5 control-label" for="id_password">
-									Contrase&ntilde;a:
-								</label>
-								<div class="col-sm-7">
-									<input type="password" name="password" 
-										id="id_password"/>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="id_username">
+										Usuario:
+									</label>
+									<div class="col-sm-7">
+										<input id="id_username" type="text" 
+											name="username" maxlength="30"/>
+									</div>
 								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="id_password">
+										Contrase&ntilde;a:
+									</label>
+									<div class="col-sm-7">
+										<input type="password" name="password" 
+											id="id_password"/>
+									</div>
+								</div>
+								<button type="submit" class="btn btn-success btn-block"
+									 name="login_submit" >
+										<span class="glyphicon glyphicon-log-in"></span>
+										Iniciar sesi&oacute;n
+								</button>
+							</fieldset>
+						</form>
+						<br/>
+						<div class="row">
+							<div class="col-xs-12">
+								<a class="btn btn-info btn-block" href="/password_reset/">
+									¿Olvidaste la contrase&ntilde;a?
+								</a>
 							</div>
-							<button type="submit" class="btn btn-success btn-block"
-								 name="login_submit" >
-									<span class="glyphicon glyphicon-log-in"></span>
-									Iniciar sesi&oacute;n
-							</button>
-						</fieldset>
-					</form>
-					<br/>
-					<div class="row">
-						<div class="col-xs-12">
-							<a class="btn btn-info btn-block" href="/password_reset/">
-								¿Olvidaste la contrase&ntilde;a?
-							</a>
 						</div>
-					</div>
-				{% endif %}
+					{% endif %}
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<footer>
+	<div class="navbar navbar-fixed-bottom">
+		URJCheckIn Jorge Bazaco Caloto &copy; 2014
+	</div>
+</footer>
