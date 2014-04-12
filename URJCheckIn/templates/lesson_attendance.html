@@ -39,6 +39,10 @@
 				</div>
 				<div class="panel-body">
 					<p>
+						Hora: 
+						<span>{{checkin.time|date:'H:i'}}<span>
+					</p>
+					<p>
 						Checkin con c&oacute;digo: 
 						<span>{% if checkin.codeword %}S&iacute;{% else %}No{% endif %}<span>
 					</p>
