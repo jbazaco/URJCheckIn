@@ -85,6 +85,12 @@
 
 <footer>
 	<div class="navbar navbar-fixed-bottom">
+		{% if request.user.is_authenticated %}
+			Para reportar problemas,
+			<a href="{% url 'reports' %}" class="ajax">informa a los administradores</a>.
+			<span class="hidden-xs">|</span>
+			<div class="visible-xs"><br/></div>
+		{% endif %}
 		URJCheckIn Jorge Bazaco Caloto &copy; 2014
 	</div>
 </footer>
