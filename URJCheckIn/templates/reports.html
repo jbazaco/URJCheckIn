@@ -64,35 +64,35 @@
 		<div id="my_reports">
 			<div class="panel panel-danger">
 				<div class="panel-heading">
-					<h3 class="panel-title">Mis &uacute;ltimos reportes</h3>
+					<h3 class="panel-title">Mis reportes</h3>
 				</div>
-				<ul class="reports_list list-group">
-					{% for report in reports %}
-						<li class="list-group-item">
-							ID: #{{report.id}}
-							<dl class="dl-horizontal fields">
-								<dt>Estado:</dt>
-								<dd>
-									{% if report.done %}atendida{% else %}pendiente{% endif %}
-									 [ <em>solicitado hace {{report.time|timesince}}</em> ]
-								</dd>
-								{% if report.url %}
-									<dt>Url:</dt><dd>{{report.url}}</dd>
-								{% endif %}
-								<dt>Problema:</dt><dd>{{report.ask}}</dd>
-								{% if report.solver %}
-									<dt>Gestionada por:</dt><dd>{{report.solver}}</dd>
-								{% endif %}
-								{% if report.answer %}
-									<dt>Respuesta:</dt><dd>{{report.answer}}</dd>
-								{% endif %}
-							</dl>
-						</li>
-					{% empty %}
-						<li class="list-group-item">
-							No has reportado ning&uacute;n problema.
-						</li>
-					{% endfor %}
+				<ul id="reports_list" class="list-group">
+					{% if reports.has_previous %}
+						<a id="ask_newer" class="btn btn-primary btn-sm btn-block" role="button"
+						 href="?page={{reports.previous_page_number}}"
+						 {% with reports|first as first_report %}
+							 onClick="askReports({{first_report.id}}, true);return false;">
+						 {% endwith %}
+							<span class="glyphicon glyphicon-refresh"></span>
+								Reportes m&aacute;s recientes
+						</a>
+					{% endif %}
+					{% include 'pieces/reports.html' %}
+					<div class="panel-footer">
+						{% if reports.has_next %}
+							<a id="ask_older" href="?page={{reports.next_page_number}}" 
+								class="btn btn-primary btn-sm btn-block" role="button"
+								{% with reports|last as last_report %}
+									onClick="askReports({{last_report.id}}, false); return false;">
+								{% endwith %}
+								<span class="glyphicon glyphicon-refresh"></span> Reportes anteriores
+							</a>
+						{% else %}
+							<div class="btn btn-primary btn-sm btn-block disabled">
+								No hay m&aacute;s reportes
+							</div>
+						{% endif %}
+					</div>
 				</ul>
 			</div>
 		</div>

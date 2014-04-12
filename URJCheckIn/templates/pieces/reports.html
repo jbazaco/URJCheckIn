@@ -1,0 +1,26 @@
+{% for report in reports %}
+	<li class="list-group-item">
+		ID: #{{report.id}}
+		<dl class="dl-horizontal fields">
+			<dt>Estado:</dt>
+			<dd>
+				{% if report.done %}atendida{% else %}pendiente{% endif %}
+				[ <em>solicitado hace {{report.time|timesince}}</em> ]
+			</dd>
+			{% if report.url %}
+				<dt>Url:</dt><dd>{{report.url}}</dd>
+			{% endif %}
+			<dt>Problema:</dt><dd>{{report.ask}}</dd>
+			{% if report.solver %}
+				<dt>Gestionada por:</dt><dd>{{report.solver}}</dd>
+			{% endif %}
+			{% if report.answer %}
+				<dt>Respuesta:</dt><dd>{{report.answer}}</dd>
+			{% endif %}
+		</dl>
+	</li>
+{% empty %}
+	<li class="list-group-item">
+		No has reportado ning&uacute;n problema.
+	</li>
+{% endfor %}

@@ -755,7 +755,7 @@ def edit_lesson(request, idlesson):
 @login_required
 def reports(request):
 	"""Devuelve una pagina con un formulario para reportar un problema a los administradores
-		y muestra el estado de los ultimos reportes del usuario"""#TODO
+		y muestra el estado de los ultimos reportes del usuario"""
 	if request.method != 'GET' and request.method != 'POST':
 		return method_not_allowed(request)
 
@@ -764,18 +764,23 @@ def reports(request):
 		form = ReportForm(request.POST, instance=report)
 		if not form.is_valid():
 			if request.is_ajax():
-				return HttpResponse(json.dumps({'errors': lform.errors}), 
+				return HttpResponse(json.dumps({'errors': form.errors}), 
 									content_type="application/json")
 		else:
-			form.save()
+			report = form.save()
 			if request.is_ajax():
-				return HttpResponse(json.dumps({'ok': True}), content_type="application/json")
+				html = loader.get_template('pieces/reports.html').render(RequestContext(
+															request, {'reports':[report]}))
+				resp = {'report':html, 'ok': True, 'idreport': report.id}
+				return HttpResponse(json.dumps(resp), content_type="application/json")
 			else:
 				form = ReportForm()
-	#TODO paginator
+
 	if request.method != 'POST':
 		form = ReportForm()
-	reports = AdminTask.objects.filter(user=request.user).order_by('-time')[0:10]
+	reports = my_paginator(request, 
+					AdminTask.objects.filter(user=request.user).order_by('-time'),
+					10)
 	ctx = {'form': form, 'reports': reports, 'htmlname': 'reports.html'}
 	return response_ajax_or_not(request, ctx)
 
@@ -1017,5 +1022,40 @@ def more_lessons(request, current, newer):
 	html = loader.get_template('pieces/lessons.html').render(RequestContext(
 									request, {'lessons':lessons, 'future':newer}))
 	resp = {'lessons': html, 'newer': newer, 'idlesson': idlesson}
+	return HttpResponse(json.dumps(resp), content_type="application/json")
+
+
+@login_required
+@ajax_required
+def more_reports(request, current, newer):
+	current = int(current)
+	newer = (newer == 'true')
+	try:
+		report = AdminTask.objects.get(id=current)
+	except AdminTask.DoesNotExist:
+		resp = {'reports': [], 'newer': newer, 'idreport': 0}
+		return HttpResponse(json.dumps(resp), content_type="application/json")
+
+	all_reports = AdminTask.objects.filter(user=request.user)
+	if newer:
+		reports = all_reports.filter(time__gt=report.time).order_by('-time')
+		#Se tiene que hacer asi porque si se hace el slice primero con order_by('time')
+		# y luego se llama a reverse() se seleccionan los 10 elementos opuestos
+		n_reports = reports.count()
+		if n_reports > 10:
+			reports = reports[n_reports-10:]
+	else:
+		reports = all_reports.filter(time__lt=report.time).order_by('-time')[0:10]
+
+	if reports:
+		if newer:
+			idreport = reports[0].id
+		else:
+			idreport = reports[reports.count()-1].id
+	else:
+		idreport = 0
+	html = loader.get_template('pieces/reports.html').render(RequestContext(
+												request, {'reports':reports}))
+	resp = {'reports':html, 'newer':newer, 'idreport':idreport}
 	return HttpResponse(json.dumps(resp), content_type="application/json")
 
