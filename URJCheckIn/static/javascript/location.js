@@ -49,8 +49,16 @@ function checkinDone(data) {
 	}
 }
 
+/* En caso de error informa al usuario sobre el error y envia el formulario sin la localizacion.
+	Esto es lo mas logico puesto que el error puede deberse a que el usuario ha denegado la
+	localizacion o es imposible localizarlo, por lo que tiene que poder realizar el checkin de 
+	alguna manera */
 function geolocationError(error) {
-	alert("Error #" + error.code + " " + error.message);
+	alertBefore('Error #' + error.code + ' ' + error.message + 
+				' (check in enviado sin geolocalizaci&oacute;n)', 
+				'#checkinbox button', checkin_alert_class, 'warning', '#checkinbox');
+	$.post($('#checkinbox').attr('action'), $('#checkinbox').serialize(), checkinDone);
+	$('#loading_page').hide();
 }
 
 /* funcion cogida de https://github.com/LazarSoft/jsqrcode */
