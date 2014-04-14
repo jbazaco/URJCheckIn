@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django import forms
 from models import Degree, Subject, UserProfile, Lesson, CheckIn, Room, Building, AdminTask
 from django.forms.util import to_current_timezone, timezone
@@ -165,4 +166,22 @@ class CodesFilterForm(forms.Form):
 		else:
 			return datetime.time.max
 
+#Formulario para buscar aulas libres
+class FreeRoomForm(forms.Form):
+	start_time = forms.DateTimeField(widget=MySplitDateTimeWidget(date_attrs={'type': 'date', 
+			'required': 'required', 'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 
+			'required': 'required', 'placeholder':'HH:MM'}))
+	end_time = forms.DateTimeField(widget=MySplitDateTimeWidget(date_attrs={'type': 'date', 
+			'required': 'required', 'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 
+			'required': 'required', 'placeholder':'HH:MM'}))
+	building = forms.ModelChoiceField(queryset=Building.objects.all())
+
+	def clean(self):
+		cleaned_data = super(FreeRoomForm, self).clean()
+		start_time = cleaned_data.get('start_time')
+		end_time = cleaned_data.get('end_time')
+		if start_time and end_time:
+			if start_time > end_time:
+				 raise forms.ValidationError('La fecha de inicio debe ser anterior a la de finalización')
+		return cleaned_data
 

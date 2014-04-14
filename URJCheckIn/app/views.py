@@ -7,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.debug import sensitive_post_parameters
-from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists, AdminTask
+from models import UserProfile, Lesson, Subject, CheckIn, LessonComment, ForumComment, remove_if_exists, AdminTask, get_free_room, Building
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm, ReportForm, ChangeEmailForm
+from forms import ProfileEditionForm, CheckInForm, SubjectForm, ExtraLessonForm, ProfileImageForm, ControlFilterForm, CodesFilterForm, ReportForm, ChangeEmailForm, FreeRoomForm
 from dateutil import parser
 from django.core.exceptions import ValidationError
 import datetime
@@ -704,7 +704,7 @@ def create_lesson(request, idsubj):
 	
 	if request.method != 'POST':
 		lform = ExtraLessonForm()
-	ctx = {'subject': subject, 'form': lform, 'htmlname': 'new_lesson.html'}
+	ctx = {'subject': subject, 'form': lform, 'room_form': FreeRoomForm(), 'htmlname': 'new_lesson.html'}
 	return response_ajax_or_not(request, ctx)
 
 
@@ -751,8 +751,31 @@ def edit_lesson(request, idlesson):
 	
 	if request.method != 'POST':
 		lform = ExtraLessonForm(instance=lesson)
-	ctx = {'lesson': lesson, 'form': lform, 'htmlname': 'lesson_edit.html'}
+	ctx = {'lesson': lesson, 'form': lform, 'room_form': FreeRoomForm(), 'htmlname': 'lesson_edit.html'}
 	return response_ajax_or_not(request, ctx)
+
+
+@login_required
+def free_room(request):
+	"""Devuelve un aula libre en la franja horaria solicitada y en el edificio solicitado"""
+	if request.method != 'GET':
+		return method_not_allowed(request)
+	form = FreeRoomForm(request.GET)
+	free_room = False
+	if form.is_valid():
+		data = form.cleaned_data
+		free_room = get_free_room(data['start_time'], data['end_time'], data['building'])
+		if not free_room:
+			free_room = 'No hay aulas libres en el ' + str(data['building'])
+		if request.is_ajax():
+			return HttpResponse(json.dumps({'ok': True, 'free_room': str(free_room)}), 
+							content_type="application/json")
+	elif request.is_ajax():
+		return HttpResponse(json.dumps({'ok': False, 'errors': form.errors}), 
+							content_type="application/json")
+	ctx = {'room_form': form, 'free_room': free_room, 'htmlname': 'freeroom.html'}
+	return response_ajax_or_not(request, ctx)
+
 
 @login_required
 def reports(request):
