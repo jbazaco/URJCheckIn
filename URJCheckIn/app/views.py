@@ -406,16 +406,6 @@ def forum(request):
 	elif request.method != "GET":
 		return method_not_allowed(request)
 
-	#Para el caso en el que pida mas comentarios con ajax
-	if request.is_ajax():
-		if request.GET.get('idlesson') and request.GET.get('newer') and request.GET.get('idcomment'):
-			try:
-				return more_comments(request, int(request.GET.get('idcomment')), 
-								request.GET.get('newer') == 'true',
-								 int(request.GET.get('idlesson')))
-			except ValueError:
-				pass
-
 	comments =  ForumComment.objects.all().order_by('-date')
 	ctx = {'comments': my_paginator(request, comments, 10), 'htmlname': 'forum.html'}
 	return response_ajax_or_not(request, ctx)
@@ -525,14 +515,6 @@ def subject(request, idsubj):
 		elif 'error' in resp:
 			error = resp['error']
 
-	#Para el caso en el que pida mas comentarios con ajax
-	if request.is_ajax():
-		if request.GET.get('idlesson') and request.GET.get('newer'):
-			try:
-				return more_lessons(request, int(request.GET.get('idlesson')), 
-									request.GET.get('newer') == 'true')
-			except ValueError:
-				pass
 	if profile:
 		if subject in profile.subjects.all():
 			signed = True
@@ -970,11 +952,16 @@ def email_change(request):
 # Funciones para solicitar mas elementos de algun tipo #
 ########################################################
 
-def more_comments(request, current, newer, idlesson):
+@login_required
+@ajax_required
+def more_comments(request, current, idlesson, newer):
 	"""Si newer = True devuelve un fragmento html con 10 comentarios mas nuevos que num ordenados
 		de mas nuevo a mas antiguo. Si newer = False los anteriores.
 		Ademas indica si son newer y el id del mas reciente/mas antiguo (si no hay devuelve 0)
 		Si idlesson es menor que 1 los coge del foro y si no de la lesson con id idlesson"""
+	current = int(current)
+	idlesson = int(idlesson)
+	newer = (newer == 'true')
 	if current > 0:
 		try:
 			if idlesson > 0:

@@ -32,8 +32,7 @@ function commentSaved(data) {
 	Si idlesson es menor que 0 los pide del foro y si es mayor de la clase con id idlesson*/
 function askComments(idcomment, idlesson, newer) {
 	disableButtons(['#ask_newer', '#ask_older']);
-	path = window.location.pathname + '?idlesson=' + idlesson + '&newer=' + newer +
-			'&idcomment=' + idcomment;
+	path = '/more/comments/' + idcomment + '/' + idlesson + '/' + newer;
 	$.getJSON(path, commentsReceived);
 }
 
