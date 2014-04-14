@@ -73,6 +73,17 @@
     <div id="content" class="{% block coltype %}colM{% endblock %}">
         {% block pretitle %}{% endblock %}
         {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+		{% if request.path == '/admin/auth/user/' and request.user.is_authenticated %}
+			<div class="module">
+				<div>Creaci&oacute;n de usuarios a partir de un fichero CSV</div>
+				<form action="/admin/csv/users" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+					<input id="csv_users" type="file" name="csv_users">
+					<button type="submit">Subir y generar usuarios</button>
+					<a href="/csv/users_csv.csv">Descargar plantilla</a>
+				</form>
+			</div>
+		{% endif %}
         {% block content %}
         {% block object-tools %}{% endblock %}
         {{ content }}
