@@ -81,8 +81,7 @@ function askLessons(idlesson, newer) {
 		disableButtons(['#ask_newer']);
 	else
 		disableButtons(['#ask_older']);
-	path = window.location.pathname + '?idlesson=' + idlesson + '&newer=' + newer;
-	$.getJSON(path, lessonsReceived);
+	$.getJSON('/more/lessons/' + idlesson + '/' + newer, lessonsReceived);
 }
 
 /* Coloca las clases recibidas en su sitio */

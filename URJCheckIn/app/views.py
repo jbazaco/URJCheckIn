@@ -305,16 +305,6 @@ def process_lesson(request, idlesson):
 		resp = save_lesson_comment(request, lesson)
 		if request.is_ajax():
 			return HttpResponse(json.dumps(resp), content_type="application/json")
-
-	#Para el caso en el que pida mas comentarios con ajax
-	if request.is_ajax():
-		if request.GET.get('idlesson') and request.GET.get('newer') and request.GET.get('idcomment'):
-			try:
-				return more_comments(request, int(request.GET.get('idcomment')), 
-								request.GET.get('newer') == 'true',
-								 int(request.GET.get('idlesson')))
-			except ValueError:
-				pass
 	
 	lesson_state = lesson_str_state(lesson, request.user)
 	comments = my_paginator(request, lesson.lessoncomment_set.all().order_by('-date'), 10)
@@ -1016,12 +1006,16 @@ def more_comments(request, current, idlesson, newer):
 	return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
+@login_required
+@ajax_required
 def more_lessons(request, current, newer):
 	"""Si newer = True devuelve un fragmento html con 10 clases posteriores a la lesson con
 		id current ordenados de menor fecha a mayor fecha. Si newer = False las anteriores 
 		ordenadas de mayor fecha a menos fecha.
 		Ademas indica si son newer y el id de la ultima lesson que devuelve (si no hay 
 		devuelve 0)"""
+	current = int(current)
+	newer = (newer == 'true')
 	try:
 		lesson = Lesson.objects.get(id=current)
 		subject = lesson.subject
