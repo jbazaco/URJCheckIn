@@ -1031,6 +1031,7 @@ def more_lessons(request, current, newer):
 			return HttpResponse(json.dumps(resp), content_type="application/json")
 		if not subject in profile.subjects.all():
 			resp = {'lessons': [], 'newer': newer, 'idlesson': 0}
+			return HttpResponse(json.dumps(resp), content_type="application/json")
 
 	all_lessons = Lesson.objects.filter(subject=subject.id)
 	if newer:
