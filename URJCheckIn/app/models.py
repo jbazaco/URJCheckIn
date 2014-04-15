@@ -154,7 +154,7 @@ class UserProfile(models.Model):
 	is_student = models.BooleanField(default=True, verbose_name='es alumno')
 	age = models.PositiveIntegerField(validators=[MinValueValidator(17), MaxValueValidator(100)], verbose_name='edad', blank=True)
 	#TODO quizas mejor poner como grupo de usuario
-	dni = models.CharField(max_length=20, verbose_name='DNI (o similar)')	
+	dni = models.CharField(max_length=20, verbose_name='DNI', unique=True)	
 	show_email = models.BooleanField(default=False, verbose_name='mostrar email')
 
 	class Meta:
