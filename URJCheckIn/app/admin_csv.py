@@ -54,20 +54,25 @@ def create_user(info):
 	"""
 	if len(info) < 6:
 		return
-	elif not info[0] or not info[1] or not info[3]:
+	else:
+		first_name = info[0].strip()
+		last_name = info[1].strip()
+		email = info[2].strip()
+		dni = info[3].strip()
+	if not first_name or not last_name or not dni:
 		return
-	elif info[3] == 'DNI':#Primera linea de la plantilla con el nombre de los campos
+	elif dni == 'DNI':#Primera linea de la plantilla con el nombre de los campos
 		return
-	elif UserProfile.objects.filter(dni=info[3]).exists():
+	elif UserProfile.objects.filter(dni=dni).exists():
 		return
-	
-	username = get_username(info[0], info[1])
 
-	user = User(username=username, first_name=info[0], last_name=info[1], email=info[2])
-	user.set_password(info[3])
+	username = get_username(first_name, last_name)
+
+	user = User(username=username, first_name=first_name, last_name=last_name, email=email)
+	user.set_password(dni)
 	user.save()
 	is_student = not (info[5]=='No')#en caso de error mejor poner que es estudiante
-	profile = UserProfile(user=user, dni=info[3], is_student=is_student, age=100)
+	profile = UserProfile(user=user, dni=dni, is_student=is_student, age=100)
 	profile.save()
 	degrees = info[4].split()
 	for d_code in degrees:
@@ -86,7 +91,6 @@ def remove_accents(input_str):
 def get_username(name, surname):
 	"""Genera un nombre de usuario con la primera letra del nombre y el primer apellido,
 		si ya existe pone un numero al final"""
-	#El strip es por si el nombre estuviese mal (con un espacio al princio)
 	username = remove_accents((name[0:1] + surname.split()[0]).strip().lower())
 	username_tmp = username
 	n = 0
