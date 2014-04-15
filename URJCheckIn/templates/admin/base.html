@@ -77,7 +77,7 @@
 			{% if request.path == '/admin/auth/user/' %}
 				<div class="module">
 					<div>Creaci&oacute;n de usuarios a partir de un fichero CSV</div>
-					<form action="/admin/csv/users" method="POST" enctype="multipart/form-data"><!--TODO cambiar action a "csv/"-->
+					<form action="csv/" method="POST" enctype="multipart/form-data"><!--TODO cambiar action a "csv/"-->
 						{% csrf_token %}
 						<input id="csv_users" type="file" name="csv_users">
 						<button type="submit">Subir y generar usuarios</button>
