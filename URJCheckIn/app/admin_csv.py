@@ -1,3 +1,6 @@
+import sys 
+reload(sys) 
+sys.setdefaultencoding("utf-8")
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
@@ -7,6 +10,7 @@ import os
 from django.utils.datastructures import MultiValueDictKeyError
 import csv
 from django.contrib.auth.models import User
+import unicodedata
 
 def handle_uploaded_file(f, root):
 	name = str(f)
@@ -21,13 +25,14 @@ def handle_uploaded_file(f, root):
 @login_required
 @staff_member_required
 def create_users(request):
+	"""Crea usuarios y sus perfiles a partir de un fichero csv con los campos separados por ';' """
 	if request.method != 'POST':
 		return HttpResponseBadRequest('Wrong method')
-	print "create users TODO"
 	try:
 		r_file = request.FILES['csv_users']
 	except MultiValueDictKeyError:
 		return HttpResponseBadRequest('Wrong form')
+
 	fname = handle_uploaded_file(r_file,  settings.MEDIA_ROOT + 'csv/')
 	with open(fname, 'rb') as csvfile:
 		reader = csv.reader(csvfile, delimiter=';', quotechar='|')
@@ -35,25 +40,36 @@ def create_users(request):
 			create_user(row)	
 	if os.path.exists(fname):
 		os.remove(fname)
-	#if todo OK TODO
 	return HttpResponseRedirect('/admin/auth/user/')
 
 def create_user(info):
-	if len(info) < 7:
+	"""
+		Crea un usuario si no existe, el formato de info debe ser:
+		0->First_name (User)
+		1->Last_name (User)
+		2->Email (User)
+		3->Dni (UserProfile)
+		4->Degrees (UserProfile) [Con los codes de los Degrees separados por espacios si hay varios]
+		5->Is_student (UserProfile) (Si=True / No=False) [realmente sera True si no pone 'No']
+	"""
+	if len(info) < 6:
 		return
-	elif not info[0] or not info[4]:
+	elif not info[0] or not info[1] or not info[3]:
 		return
-	elif User.objects.filter(username=info[0]).exists():
+	elif info[3] == 'DNI':#Primera linea de la plantilla con el nombre de los campos
 		return
-	elif UserProfile.objects.filter(dni=info[4]).exists():
+	elif UserProfile.objects.filter(dni=info[3]).exists():
 		return
-	user = User(username=info[0], first_name=info[1], last_name=info[2], email=info[3])
-	user.set_password(info[4])
+	
+	username = get_username(info[0], info[1])
+
+	user = User(username=username, first_name=info[0], last_name=info[1], email=info[2])
+	user.set_password(info[3])
 	user.save()
-	is_student = not (info[6]=='No')#en caso de error mejor poner que es estudiante
-	profile = UserProfile(user=user, dni=info[4], is_student=is_student, age=100)
+	is_student = not (info[5]=='No')#en caso de error mejor poner que es estudiante
+	profile = UserProfile(user=user, dni=info[3], is_student=is_student, age=100)
 	profile.save()
-	degrees = info[5].split()
+	degrees = info[4].split()
 	for d_code in degrees:
 		try:
 			degree =Degree.objects.get(code=d_code)
@@ -62,3 +78,19 @@ def create_user(info):
 		profile.degrees.add(degree)
 	#TODO si email, enviar email al usuario
 
+def remove_accents(input_str):
+	#http://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
+	nkfd_form = unicodedata.normalize('NFKD', unicode(input_str))
+	return u"".join([c for c in nkfd_form if not unicodedata.combining(c)])
+
+def get_username(name, surname):
+	"""Genera un nombre de usuario con la primera letra del nombre y el primer apellido,
+		si ya existe pone un numero al final"""
+	#El strip es por si el nombre estuviese mal (con un espacio al princio)
+	username = remove_accents((name[0:1] + surname.split()[0]).strip().lower())
+	username_tmp = username
+	n = 0
+	while User.objects.filter(username=username).exists():
+		n += 1
+		username = username_tmp + str(n)
+	return username
