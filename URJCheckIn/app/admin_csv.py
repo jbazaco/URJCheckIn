@@ -11,6 +11,8 @@ from django.utils.datastructures import MultiValueDictKeyError
 import csv
 from django.contrib.auth.models import User
 import unicodedata
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 def handle_uploaded_file(f, root):
 	name = str(f)
@@ -73,7 +75,12 @@ def create_user(info):
 
 	username = get_username(first_name, last_name)
 
-	user = User(username=username, first_name=first_name, last_name=last_name, email=email)
+	user = User(username=username, first_name=first_name, last_name=last_name)
+	try:
+		validate_email(email)
+		user.email = email
+	except ValidationError:
+		pass
 	user.set_password(dni)
 	user.save()
 	is_student = not (info[5]=='No')#en caso de error mejor poner que es estudiante
@@ -86,7 +93,6 @@ def create_user(info):
 		except Degree.DoesNotExist:
 			continue
 		profile.degrees.add(degree)
-	#TODO si email, enviar email al usuario #TODO oncreate user
 
 def remove_accents(input_str):
 	#http://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
