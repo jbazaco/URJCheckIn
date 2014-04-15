@@ -4,7 +4,7 @@ sys.setdefaultencoding("utf-8")
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
-from models import get_rand_string, UserProfile, Degree
+from models import get_rand_string, UserProfile, Degree, Subject
 from django.conf import settings
 import os
 from django.utils.datastructures import MultiValueDictKeyError
@@ -81,7 +81,7 @@ def create_user(info):
 		except Degree.DoesNotExist:
 			continue
 		profile.degrees.add(degree)
-	#TODO si email, enviar email al usuario
+	#TODO si email, enviar email al usuario #TODO oncreate user
 
 def remove_accents(input_str):
 	#http://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
@@ -98,3 +98,34 @@ def get_username(name, surname):
 		n += 1
 		username = username_tmp + str(n)
 	return username
+
+@login_required
+@staff_member_required
+def relate_subject_user(request, idsubj):
+	"""Relaciona los usuarios cuyos DNIs aparecen en el csv con la asignatura indicada
+		en la URL"""
+	if request.method != 'POST':
+		return HttpResponseBadRequest('Wrong method')
+	try:
+		r_file = request.FILES['csv_subject_users']
+		subject = Subject.objects.get(id=idsubj)
+	except MultiValueDictKeyError:
+		return HttpResponseBadRequest('Wrong form')
+	except Subject.DoesNotExist:
+		return HttpResponseBadRequest('#404 The subject with id ' + str(idsubj) + ' does not exist.')
+
+	fname = handle_uploaded_file(r_file,  settings.MEDIA_ROOT + 'csv/')
+	with open(fname, 'rb') as csvfile:
+		reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+		for row in reader:
+			if row[0] != 'DNI':#Primera fila de la plantilla con el nombre del campo DNI
+				try:
+					profile = UserProfile.objects.get(dni=row[0])
+				except UserProfile.DoesNotExist:
+					continue
+				profile.subjects.add(subject)
+				
+	if os.path.exists(fname):
+		os.remove(fname)
+	return HttpResponseRedirect('/admin/app/subject/')
+
