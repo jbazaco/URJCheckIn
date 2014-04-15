@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import sys 
 reload(sys) 
 sys.setdefaultencoding("utf-8")
@@ -13,6 +14,7 @@ from django.contrib.auth.models import User
 import unicodedata
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 
 def handle_uploaded_file(f, root):
 	name = str(f)
@@ -83,6 +85,13 @@ def create_user(info):
 		pass
 	user.set_password(dni)
 	user.save()
+	if user.email:
+		send_mail('Bienvenido a URJCheckIn', 'Acaba de crearse una cuenta de usuario para esta ' + 
+					'dirección de correo.\nLos credenciales son:\n\tUsuario: ' + 
+					user.username + '\n\tContraseña: Introduzca su DNI\n' +
+					'Le recomendamos acceder a su perfil para modificar su contraseña.', #TODO poner enlace a la pagina en produccion
+					'from@example.com',#TODO poner direccion de correo en produccion
+					[user.email], fail_silently=False)
 	is_student = not (info[5]=='No')#en caso de error mejor poner que es estudiante
 	profile = UserProfile(user=user, dni=dni, is_student=is_student, age=100)
 	profile.save()
