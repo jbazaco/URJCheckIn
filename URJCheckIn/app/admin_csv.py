@@ -34,10 +34,15 @@ def create_users(request):
 		return HttpResponseBadRequest('Wrong form')
 
 	fname = handle_uploaded_file(r_file,  settings.MEDIA_ROOT + 'csv/')
-	with open(fname, 'rb') as csvfile:
-		reader = csv.reader(csvfile, delimiter=';', quotechar='|')
-		for row in reader:
-			create_user(row)	
+	try:
+		with open(fname, 'rb') as csvfile:
+			reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+			for row in reader:
+				create_user(row)
+	except:
+		if os.path.exists(fname):
+			os.remove(fname)
+		return HttpResponseBadRequest('Error procesando el fichero')
 	if os.path.exists(fname):
 		os.remove(fname)
 	return HttpResponseRedirect('/admin/auth/user/')
@@ -115,16 +120,20 @@ def relate_subject_user(request, idsubj):
 		return HttpResponseBadRequest('#404 The subject with id ' + str(idsubj) + ' does not exist.')
 
 	fname = handle_uploaded_file(r_file,  settings.MEDIA_ROOT + 'csv/')
-	with open(fname, 'rb') as csvfile:
-		reader = csv.reader(csvfile, delimiter=';', quotechar='|')
-		for row in reader:
-			if row[0] != 'DNI':#Primera fila de la plantilla con el nombre del campo DNI
-				try:
-					profile = UserProfile.objects.get(dni=row[0])
-				except UserProfile.DoesNotExist:
-					continue
-				profile.subjects.add(subject)
-				
+	try:
+		with open(fname, 'rb') as csvfile:
+			reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+			for row in reader:
+				if row[0] != 'DNI':#Primera fila de la plantilla con el nombre del campo DNI
+					try:
+						profile = UserProfile.objects.get(dni=row[0])
+					except UserProfile.DoesNotExist:
+						continue
+					profile.subjects.add(subject)
+	except:
+		if os.path.exists(fname):
+			os.remove(fname)
+		return HttpResponseBadRequest('Error procesando el fichero')
 	if os.path.exists(fname):
 		os.remove(fname)
 	return HttpResponseRedirect('/admin/app/subject/')
