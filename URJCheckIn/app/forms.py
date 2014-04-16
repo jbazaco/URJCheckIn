@@ -28,7 +28,8 @@ class CheckInForm(forms.ModelForm):
 			'mark': forms.TextInput(attrs={'required':'required','type':'number', 'min':0, 
 								'max':'5', 'value':'3', 'step':'1', 'placeholder':'0-5'}),
 			'comment': forms.Textarea(attrs={'maxlength':'250', 'class': 'form-control', 
-												'rows': '3'}),
+							'rows': '3', 'placeholder': '(Comentario y puntuación anónimos para'+
+							' el profesor)'}),
 			'longitude': forms.TextInput(attrs={'hidden': 'hidden'}),
 			'latitude': forms.TextInput(attrs={'hidden': 'hidden'}),
 		}
