@@ -165,6 +165,11 @@ class UserProfile(models.Model):
 	def __unicode__(self):
 		return u"Perfil de %s" % (self.user)
 
+	def clean(self):
+		super(UserProfile, self).clean()
+		if self.description:
+			self.description = self.description.strip()
+
 
 
 def get_rand_string():

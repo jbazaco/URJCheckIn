@@ -68,7 +68,10 @@ function setForm() {
 function unsetForm(user) {
 	$('#name_profile').html($('#id_name').val());
 	$('#age_profile').html(user.age);
-	$('#desc_profile').html(user.description);
+	if (user.description)
+		$('#desc_profile').text(user.description).html();
+	else
+		$('#desc_profile').html('<i>El usuario no ha aportado informaci&oacute;n.</i>');
 	var dd_email = $('dd.email_profile');
 	if (user.show_email) {
 		if (dd_email.length > 0) {

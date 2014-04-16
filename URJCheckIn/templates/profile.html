@@ -18,50 +18,50 @@
 			</div>
 			<dl class="dl-horizontal fields col-xs-12 col-sm-8 col-sm-offset-0">
 				<div class="span2 well">
-				<dt>Nombre: </dt>
-				<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}.</dd>
-				<dt>Edad: </dt>
-				<dd id="age_profile">{{profile.age}}</dd>
-				<dt>Descripci&oacute;n: </dt>
-				<dd id="desc_profile">
-					{% if profile.description %}
-						{{profile.description}}
+					<dt>Nombre: </dt>
+					<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}.</dd>
+					<dt>Edad: </dt>
+					<dd id="age_profile">{{profile.age}}</dd>
+					<dt>Descripci&oacute;n: </dt>
+					<dd id="desc_profile">
+						{% if profile.description %}
+							{{profile.description}}
+						{% else %}
+							<i>El usuario no ha aportado informaci&oacute;n.</i>
+						{% endif %}
+					</dd>
+					{% if profile.is_student %}
+						<dt>Estudia: </dt>
 					{% else %}
-						El usuario no ha aportado informaci&oacute;n.
+						<dt>Ense&ntilde;a: </dt>
 					{% endif %}
-				</dd>
-				{% if profile.is_student %}
-					<dt>Estudia: </dt>
-				{% else %}
-					<dt>Ense&ntilde;a: </dt>
-				{% endif %}
-				<dd>
-					{% for degree in profile.degrees.all %}
-						{% if not forloop.first %}
-							,
-						{% endif %}
-						{{degree.name}}
-					{% empty %}
-						Nada.
-					{% endfor %}
-				</dd>
-				<dt>Asignaturas: </dt>
-				<dd>
-					{% for subject in profile.subjects.all %}
-						{% if not forloop.first %}
-							,
-						{% endif %}
-						<a href="{% url 'subject' subject.id %}" class="ajax">
-							{{subject.name}}
-						</a>
-					{% empty %}
-						Ninguna.
-					{% endfor %}
-				</dd>
-				{% if profile.user.email and profile.show_email %}
-					<dt class="email_profile">e-mail: </dt>
-					<dd class="email_profile">{{profile.user.email}}</dd>
-				{% endif %}
+					<dd>
+						{% for degree in profile.degrees.all %}
+							{% if not forloop.first %}
+								,
+							{% endif %}
+							{{degree.name}}
+						{% empty %}
+							<i>Nada.</i>
+						{% endfor %}
+					</dd>
+					<dt>Asignaturas: </dt>
+					<dd>
+						{% for subject in profile.subjects.all %}
+							{% if not forloop.first %}
+								,
+							{% endif %}
+							<a href="{% url 'subject' subject.id %}" class="ajax">
+								{{subject.name}}
+							</a>
+						{% empty %}
+							<i>Ninguna.</i>
+						{% endfor %}
+					</dd>
+					{% if profile.user.email and profile.show_email %}
+						<dt class="email_profile">e-mail: </dt>
+						<dd class="email_profile">{{profile.user.email}}</dd>
+					{% endif %}
 				</div>
 			</dl>
 		</div>
