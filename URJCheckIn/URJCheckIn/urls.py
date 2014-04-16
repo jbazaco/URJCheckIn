@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'app.views.home', name='home'),
 	url(r'^checkin$', 'app.views.checkin', name='checkin'),
+	url(r'^help$', 'app.views.help', name='help'),
 	url(r'^profile/view/(?P<iduser>\d+)$', 'app.views.profile', name='profile'),
 	url(r'^profile/img/(?P<action>edit|delete)$', 'app.views.change_profile_img',
 													name='change_profile_img'),

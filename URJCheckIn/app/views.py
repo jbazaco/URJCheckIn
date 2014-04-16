@@ -68,6 +68,11 @@ def send_error_page(request, error):
 	return response_ajax_or_not(request, {'htmlname': 'error.html', 'message': error})
 
 @login_required
+def help(request):
+	"""Devuelve una pagina de ayuda"""
+	return response_ajax_or_not(request, {'htmlname': 'help.html'})
+
+@login_required
 def home(request):
 	"""Devuelve la pagina de inicio"""
 	if request.method != "GET":
