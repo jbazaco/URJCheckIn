@@ -453,7 +453,7 @@ def seminars(request):
 		if profile.is_student:
 			return send_error_page(request, 'Los estudiantes no pueden crear seminarios')
 
-		subj = Subject(is_seminar=True)
+		subj = Subject(is_seminar=True, creator=request.user)
 		csform = SubjectForm(request.POST, instance=subj)
 		if not csform.is_valid():
 			if request.is_ajax():

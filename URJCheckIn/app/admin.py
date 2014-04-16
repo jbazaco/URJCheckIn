@@ -67,7 +67,7 @@ class SubjectAdmin(admin.ModelAdmin):
 	fieldsets = [
 		(None , {'fields': ('name', 'degrees', 'first_date', 'last_date', 'creator')}),
 		('Seminario', {'fields': ('is_seminar', 'max_students', 'description'), 'classes':['collapse']}),
-	 ]
+	]
 	list_display = ('name', 'first_date', 'last_date', 'subject_state')
 	list_filter = ('is_seminar', SubjectStateFilter, 'degrees')
 	search_fields = ('name', 'degrees__name', 'userprofile__user__first_name', 
@@ -75,6 +75,10 @@ class SubjectAdmin(admin.ModelAdmin):
 	inlines = [
 		TimetableInline,
 	]
+	def formfield_for_foreignkey(self, db_field, request, **kwargs):
+		if db_field.name == "creator":
+			kwargs["initial"] = request.user
+		return super(SubjectAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 	
 
 admin.site.register(Subject, SubjectAdmin)

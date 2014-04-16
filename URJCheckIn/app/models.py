@@ -22,7 +22,6 @@ WEEK_DAYS = (
 	('5', 'Sábado'),
 	('6', 'Domingo')
 )
-FIRST_ADMIN_ID = 1
 
 class Degree(models.Model):
 	name = models.CharField(max_length=100, unique=True, verbose_name='nombre')
@@ -43,7 +42,7 @@ class Subject(models.Model):
 	#util para seminarios, se puede dejar a 0 para clases
 	max_students = models.PositiveIntegerField(verbose_name='plazas', default=0)
 	description = models.TextField(max_length=200, blank=True, verbose_name='descripción')
-	creator = models.ForeignKey(User, verbose_name='creador', default=FIRST_ADMIN_ID)
+	creator = models.ForeignKey(User, verbose_name='creador')
 
 	class Meta:
 		verbose_name = 'asignatura'
