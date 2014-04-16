@@ -42,7 +42,7 @@ def create_users(request):
 		with open(fname, 'rb') as csvfile:
 			reader = csv.reader(csvfile, delimiter=';', quotechar='|')
 			for row in reader:
-				create_user(row)
+				create_user_and_profile(row)
 	except:
 		if os.path.exists(fname):
 			os.remove(fname)
@@ -51,7 +51,7 @@ def create_users(request):
 		os.remove(fname)
 	return HttpResponseRedirect('/admin/auth/user/')
 
-def create_user(info):
+def create_user_and_profile(info):
 	"""
 		Crea un usuario si no existe, el formato de info debe ser:
 		0->First_name (User)
@@ -75,16 +75,7 @@ def create_user(info):
 	elif UserProfile.objects.filter(dni=dni).exists():
 		return
 
-	username = get_username(first_name, last_name)
-
-	user = User(username=username, first_name=first_name, last_name=last_name)
-	try:
-		validate_email(email)
-		user.email = email
-	except ValidationError:
-		pass
-	user.set_password(dni)
-	user.save()
+	user = create_user(first_name, last_name, email, dni)
 	if user.email:
 		send_mail('Bienvenido a URJCheckIn', 'Acaba de crearse una cuenta de usuario para esta ' + 
 					'dirección de correo.\nLos credenciales son:\n\tUsuario: ' + 
@@ -93,9 +84,25 @@ def create_user(info):
 					'from@example.com',#TODO poner direccion de correo en produccion
 					[user.email], fail_silently=False)
 	is_student = not (info[5]=='No')#en caso de error mejor poner que es estudiante
-	profile = UserProfile(user=user, dni=dni, is_student=is_student, age=100)
+	create_profile(user, dni, is_student, info[4].split(), 100)
+
+def create_user(first_name, last_name, email, password):
+	"""Crea un usuario y lo devuelve. El username es generado a partir de first_name y last_name"""
+	username = get_username(first_name, last_name)
+	user = User(username=username, first_name=first_name, last_name=last_name)
+	try:
+		validate_email(email)
+		user.email = email
+	except ValidationError:
+		pass
+	user.set_password(password)
+	user.save()
+	return user
+
+def create_profile(user, dni, is_student, degrees, age):
+	"""Crea un perfil de usuario, con los campos user, dni, is_student, degrees y age"""
+	profile = UserProfile(user=user, dni=dni, is_student=is_student, age=age)
 	profile.save()
-	degrees = info[4].split()
 	for d_code in degrees:
 		try:
 			degree =Degree.objects.get(code=d_code)
