@@ -353,12 +353,19 @@ class Timetable(models.Model):
 							id=self.id
 						)
 			try:
-				if timetables_same_time.filter(subject=self.subject):
-					raise ValidationError('El horario no puede solaparse con otro ' +
-											'de la misma asignatura')
-				if timetables_same_time.filter(room=self.room):#TODO comprobar si se solapan las fechas de las asignaturas
-					raise ValidationError('El horario no puede solaparse con otro ' +
-											'en la misma aula')
+				if self.subject:
+					#Se comprueba si tiene 'name' para el caso en que se cree el Timetable a la 
+					#vez que la Subject y en la creacion de la Subject haya errores
+					if self.subject.name:
+						if timetables_same_time.filter(subject=self.subject):
+							raise ValidationError('El horario no puede solaparse con otro ' +
+													'de la misma asignatura')
+						if timetables_same_time.filter(room=self.room, 
+										subject__last_date__gte=self.subject.first_date,
+										subject__first_date__lte=self.subject.last_date):
+							raise ValidationError('El horario no puede solaparse con otro ' +
+													'en la misma aula')
+						
 			except (Subject.DoesNotExist, Room.DoesNotExist):
 				pass
 
