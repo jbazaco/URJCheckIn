@@ -14,20 +14,84 @@
 </div>
 
 <div class="row">
-	<div class="col-md-10 col-md-offset-1">
+	<div id="faqs" class="col-md-10 col-md-offset-1">
 		<div class="panel panel-info">
 			<div class="panel-heading">
 				<h3 class="panel-title">F.A.Q.s (Preguntas frecuentes)</h3>
 			</div>
 			<ul id="tasks" class="list-group lessons_list">
 				<li class="list-group-item">
-					<p>¿C&oacute;mo registro mi asistencia a una clase?</p>
-					<p>
+					<p class="ask">¿C&oacute;mo registro mi asistencia a una clase?</p>
+					<p class="answer">
 						Durante la clase debes acceder a la pesta&ntilde;a
 						<a href="{% url 'checkin' %}">CheckIn</a>, elegir la asignatura o seminario
 						de la clase a la que est&aacute;s asistiendo e introducir el 
 						<a href="#faq_codeword">c&oacute;digo de la clase</a> o bien 
 						<a href="#faq_geolocation">registrarte con tu localizaci&oacute;n</a> o con ambas.
+					</p>
+				</li>
+				<li id="faq_geolocation" class="list-group-item">
+					<p class="ask">¿C&oacute;mo realizo el check in con mi localizaci&oacute;n?</p>
+					<p class="answer">
+						Para realizar el check in con tu posici&oacute;n necesitas un dispositivo
+						y un navegador que lo soporten. En caso de que tu dispositivo lo soporte
+						se te pedir&aacute; permiso al pulsar sobre el bot&oacute;n de realizar el
+						check in. Si crees que tu dispositivo lo soporta pero no te permite realizar
+						el check in con la geolocalizaci&oacute;n, comprueba en la configuraci&oacute;n
+						del navegador o del dispositivo que la localizaci&oacute;n est&aacute; habilitada.
+					</p>
+				</li>
+				<li id="faq_codeword" class="list-group-item">
+					<p class="ask">¿D&oacute;nde encuentro el c&oacute;digo para hacer el check in?</p>
+					<p class="answer">
+						Este c&oacute;digo se encuentra en el aula donde se realiza la clase durante la
+						duraci&oacute;n de la misma.
+					</p>
+				</li>
+				<li class="list-group-item">
+					<p class="ask">¿Hay alguna aplicaci&oacute;n para el m&oacute;vil?</p>
+					<p class="answer">
+						La propia p&aacute;gina est&aacute; dise&ntilde;ada para funcionar como
+						si se tratase de una aplicaci&oacute;n de smartphone. Si quieres tenerla en 
+						el escritorio y prescindir de la barra del navegador, puedes generar
+						una aplicaci&oacute;n como la que encontrar&iacute;s en las tiendas de 
+						aplicaciones:
+						<ul>	
+							<li>
+								En caso de tener un iPhone o iPad, desde Safari, presiona el 
+								bot&oacute;n para a&ntilde;adir la p&aacute;gina a favoritos, 
+								pero en vez de seleccionar esa opci&oacute;n, seleccione "A&ntilde;adir 
+								a pantalla de inicio".
+							</li>
+							<li>
+								En caso de tener un m&oacute;vil o tablet android, desde Chrome, 
+								presiona el bot&oacute;n de opciones y "A&ntilde;adir a pantalla de 
+								inicio".
+							</li>
+						</ul>
+					</p>
+				</li>
+				<li class="list-group-item">
+					<p class="ask">¿Los comentarios y puntuaciones realizados por los alumnos son
+					 an&oacute;nimos?</p>
+					<p class="answer">
+						Los comentarios y puntuaciones se registran asociados al alumno que los ha 
+						realizado, pero a los profesores solo se les muestra la puntuaci&oacute;n
+						vinculada a un comentario sin indicar el usuario que realiz&oacute; la 
+						valoraci&oacute;n.<br/>
+						Ésto implica que en caso de ocurrir alguna incidencia grave como
+						insultos o amenazas se puede conocer el redactor del mensaje. Un profesor 
+						puede solicitar el nombre del usuario que realiz&oacute; un comentario en 
+						situaciones justificadas.</br>
+						Suponiendo un uso correcto del sistema de valoraci&oacute;n la respuesta a 
+						esta pregunta es: s&iacute;, son an&oacute;nimos.
+					</p>
+				</li>
+				<li class="list-group-item">
+					<p class="ask">¿C&oacute;mo modifico mi perfil y contrase&ntilde;a?</p>
+					<p class="answer">
+						Para realizar cambios sobre tu cuenta accede a la pesta&ntilde;a de 
+						<a href="{% url 'profile' request.user.id %}">Perfil</a>.
 					</p>
 				</li>
 			</ul>
