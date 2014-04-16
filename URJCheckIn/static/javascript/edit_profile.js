@@ -57,7 +57,7 @@ function showEditProfile(event) {
 function setForm() {
 	$('#id_name').attr('value', $('#name_profile').html());
 	$('#id_age').attr('value', $('#age_profile').html());
-	$('#id_description').html($('#desc_profile').html());
+	$('#id_description').html($.trim($('#desc_profile').html()));
 	//TODO para el resto de campos
 	$('#profile').hide();
 	$('#profile_form').css('display','inherit');
