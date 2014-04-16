@@ -108,6 +108,24 @@
 					{% endif %}
 				{% endif %}
 			{% endif %}
+			{% if timetables %}
+				<dt>Horario: </dt>
+				<dd>
+					<ul id="profesor_list">
+						{%for timetable in timetables %}
+							<li>
+								{% if timetable.day == '0' %}Lunes{% elif timetable.day == '1' %}
+								Martes{% elif timetable.day == '2' %}Mi&eacute;rcoles
+								{% elif timetable.day == '3' %}Jueves{% elif timetable.day == '4' %}
+								Viernes{% elif timetable.day == '5' %}S&aacute;bado
+								{% elif timetable.day == '6' %}Domingo{% endif %}
+								de {{timetable.start_time|date:'H:i' }} a 
+								{{timetable.end_time|date:'H:i' }}
+							</li>
+						{%endfor%}
+					</ul>
+				</dd>
+			{% endif %}
 		</div>
 	</dl>
 </div>

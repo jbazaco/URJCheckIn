@@ -527,11 +527,13 @@ def subject(request, idsubj):
 	lessons_p = my_paginator(request,
 				lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
 				10)
+	timetables = subject.timetable_set.all()
 	ctx = {'lessons_f': lessons_f, 'lessons_p': lessons_p,
 			'lessons_n': lessons.filter(end_time__gt=timezone.now(), 
 										start_time__lt=timezone.now()),
 			'profesors': profesors, 'subject': subject, 'profile':profile,
-			'signed': signed, 'started': started, 'htmlname': 'subject.html'}
+			'signed': signed, 'started': started, 'timetables': timetables,
+			'htmlname': 'subject.html'}
 	if error:
 		ctx['error'] = error
 	return response_ajax_or_not(request, ctx)
