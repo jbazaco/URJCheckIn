@@ -19,11 +19,17 @@
 			<dl class="dl-horizontal fields col-xs-12 col-sm-8 col-sm-offset-0">
 				<div class="span2 well">
 				<dt>Nombre: </dt>
-				<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}</dd>
+				<dd id="name_profile">{{profile.user.first_name}} {{profile.user.last_name}}.</dd>
 				<dt>Edad: </dt>
 				<dd id="age_profile">{{profile.age}}</dd>
 				<dt>Descripci&oacute;n: </dt>
-				<dd id="desc_profile">{{profile.description}}</dd>
+				<dd id="desc_profile">
+					{% if profile.description %}
+						{{profile.description}}
+					{% else %}
+						El usuario no ha aportado informaci&oacute;n.
+					{% endif %}
+				</dd>
 				{% if profile.is_student %}
 					<dt>Estudia: </dt>
 				{% else %}
@@ -35,6 +41,8 @@
 							,
 						{% endif %}
 						{{degree.name}}
+					{% empty %}
+						Nada.
 					{% endfor %}
 				</dd>
 				<dt>Asignaturas: </dt>
@@ -46,6 +54,8 @@
 						<a href="{% url 'subject' subject.id %}" class="ajax">
 							{{subject.name}}
 						</a>
+					{% empty %}
+						Ninguna.
 					{% endfor %}
 				</dd>
 				{% if profile.user.email and profile.show_email %}
