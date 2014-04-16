@@ -265,7 +265,7 @@
 			</div>
 		</div>
 	{% if profile %}
-			<button name="hide_form" class="btn btn-danger btn-block" id="hide_form">
+			<button name="hide_form" class="btn btn-danger btn-block hidden" id="hide_form">
 					<span class="glyphicon glyphicon-remove"></span> Cancelar y volver al perfil
 			</button>
 		</div>
@@ -275,6 +275,7 @@
 			pulsando el boton, en caso contrario se mostrara directamente -->
 		<script>
 			cancelEditProfile('{{profile.user.id}}');
+			$('#hide_form').removeClass('hidden');
 		</script>
 	{% endif %}
 {%endif%}
