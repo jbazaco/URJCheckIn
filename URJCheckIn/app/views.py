@@ -61,11 +61,11 @@ def response_ajax_or_not(request, ctx):
     """
     if request.is_ajax():
         html = loader.get_template(ctx['htmlname']).render(
-                                RequestContext(request, ctx))
+                                   RequestContext(request, ctx))
         resp = {'#mainbody':html, 'url': request.get_full_path()}
         return HttpResponse(json.dumps(resp), content_type="application/json")
     return render_to_response('main.html', ctx,
-            context_instance=RequestContext(request))
+                              context_instance=RequestContext(request))
 
 def not_found(request):
     """
@@ -76,7 +76,7 @@ def not_found(request):
 def send_error_page(request, error):
     """Devuelve una pagina de error"""
     return response_ajax_or_not(request, {'htmlname': 'error.html',
-                                            'message': error})
+                                          'message': error})
 
 @login_required
 def help_page(request):
@@ -98,7 +98,7 @@ def home(request):
         profile = request.user.userprofile
     except UserProfile.DoesNotExist:
         return response_ajax_or_not(request, {'tasks': tasks,
-                                                'htmlname': 'home.html'})
+                                              'htmlname': 'home.html'})
 
     try:
         week = int(request.GET.get('page'))
@@ -235,10 +235,11 @@ def profile_page(request, iduser):
     except UserProfile.DoesNotExist:
         #mostrara el formulario para cambiar la password
         if str(request.user.id) == iduser:
-            return response_ajax_or_not(request, {'htmlname': 'profile.html', 
-                        'email_form': ChangeEmailForm(instance=request.user)})
+            return response_ajax_or_not(request, {
+                    'htmlname': 'profile.html', 
+                    'email_form': ChangeEmailForm(instance=request.user)})
         return send_error_page(request, 'El usuario con id ' + iduser + 
-                                ' no tiene perfil')
+                               ' no tiene perfil')
 
     if request.method == "POST":
         if iduser == str(request.user.id):
@@ -255,19 +256,19 @@ def profile_page(request, iduser):
                 pform.save()
                 if request.is_ajax():
                     resp = {'user': {'age': profile.age,
-                                    'description': profile.description, 
-                                    'email': profile.user.email, 
-                                    'show_email': profile.show_email}}
+                                     'description': profile.description, 
+                                     'email': profile.user.email, 
+                                     'show_email': profile.show_email}}
                     return HttpResponse(json.dumps(resp),
                                         content_type="application/json")
         else:
             return send_error_page(request, 'Est&aacute;s intentando cambiar' +
-                                    ' un perfil distinto del tuyo')
-    if request.method != "POST":#si es un POST coge el form que ha recibido
+                                   ' un perfil distinto del tuyo')
+    if request.method != "POST": # si es un POST coge el form que ha recibido
         pform = ProfileEditionForm(instance=profile)
     ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html',
-            'form_img': ProfileImageForm(),
-            'email_form': ChangeEmailForm(instance=request.user)}
+           'form_img': ProfileImageForm(),
+           'email_form': ChangeEmailForm(instance=request.user)}
     return response_ajax_or_not(request, ctx)
 
 
@@ -325,7 +326,7 @@ def change_profile_img(request, action):
         profile.save()
     if request.is_ajax():
         return HttpResponse(json.dumps({'ok': True, 'img_url': img_url}), 
-                                content_type="application/json")
+                            content_type="application/json")
     return HttpResponseRedirect('/profile/view/' + str(request.user.id))
 
 
@@ -343,19 +344,19 @@ def process_lesson(request, idlesson):
         profile = lesson.subject.userprofile_set.get(user=request.user)
     except Lesson.DoesNotExist:
         return send_error_page(request,
-                            'La clase a la que intentas acceder no existe.')
+                               'La clase a la que intentas acceder no existe.')
     except UserProfile.DoesNotExist:
         #Si tiene el permiso puede ver las clases
         if request.user.has_perm('app.can_see_statistics'):
             profile = None
         else:
             return send_error_page(request, 'No est&aacutes matriculado en ' + 
-                                    str(lesson.subject))
+                                   str(lesson.subject))
 
     if request.method == "POST" and profile:
         if profile.is_student:
             return send_error_page(request,'Solo los profesores pueden ' +
-                                    'comentar en las clases')
+                                   'comentar en las clases')
         resp = save_lesson_comment(request, lesson)
         if request.is_ajax():
             return HttpResponse(json.dumps(resp),
@@ -368,8 +369,8 @@ def process_lesson(request, idlesson):
     profesors = lesson.subject.userprofile_set.filter(is_student=False)
     
     ctx = {'lesson':lesson, 'comments':comments, 'profile':profile,
-            'lesson_state':lesson_state, 'profesors':profesors,
-            'subject': lesson.subject, 'htmlname': 'lesson.html'}
+           'lesson_state':lesson_state, 'profesors':profesors,
+           'subject': lesson.subject, 'htmlname': 'lesson.html'}
     if lesson_state != "sin realizar":
         show_opinions = True if (not profile) else (not profile.is_student)
         if show_opinions: 
@@ -393,11 +394,11 @@ def lesson_attendance(request, idlesson):
         lesson.subject.userprofile_set.get(user=request.user, is_student=False)
     except Lesson.DoesNotExist:
         return send_error_page(request, 'La clase a la que intentas acceder ' +
-                                'no existe.')
+                               'no existe.')
     except UserProfile.DoesNotExist:
         if not request.user.has_perm('app.can_see_statistics'):
             return send_error_page(request, 'Solo los profesores de la ' +
-                                    'asignatura tienen acceso.')
+                                   'asignatura tienen acceso.')
     
     ctx = {'lesson':lesson,
             'checkins': lesson.checkin_set.all().order_by(\
@@ -454,9 +455,10 @@ def method_not_allowed(request):
     if request.is_ajax():
         resp = {'error': 'Metodo ' + request.method + ' no soportado'}
         return HttpResponse(json.dumps(resp), content_type="application/json")
-    return render_to_response('error.html', {'message': "M&eacutetodo " + 
-                    request.method +  " no soportado en " + request.path},
-                    context_instance=RequestContext(request))
+    return render_to_response('error.html',
+                              {'message': "M&eacutetodo " + request.method +
+                               " no soportado en " + request.path},
+                              context_instance=RequestContext(request))
     #405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);
 
 @login_required
@@ -472,7 +474,7 @@ def forum(request):
 
     comments =  ForumComment.objects.all().order_by('-date')
     ctx = {'comments': my_paginator(request, comments, 10),
-            'htmlname': 'forum.html'}
+           'htmlname': 'forum.html'}
     return response_ajax_or_not(request, ctx)
 
 
@@ -511,8 +513,8 @@ def subjects_page(request):
         return send_error_page(request, 'No tienes un perfil creado.')
     subjects = profile.subjects.all()
     ctx = {'subjects':subjects.filter(is_seminar=False), 
-            'seminars':subjects.filter(is_seminar=True),
-            'htmlname': 'subjects.html'}
+           'seminars':subjects.filter(is_seminar=True),
+           'htmlname': 'subjects.html'}
     return response_ajax_or_not(request, ctx)
     
 
@@ -530,7 +532,7 @@ def seminars(request):
     if request.method == "POST":
         if profile.is_student:
             return send_error_page(request, 'Los estudiantes no pueden crear' +
-                                    'seminarios')
+                                   'seminarios')
 
         subj = Subject(is_seminar=True, creator=request.user)
         csform = SubjectForm(request.POST, instance=subj)
@@ -556,7 +558,7 @@ def seminars(request):
     if request.method != "POST":
         csform = SubjectForm()
     ctx = {'profile':profile, 'seminars': future_seminars, 'form': csform, 
-            'htmlname': 'seminars.html'}
+           'htmlname': 'seminars.html'}
     return response_ajax_or_not(request, ctx)
 
 @login_required
@@ -574,7 +576,7 @@ def subject_page(request, idsubj):
         profile = UserProfile.objects.get(user=request.user)
     except Subject.DoesNotExist:
         return send_error_page(request, '#404 La asignatura a la que ' +
-                                'intentas acceder no existe.')
+                               'intentas acceder no existe.')
     except UserProfile.DoesNotExist:
         #Si controla las estadisticas tiene acceso
         if request.user.has_perm('app.can_see_statistics'):
@@ -599,7 +601,7 @@ def subject_page(request, idsubj):
             #Solo pueden ver las asignaturas en las que estan matriculados
             if not subject.is_seminar:
                 return send_error_page(request, 'No est&aacutes matriculado ' +
-                                        'en ' + str(subject))
+                                       'en ' + str(subject))
     else:#caso en el que tiene permisos can_see_statistics pero sin perfil
         signed = False
         
@@ -615,12 +617,12 @@ def subject_page(request, idsubj):
         lessons.filter(end_time__lte=timezone.now()).order_by('-start_time'),
         10)
     ctx = {'lessons_f': lessons_f, 'lessons_p': lessons_p,
-            'lessons_n': lessons.filter(end_time__gt=timezone.now(), 
-                                        start_time__lt=timezone.now()),
-            'profesors': profesors, 'subject': subject, 'profile':profile,
-            'signed': signed, 'started': started,
-            'timetables': subject.timetable_set.all(),
-            'htmlname': 'subject.html'}
+           'lessons_n': lessons.filter(end_time__gt=timezone.now(), 
+                                       start_time__lt=timezone.now()),
+           'profesors': profesors, 'subject': subject, 'profile':profile,
+           'signed': signed, 'started': started,
+           'timetables': subject.timetable_set.all(),
+           'htmlname': 'subject.html'}
     if error:
         ctx['error'] = error
     return response_ajax_or_not(request, ctx)
@@ -633,7 +635,8 @@ def sign_in_seminar(request, subject, profile):
     caso contrario.
     Devuelve un diccionario con error = error si ocurre un error o un ok
     = True si la peticion no es ajax o el diccionario para crear el
-    objeto json para responder si la peticion es ajax"""
+    objeto json para responder si la peticion es ajax
+    """
     if not subject.is_seminar:
         return {'error': 'La acci&oacute;n que intentas realizar solo se ' +
                 'puede realizar sobre seminarios.'}
@@ -674,7 +677,7 @@ def subject_attendance(request, idsubj):
         subject = Subject.objects.get(id=idsubj)
     except Subject.DoesNotExist:
         return send_error_page(request, 'La asignatura con id ' + str(idsubj) +
-                                ' no existe.')
+                               ' no existe.')
 
     if not request.user.has_perm('app.can_see_statistics'):
         try:
@@ -683,10 +686,10 @@ def subject_attendance(request, idsubj):
             return send_error_page(request, 'No tienes un perfil creado.')
         if profile.is_student:
             return send_error_page(request,
-                                    'Solo los profesores tienen acceso.')
+                                   'Solo los profesores tienen acceso.')
         if not subject in profile.subjects.all():
             return send_error_page(request,
-                                'No tienes acceso a esta informaci&oacute;n.')
+                                 'No tienes acceso a esta informaci&oacute;n.')
     
     students = subject.userprofile_set.filter(is_student=True)
     lessons = subject.lesson_set.filter(done=True)
@@ -700,11 +703,11 @@ def subject_attendance(request, idsubj):
         else:
             percent = 0
         students_info.append({'id': student.user.id, 'percent': percent,
-                'name': student.user.first_name + ' ' + student.user.last_name,
-                'dni': student.dni})
+                              'name': student.user.first_name + ' ' +
+                              student.user.last_name, 'dni': student.dni})
         
     ctx = {'students': students_info, 'subject': subject,
-            'htmlname': 'subject_attendance.html'}
+           'htmlname': 'subject_attendance.html'}
     return response_ajax_or_not(request, ctx)
 
 
@@ -718,17 +721,17 @@ def subject_edit(request, idsubj):
         subject = Subject.objects.get(id=idsubj)
         if subject.creator != request.user:
             return send_error_page(request, 'Solo el creador de la ' + 
-                                    'asignatura puede editarla.')
+                                   'asignatura puede editarla.')
     except Subject.DoesNotExist:
         return send_error_page(request, 'La asignatura con id ' + str(idsubj) +
-                                ' no existe.')
+                               ' no existe.')
 
     if request.method == 'POST':
         if request.POST.get("action", default='edit') == 'delete':
             subject.delete()
             if request.is_ajax():
                 return HttpResponse(json.dumps({'deleted': True,
-                                    'redirect': '/subjects'}),
+                                                'redirect': '/subjects'}),
                                     content_type="application/json")
             return HttpResponseRedirect('/subjects')
 
@@ -759,13 +762,13 @@ def create_lesson(request, idsubj):
         profile = request.user.userprofile
         if profile.is_student:
             return send_error_page(request,
-                                    'Solo los profesores tienen acceso.')
+                                   'Solo los profesores tienen acceso.')
         subject = profile.subjects.get(id=idsubj)
     except UserProfile.DoesNotExist:
         return send_error_page(request, 'No tienes un perfil creado.')
     except Subject.DoesNotExist:
         return send_error_page(request, 'No eres profesor de la asignatura ' +
-                                'con id ' + str(idsubj))
+                               'con id ' + str(idsubj))
 
     if request.method == 'POST':
         lesson = Lesson(is_extra=True, subject=subject)
@@ -785,7 +788,7 @@ def create_lesson(request, idsubj):
     if request.method != 'POST':
         lform = ExtraLessonForm()
     ctx = {'subject': subject, 'form': lform, 'room_form': FreeRoomForm(),
-            'htmlname': 'new_lesson.html'}
+           'htmlname': 'new_lesson.html'}
     return response_ajax_or_not(request, ctx)
 
 
@@ -798,14 +801,14 @@ def edit_lesson(request, idlesson):
         profile = request.user.userprofile
         if profile.is_student:
             return send_error_page(request,
-                                    'Solo los profesores tienen acceso.')
+                                   'Solo los profesores tienen acceso.')
         lesson = Lesson.objects.get(id=idlesson)
         if lesson.start_time < timezone.now():
             return send_error_page(request,
-                                    'No se pueden editar clases antiguas.')
+                                   'No se pueden editar clases antiguas.')
         if lesson.subject not in profile.subjects.all():
             return send_error_page(request, 'Tienes que ser profesor de la ' +
-                                    'asignatura para editarla.')
+                                   'asignatura para editarla.')
     except UserProfile.DoesNotExist:
         return send_error_page(request, 'No tienes un perfil creado.')
     except Lesson.DoesNotExist:
@@ -819,12 +822,12 @@ def edit_lesson(request, idlesson):
                 lesson.delete()
                 if request.is_ajax():
                     return HttpResponse(json.dumps({'deleted': True,
-                                        'redirect': url_redirect}),
+                                                    'redirect': url_redirect}),
                                         content_type="application/json")
                 return HttpResponseRedirect(url_redirect)
             else:
                 return send_error_page(request,
-                                    'Solo se pueden eliminar clases extras')
+                                       'Solo se pueden eliminar clases extras')
 
         lform = ExtraLessonForm(request.POST, instance=lesson)
         if not lform.is_valid():
@@ -840,7 +843,7 @@ def edit_lesson(request, idlesson):
     if request.method != 'POST':
         lform = ExtraLessonForm(instance=lesson)
     ctx = {'lesson': lesson, 'form': lform, 'room_form': FreeRoomForm(),
-            'htmlname': 'lesson_edit.html'}
+           'htmlname': 'lesson_edit.html'}
     return response_ajax_or_not(request, ctx)
 
 
@@ -857,18 +860,18 @@ def free_room(request):
     if form.is_valid():
         data = form.cleaned_data
         f_room = get_free_room(data['start_time'], data['end_time'],
-                                    data['building'])
+                               data['building'])
         if not f_room:
             f_room = 'No hay aulas libres en el ' + str(data['building'])
         if request.is_ajax():
             return HttpResponse(json.dumps({'ok': True,
-                                'free_room': str(f_room)}), 
+                                            'free_room': str(f_room)}), 
                                 content_type="application/json")
     elif request.is_ajax():
         return HttpResponse(json.dumps({'ok': False, 'errors': form.errors}), 
                             content_type="application/json")
     ctx = {'room_form': form, 'free_room': f_room,
-            'htmlname': 'freeroom.html'}
+           'htmlname': 'freeroom.html'}
     return response_ajax_or_not(request, ctx)
 
 
@@ -902,9 +905,9 @@ def reports_page(request):
 
     if request.method != 'POST':
         form = ReportForm()
-    reports = my_paginator(request, 
-                AdminTask.objects.filter(user=request.user).order_by('-time'),
-                10)
+    reports = my_paginator(
+        request, AdminTask.objects.filter(user=request.user).order_by('-time'),
+        10)
     ctx = {'form': form, 'reports': reports, 'htmlname': 'reports.html'}
     return response_ajax_or_not(request, ctx)
 
@@ -929,7 +932,7 @@ def control_attendance(request):
         subjects_wrap.append(element)
     url_page = prepare_url_pagination(request.get_full_path())
     ctx = {'form': form, 'rows': subjects_wrap, 'subjects': subjects, 
-            'htmlname': 'control_attendance.html', 'url_page': url_page}
+           'htmlname': 'control_attendance.html', 'url_page': url_page}
     return response_ajax_or_not(request, ctx)
 
     
@@ -941,7 +944,8 @@ def prepare_url_pagination(full_url):
     """
     url = full_url
     if 'page=' in full_url:
-        url = full_url[:full_url.index('page=')-1]#elimina '?page=X' o '&page=X'
+        #elimina '?page=X' o '&page=X'
+        url = full_url[:full_url.index('page=')-1]
 
     if '?' in url:
         url = url + '&page='
@@ -977,12 +981,14 @@ def control_filter(form):
 
     f_prof_0 = data['professor_0']
     if len(f_prof_0) > 0:
-        all_subj = all_subj.filter(userprofile__is_student=False,
+        all_subj = all_subj.filter(
+                userprofile__is_student=False,
                 userprofile__user__first_name__contains=f_prof_0).distinct()
 
     f_prof_1 = data['professor_1']
     if len(f_prof_1):
-        all_subj = all_subj.filter(userprofile__is_student=False,
+        all_subj = all_subj.filter(
+                    userprofile__is_student=False,
                     userprofile__user__last_name__contains=f_prof_1).distinct()
 
     return all_subj
@@ -1009,12 +1015,12 @@ def show_codes(request):
         return method_not_allowed(request)
     if not request.user.has_perm('app.can_see_codes'):
         return send_error_page(request, 'No tienes permisos para ver esta ' +
-                                'informaci&oacute;n.')
+                               'informaci&oacute;n.')
     form = CodesFilterForm(request.GET)
     all_lessons = codes_order(form, codes_filter(form))
 
     ctx = {'form': form, 'htmlname': 'control_codes.html',
-            'lessons': all_lessons}
+           'lessons': all_lessons}
     return response_ajax_or_not(request, ctx)
 
 
@@ -1050,7 +1056,7 @@ def codes_filter(form):
     #Las horas son naive, y estan relacionadas con la hora local del usuario
     #que solicita los codigos por eso se las localiza con la timezone local
     f_from_dt = datetime.datetime(f_date.year, f_date.month, f_date.day,
-                                    f_from.hour, f_from.minute)
+                                  f_from.hour, f_from.minute)
     f_from_dt = pytz.timezone(str(timezone.get_current_timezone())).localize(\
                                                         f_from_dt, is_dst=None)
     f_to_dt = datetime.datetime(f_date.year, f_date.month, f_date.day,
@@ -1059,7 +1065,7 @@ def codes_filter(form):
                                                         f_to_dt, is_dst=None)
     
     all_lessons = all_lessons.filter(start_time__lte = f_to_dt,
-                                    start_time__gte = f_from_dt)
+                                     start_time__gte = f_from_dt)
 
     f_room = data['room']
     f_building = data['building']
@@ -1194,8 +1200,8 @@ def more_lessons(request, current, newer):
         return HttpResponse(json.dumps(resp), content_type="application/json")
     #no tiene acceso a asignaturas que no tiene (a no ser que tenga permiso
     #can_see_statistics)
-    if not (request.user.has_perm('app.can_see_statistics') or \
-                                                        subject.is_seminar):
+    if not (request.user.has_perm('app.can_see_statistics') or 
+                                                subject.is_seminar):
         try:
             profile = request.user.userprofile
         except UserProfile.DoesNotExist:

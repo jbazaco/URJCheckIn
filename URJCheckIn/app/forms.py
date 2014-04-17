@@ -12,9 +12,9 @@ class MySplitDateTimeWidget(forms.MultiWidget):
     DateInput y TimeInput por separado
     """
     def __init__(self, attrs=None, date_attrs=None, time_attrs=None,
-                                        date_format=None, time_format=None):
+                 date_format=None, time_format=None):
         widgets = (forms.DateInput(attrs=date_attrs, format=date_format),
-                    forms.TimeInput(attrs=time_attrs, format=time_format))
+                   forms.TimeInput(attrs=time_attrs, format=time_format))
         super(MySplitDateTimeWidget, self).__init__(widgets, attrs)
 
     def decompress(self, value):
@@ -30,13 +30,13 @@ class CheckInForm(forms.ModelForm):
         model = CheckIn
         fields = ('mark', 'comment', 'longitude', 'latitude', 'codeword')
         widgets = {
-            'mark': forms.TextInput(attrs={'required':'required',
-                        'type':'number', 'min':0, 'max':'5', 'value':'3',
-                        'step':'1', 'placeholder':'0-5'}),
-            'comment': forms.Textarea(attrs={'maxlength':'250',
-                        'class': 'form-control', 'rows': '3',
-                        'placeholder': '(Comentario y puntuación anónimos' +
-                        ' para el profesor)'}),
+            'mark': forms.TextInput(attrs={
+                'required':'required', 'type':'number', 'min':0, 'max':'5',
+                'value':'3', 'step':'1', 'placeholder':'0-5'}),
+            'comment': forms.Textarea(attrs={
+                    'maxlength':'250', 'class': 'form-control', 'rows': '3',
+                    'placeholder': '(Comentario y puntuación anónimos' +
+                    ' para el profesor)'}),
             'longitude': forms.TextInput(attrs={'hidden': 'hidden'}),
             'latitude': forms.TextInput(attrs={'hidden': 'hidden'}),
         }
@@ -51,10 +51,11 @@ class ProfileEditionForm(forms.ModelForm):
         model = UserProfile
         fields = ('age', 'description', 'show_email')
         widgets = {
-            'age': forms.TextInput(attrs={'required':'required',
-                        'type':'number', 'min':17, 'max':'100', 'step':'1'}),
-            'description': forms.Textarea(attrs={'maxlength':'200',
-                        'class': 'form-control', 'rows': '3'}),
+            'age': forms.TextInput(attrs={
+                    'required':'required', 'type':'number', 'min':17,
+                    'max':'100', 'step':'1'}),
+            'description': forms.Textarea(attrs={
+                    'maxlength':'200', 'class': 'form-control', 'rows': '3'}),
         }
 
 class ChangeEmailForm(forms.ModelForm):
@@ -69,14 +70,16 @@ class ExtraLessonForm(forms.ModelForm):
         model = Lesson
         fields = ('start_time', 'end_time', 'room')
         widgets = {
-            'start_time': MySplitDateTimeWidget(date_attrs={'type': 'date',
-                        'required': 'required', 'placeholder':'AAAA-MM-DD'}, 
-                        time_attrs={'type': 'time', 'required': 'required',
-                        'placeholder':'HH:MM'}),
-            'end_time': MySplitDateTimeWidget(date_attrs={'type': 'date',
-                        'required': 'required', 'placeholder':'AAAA-MM-DD'},
-                        time_attrs={'type': 'time', 'required': 'required',
-                        'placeholder':'HH:MM'}),
+            'start_time': MySplitDateTimeWidget(
+                            date_attrs={'type': 'date', 'required': 'required',
+                                        'placeholder':'AAAA-MM-DD'}, 
+                            time_attrs={'type': 'time', 'required': 'required',
+                                        'placeholder':'HH:MM'}),
+            'end_time': MySplitDateTimeWidget(
+                            date_attrs={'type': 'date', 'required': 'required',
+                                        'placeholder':'AAAA-MM-DD'},
+                            time_attrs={'type': 'time', 'required': 'required',
+                                        'placeholder':'HH:MM'}),
         }
     
 class SubjectForm(forms.ModelForm):
@@ -89,15 +92,18 @@ class SubjectForm(forms.ModelForm):
                     'description')
         widgets = {
             'name': forms.TextInput(attrs={'required':'required'}),
-            'first_date': forms.TextInput(attrs={'type': 'date',
-                        'required': 'required', 'placeholder':'AAAA-MM-DD'}),
-            'last_date': forms.TextInput(attrs={'type': 'date',
-                        'required': 'required', 'placeholder':'AAAA-MM-DD'}),
-            'max_students': forms.TextInput(attrs={'required':'required',
-                        'type':'number', 'min':0, 'step':'1'}),
-            'description': forms.Textarea(attrs={'maxlength':'200',
-                        'class': 'form-control', 'rows': '3',
-                        'required':'required'}),
+            'first_date': forms.TextInput(attrs={
+                                'type': 'date', 'required': 'required',
+                                'placeholder':'AAAA-MM-DD'}),
+            'last_date': forms.TextInput(attrs={
+                                'type': 'date', 'required': 'required',
+                                'placeholder':'AAAA-MM-DD'}),
+            'max_students': forms.TextInput(attrs={
+                                'required':'required','type':'number', 'min':0,
+                                'step':'1'}),
+            'description': forms.Textarea(attrs={
+                                'maxlength':'200','class': 'form-control',
+                                'rows': '3', 'required':'required'}),
         }
     
 class ProfileImageForm(forms.ModelForm):
@@ -112,10 +118,11 @@ class ReportForm(forms.ModelForm):
         model = AdminTask
         fields = ('ask', 'url')
         widgets = {
-            'ask': forms.Textarea(attrs={'maxlength':'500',
-                'class': 'form-control', 'rows': '4', 'required':'required'}),
+            'ask': forms.Textarea(attrs={
+                    'maxlength':'500', 'class': 'form-control', 'rows': '4',
+                    'required':'required'}),
             'url': forms.TextInput(attrs={
-                                    'placeholder': 'url afectada (opcional)'})
+                    'placeholder': 'url afectada (opcional)'})
         }
 
 class ControlFilterForm(forms.Form):
@@ -151,9 +158,10 @@ class CodesFilterForm(forms.Form):
     day = forms.DateField(required=False, widget=forms.TextInput(attrs={
                         'placeholder':'AAAA-MM-DD', 'type':'date'}))
     building = forms.ModelChoiceField(required=False,
-                        queryset=Building.objects.all(), empty_label="todos")
+                                      queryset=Building.objects.all(),
+                                      empty_label="todos")
     room = forms.ModelChoiceField(required=False, queryset=Room.objects.all(), 
-                        empty_label="cualquiera")
+                                  empty_label="cualquiera")
     subject_type = forms.ChoiceField(choices=(
                                             ('', 'Seminarios y asignaturas'),
                                             ('Sem', 'Seminario'),
@@ -197,14 +205,16 @@ class CodesFilterForm(forms.Form):
 
 class FreeRoomForm(forms.Form):
     """Formulario para buscar aulas libres"""
-    start_time = forms.DateTimeField(widget=MySplitDateTimeWidget(date_attrs={
-            'type': 'date', 'required': 'required',
-            'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 
-            'required': 'required', 'placeholder':'HH:MM'}))
-    end_time = forms.DateTimeField(widget=MySplitDateTimeWidget(date_attrs={
-            'type': 'date', 'required': 'required',
-            'placeholder':'AAAA-MM-DD'}, time_attrs={'type': 'time', 
-            'required': 'required', 'placeholder':'HH:MM'}))
+    start_time = forms.DateTimeField(widget=MySplitDateTimeWidget(
+        date_attrs={
+          'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'},
+        time_attrs={
+          'type': 'time', 'required': 'required', 'placeholder':'HH:MM'}))
+    end_time = forms.DateTimeField(widget=MySplitDateTimeWidget(
+        date_attrs={
+          'type': 'date', 'required': 'required', 'placeholder':'AAAA-MM-DD'},
+        time_attrs={
+          'type': 'time', 'required': 'required', 'placeholder':'HH:MM'}))
     building = forms.ModelChoiceField(queryset=Building.objects.all())
 
     def clean(self):

@@ -39,7 +39,7 @@ class Subject(models.Model):
     first_date = models.DateField(verbose_name='fecha de inicio')
     last_date = models.DateField(verbose_name='fecha de finalización')
     is_seminar = models.BooleanField(verbose_name='es seminario',
-                                    default=False)
+                                     default=False)
     #util para seminarios, se puede dejar a 0 para clases
     max_students = models.PositiveIntegerField(verbose_name='plazas',
                                                 default=0)
@@ -58,7 +58,7 @@ class Subject(models.Model):
         if self.first_date and self.last_date:
             if (self.first_date > self.last_date):
                 raise ValidationError('La fecha de inicio no puede ser ' +
-                                        'posterior a la de finalización')
+                                      'posterior a la de finalización')
 
     def n_students(self):
         return self.userprofile_set.filter(is_student=True).count()
@@ -82,7 +82,8 @@ class Subject(models.Model):
         # el numero de estudiantes de la asignatura
         n_div = self.n_students()*n_lessons_done
         n_checks = CheckIn.objects.filter(user__userprofile__is_student=True, 
-                    lesson__subject=self, lesson__done=True).count()
+                                          lesson__subject=self,
+                                          lesson__done=True).count()
         if n_div < 1:
             return 0
         return round(100.0*n_checks/n_div, 2)
@@ -169,9 +170,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, verbose_name='usuario')
     photo = models.ImageField(upload_to=user_image_path, blank=True)
     description = models.TextField(max_length=200, blank=True,
-                                    verbose_name='descripción')
+                                   verbose_name='descripción')
     subjects = models.ManyToManyField(Subject, blank=True,
-                                        verbose_name='asignatura')
+                                      verbose_name='asignatura')
     degrees = models.ManyToManyField(Degree, blank=True, verbose_name='grados')
     is_student = models.BooleanField(default=True, verbose_name='es alumno')
     age = models.PositiveIntegerField(validators=[MinValueValidator(17),
@@ -184,7 +185,7 @@ class UserProfile(models.Model):
         verbose_name = 'perfil de usuario'
         verbose_name_plural = 'perfiles de usuario'
         permissions = (('can_see_statistics', 'Can see statistics'),
-                        ('can_see_codes', 'Can see codes'),) 
+                       ('can_see_codes', 'Can see codes'),) 
     
     def __unicode__(self):
         return u"Perfil de %s" % (self.user)
@@ -208,12 +209,12 @@ class Lesson(models.Model):
     room =    models.ForeignKey(Room, verbose_name='aula')
     #TODO on_delete funcion para buscar otra aula
     is_extra = models.BooleanField(default=False,
-                                    verbose_name='es clase extra')
+                                   verbose_name='es clase extra')
     done = models.BooleanField(verbose_name='realizada', default=False)
     codeword = models.CharField(max_length=20, verbose_name='código',
                                 default=get_rand_string)
-    students_counted = models.PositiveIntegerField(default=0,
-                                        verbose_name='alumnos contados')
+    students_counted = models.PositiveIntegerField(
+                                default=0, verbose_name='alumnos contados')
     
     class Meta:
         verbose_name = 'clase'
@@ -228,10 +229,10 @@ class Lesson(models.Model):
         if self.start_time and self.end_time:
             if self.start_time < timezone.now():
                 raise ValidationError('La hora de inicio debe ser posterior ' +
-                                        'a este momento')
+                                      'a este momento')
             if self.start_time >= self.end_time:
                 raise ValidationError('La hora de finalización debe ser ' +
-                                        'posterior a la de inicio')
+                                      'posterior a la de inicio')
             #Para evitar solapamiento de clases
             lesson_same_time = Lesson.objects.exclude(
                         start_time__gte=self.end_time
@@ -243,15 +244,15 @@ class Lesson(models.Model):
             if timezone.localtime(self.start_time).date() != timezone.\
                                             localtime(self.end_time).date():
                 raise ValidationError('No se pueden crear clases que se ' +
-                                        'desarrollen en más de un día')
+                                      'desarrollen en más de un día')
                 
             try:
                 if lesson_same_time.filter(subject=self.subject):
                     raise ValidationError('La clase no puede solaparse con ' +
-                                            'otra de la misma asignatura')
+                                          'otra de la misma asignatura')
                 if lesson_same_time.filter(room=self.room):
                     raise ValidationError('La clase no puede solaparse con ' +
-                                            'otra en el mismo aula')
+                                          'otra en el mismo aula')
             except (Subject.DoesNotExist, Room.DoesNotExist):
                 pass
 
@@ -288,14 +289,14 @@ class AdminTask(models.Model):
     user = models.ForeignKey(User, verbose_name='usuario')
     ask = models.TextField(max_length=500, verbose_name='petición')
     url = models.TextField(max_length=200, verbose_name='url del problema',
-                            blank=True)
+                           blank=True)
     time = models.DateTimeField(default=timezone.now, verbose_name='hora')
     done = models.BooleanField(verbose_name='gestionada', default=False)
     solver = models.ForeignKey(User, verbose_name='gestionada por', blank=True,
-                                null=True, related_name='solved_task',
-                                limit_choices_to={'is_staff': True})
+                               null=True, related_name='solved_task',
+                               limit_choices_to={'is_staff': True})
     answer = models.TextField(max_length=500, verbose_name='respuesta',
-                                blank=True)
+                              blank=True)
 
     class Meta:
         verbose_name = 'tarea de administración'
@@ -308,14 +309,14 @@ class CheckIn(models.Model):
     user = models.ForeignKey(User, verbose_name='usuario')
     lesson = models.ForeignKey(Lesson, verbose_name='clase')
     mark = models.PositiveIntegerField(validators=[MaxValueValidator(5)],
-                                        verbose_name='puntuación', blank=True)
+                                       verbose_name='puntuación', blank=True)
     longitude = models.FloatField(verbose_name='longitud', blank=True,
-                                    null=True)
+                                  null=True)
     latitude = models.FloatField(verbose_name='latitud', blank=True, null=True)
     codeword = models.CharField(max_length=20, verbose_name='codigo',
                                 blank=True)
     comment = models.TextField(max_length=250, verbose_name='comentario',
-                                blank=True)
+                               blank=True)
     time = models.DateTimeField(default=timezone.now, verbose_name='hora')
 
     class Meta:
@@ -328,11 +329,11 @@ class CheckIn(models.Model):
         super(CheckIn, self).clean()
         if not (self.codeword or self.longitude):
             raise ValidationError('Tienes que enviar el código o tu ' +
-                                    'localización para hacer CheckIn')
+                                  'localización para hacer CheckIn')
         if self.codeword:
             if self.codeword != self.lesson.codeword:
                 raise ValidationError('Ese código no se corresponde con el ' +
-                                        'de la clase actual')
+                                      'de la clase actual')
 
 
 def check_lesson_done(sender, instance, **kwargs):
@@ -397,7 +398,7 @@ class Timetable(models.Model):
         if self.start_time and self.end_time and self.day:
             if (self.start_time >= self.end_time):
                 raise ValidationError('La hora de finalización debe ser ' +
-                                        'posterior a la de inicio')
+                                      'posterior a la de inicio')
             #Para evitar solapamiento de clases
             timetables_same_time = Timetable.objects.filter(
                             day=self.day
@@ -416,14 +417,14 @@ class Timetable(models.Model):
                     if self.subject.name:
                         if timetables_same_time.filter(subject=self.subject):
                             raise ValidationError('El horario no puede ' +
-                                                    'solaparse con otro ' +
-                                                    'de la misma asignatura')
+                                                  'solaparse con otro ' +
+                                                  'de la misma asignatura')
                         if timetables_same_time.filter(room=self.room, 
                             subject__last_date__gte=self.subject.first_date,
                             subject__first_date__lte=self.subject.last_date):
                             raise ValidationError('El horario no puede ' +
-                                                    'solaparse con otro ' +
-                                                    'en el mismo aula')
+                                                  'solaparse con otro ' +
+                                                  'en el mismo aula')
                         
             except (Subject.DoesNotExist, Room.DoesNotExist):
                 pass
@@ -461,7 +462,7 @@ def create_lesson(start_datetime, end_datetime, room, subject):
     edificio y si no la hay no se creara
     """
     lessons_now = Lesson.objects.filter(start_time__lte = end_datetime, 
-                                            end_time__gte = start_datetime)
+                                        end_time__gte = start_datetime)
     #Si ya hay una clase de la asignatura
     if lessons_now.filter(subject = subject).exists():
         pass
@@ -470,10 +471,10 @@ def create_lesson(start_datetime, end_datetime, room, subject):
         new_room = get_free_room(start_datetime, end_datetime, room.building)
         if new_room:#si no hay aula libre a esa hora no se crea la clase 
             Lesson(start_time=start_datetime, end_time = end_datetime,
-                    subject = subject, room = new_room).save()
+                   subject = subject, room = new_room).save()
     else:
         Lesson(start_time=start_datetime, end_time = end_datetime,
-                subject = subject, room = room).save()
+               subject = subject, room = room).save()
 #TODO def delete_timetable_lessons(timetable):
 #    """Elimina las clases posteriores al momento actual que coincidan 
 #    exactamente con el horario del timetable recibido"""
@@ -497,13 +498,15 @@ def create_timetable_lessons(sender, instance, **kwargs):
     last_date = instance.subject.last_date
     current_tz = str(timezone.get_current_timezone())
     start_datetime_n = datetime.datetime(date.year, date.month, date.day,
-                        instance.start_time.hour, instance.start_time.minute)
+                                         instance.start_time.hour,
+                                         instance.start_time.minute)
     start_datetime = pytz.timezone(current_tz).localize(start_datetime_n,
                                                         is_dst=None)
     end_datetime_n = datetime.datetime(date.year, date.month, date.day,
-                        instance.end_time.hour, instance.end_time.minute)
+                                       instance.end_time.hour,
+                                       instance.end_time.minute)
     end_datetime = pytz.timezone(current_tz).localize(end_datetime_n,
-                                                        is_dst=None)
+                                                      is_dst=None)
 
     room = instance.room
     subject = instance.subject
@@ -529,7 +532,7 @@ def get_free_room(start_time, end_time, building):
     for i in rand_pos:
         room = rooms[i]
         if not room.lesson_set.filter(start_time__lte = end_time,
-                                    end_time__gte = start_time).exists():
+                                      end_time__gte = start_time).exists():
             return room
     return None
 
