@@ -92,12 +92,12 @@ def create_user_and_profile(info):
         #TODO poner enlace a la pagina en produccion
         #TODO poner direccion de correo del emisor en produccion
         send_mail('Bienvenido a URJCheckIn', 'Acaba de crearse una cuenta de' +
-                ' usuario para esta dirección de correo.\nLos credenciales ' +
-                'son:\n\tUsuario: ' + user.username + '\n\tContraseña: ' +
-                'Introduzca su DNI\nLe recomendamos acceder a su perfil para' +
-                ' modificar su contraseña.',
-                'from@example.com',
-                [user.email], fail_silently=False)
+                  ' usuario para esta dirección de correo.\nLos credenciales' +
+                  ' son:\n\tUsuario: ' + user.username + '\n\tContraseña: ' +
+                  'Introduzca su DNI\nLe recomendamos acceder a su perfil ' +
+                  'para modificar su contraseña.',
+                  'from@example.com',
+                  [user.email], fail_silently=False)
     #en caso de error mejor poner que es estudiante
     is_student = not (info[5]=='No')
     create_profile(user, dni, is_student, info[4].split(), 100)
@@ -170,7 +170,7 @@ def relate_subject_user(request, idsubj):
         return HttpResponseBadRequest('Wrong form')
     except Subject.DoesNotExist:
         return HttpResponseBadRequest('#404 The subject with id ' + 
-                                        str(idsubj) + ' does not exist.')
+                                      str(idsubj) + ' does not exist.')
 
     fname = handle_uploaded_file(r_file,  settings.MEDIA_ROOT + 'csv/')
     try:

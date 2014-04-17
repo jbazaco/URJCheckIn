@@ -38,7 +38,8 @@ class MyUserAdmin(UserAdmin):
     list_filter = UserAdmin.list_filter + ('userprofile__is_student',
                                             'userprofile__degrees')
     search_fields = UserAdmin.search_fields + ('userprofile__subjects__name',
-                    'userprofile__degrees__name', 'userprofile__dni')
+                                               'userprofile__degrees__name',
+                                               'userprofile__dni')
     inlines = [
         UserProfileInline,
     ]
@@ -73,22 +74,22 @@ class SubjectStateFilter(TimeStateFilter):
 class SubjectAdmin(admin.ModelAdmin):
     fieldsets = [
         (None , {'fields': ('name', 'degrees', 'first_date', 'last_date',
-                                                                'creator')}),
+                 'creator')}),
         ('Seminario', {'fields': ('is_seminar', 'max_students', 'description'),
-                                                      'classes':['collapse']}),
+                       'classes':['collapse']}),
     ]
     list_display = ('name', 'first_date', 'last_date', 'subject_state')
     list_filter = ('is_seminar', SubjectStateFilter, 'degrees')
     search_fields = ('name', 'degrees__name', 'userprofile__user__first_name', 
-                    'userprofile__user__last_name')
+                     'userprofile__user__last_name')
     inlines = [
         TimetableInline,
     ]
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "creator":
             kwargs["initial"] = request.user
-        return super(SubjectAdmin, self).formfield_for_foreignkey(db_field,
-                                                        request, **kwargs)
+        return super(SubjectAdmin, self).formfield_for_foreignkey(
+                                                   db_field, request, **kwargs)
     
 
 admin.site.register(Subject, SubjectAdmin)
@@ -120,8 +121,8 @@ admin.site.register(Degree, DegreeAdmin)
 class CheckInAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'user',)
     search_fields = ('lesson__subject__name', 'lesson__subject__degrees__name',
-            'lesson__subject__degrees__code', 'user__first_name',
-            'user__last_name')
+                     'lesson__subject__degrees__code', 'user__first_name',
+                     'user__last_name')
     
 admin.site.register(CheckIn, CheckInAdmin)
 
@@ -145,9 +146,9 @@ class LessonAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'start_time', 'end_time', 'done',
                     'is_extra', 'room')
     list_filter = ('done', 'is_extra', LessonStateFilter,
-                    'room__building')
+                   'room__building')
     search_fields = ('subject__name', 'subject__degrees__name',
-                    'subject__degrees__code')
+                     'subject__degrees__code')
 
 admin.site.register(Lesson, LessonAdmin)
 
@@ -158,7 +159,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'date', 'user')
     list_filter = ('date',)
     search_fields = ('comment', 'user__first_name', 'user__last_name',
-                    'user__username')
+                     'user__username')
 
     def has_add_permission(self, request):
         return False
