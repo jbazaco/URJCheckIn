@@ -1,6 +1,4 @@
 
-/*TODO funcion que pida mensajes nuevos cada X tiempo*/
-
 $(document).ready(function() {
 	$('#mainbody').delegate('#comment_form', 'submit', sendComment);
 })
@@ -38,7 +36,6 @@ function askComments(idcomment, idlesson, newer) {
 
 /* Coloca los mensajes recibidos en su sitio (en las paginas /forum o /lesson/id */
 function commentsReceived(data) {
-	//TODO una vez hecha funcion que los pida solos, si hay mensajes almacenados tambien se introducen
 	if (data.idcomment == 0) {
 		if (!data.newer) {
 			$('#ask_older').replaceWith('<div class="btn btn-primary ' +

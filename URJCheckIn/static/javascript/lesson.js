@@ -39,3 +39,4 @@ function freeRoomReceived(data) {
 		alert("Se ha producido un error");
 	}
 }
+

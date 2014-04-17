@@ -58,7 +58,6 @@ function setForm() {
 	$('#id_name').attr('value', $('#name_profile').html());
 	$('#id_age').attr('value', $('#age_profile').html());
 	$('#id_description').html($.trim($('#desc_profile').html()));
-	//TODO para el resto de campos
 	$('#profile').hide();
 	$('#profile_form').css('display','inherit');
 	$('#photo_form').css('display','inherit');
@@ -85,7 +84,6 @@ function unsetForm(user) {
 		dd_email.remove();
 		$('dt.email_profile').remove()
 	}
-	//TODO hacerlo con el resto de propiedades
 	$('#profile_form').hide();
 	$('#photo_form').hide();
 	$('#profile').show();
