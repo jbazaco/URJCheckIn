@@ -12,7 +12,6 @@ class TimeStateFilter(admin.SimpleListFilter):
     clasificando los objectos en antiguos, actuales o futuros
     """
     title = 'estado'
-    # Parameter for the filter that will be used in the URL query.
     parameter_name = 'status'
 
     def lookups(self, request, model_admin):

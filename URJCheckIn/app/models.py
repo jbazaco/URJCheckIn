@@ -207,7 +207,6 @@ class Lesson(models.Model):
     end_time = models.DateTimeField(verbose_name='hora de finalización')
     subject = models.ForeignKey(Subject, verbose_name='asignatura')
     room =    models.ForeignKey(Room, verbose_name='aula')
-    #TODO on_delete funcion para buscar otra aula
     is_extra = models.BooleanField(default=False,
                                    verbose_name='es clase extra')
     done = models.BooleanField(verbose_name='realizada', default=False)
@@ -384,8 +383,6 @@ class Timetable(models.Model):
     start_time =  models.TimeField(verbose_name='hora de inicio')
     end_time = models.TimeField(verbose_name='hora de finalización')
     room = models.ForeignKey(Room, verbose_name='aula')
-    #TODO on_delete decidir que hago
-    #Posible solucion poner edificio por si el aula no esta disponible
     
     class Meta:
         verbose_name = 'horario'
@@ -441,7 +438,7 @@ def get_first_lesson_date(timetable):
     - El dia es mayor o igual que el dia en que comienza la asignatuta 
     """
     first_date = timetable.subject.first_date # se va calculando aqui el dia a
-                                              #partir del cual se crean clases
+                                              # partir del cual se crean clases
     today = datetime.date.today()
     if first_date <= today:
         first_date = today + datetime.timedelta(days=1)
@@ -475,25 +472,15 @@ def create_lesson(start_datetime, end_datetime, room, subject):
     else:
         Lesson(start_time=start_datetime, end_time = end_datetime,
                subject = subject, room = room).save()
-#TODO def delete_timetable_lessons(timetable):
-#    """Elimina las clases posteriores al momento actual que coincidan 
-#    exactamente con el horario del timetable recibido"""
-#    lessons = Lesson.objects.filter(subject=timetable.subject,
-#                                   start_time__gte=timezone.now())
-#    print lessons[0].start_time.hour
-#    print timetable.start_time
+
 
 def create_timetable_lessons(sender, instance, **kwargs):
-    #TODO eliminar y modificar---->post_____.connect()
     """
     Crea clases de la asignatura instance.subject en los dias
     instance.day durante el periodo de la asignatuta
     Funcion pensada para ser llamada despues de guardar un Timetable
     """
     date = get_first_lesson_date(instance)
-    #TODO if instance.pk:
-    #    old_timetable = Timetable.objects.get(id=instance.id)
-    #    delete_timetable_lessons(old_timetable)
 
     last_date = instance.subject.last_date
     current_tz = str(timezone.get_current_timezone())
