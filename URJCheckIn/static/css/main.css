@@ -39,13 +39,7 @@
 #menu_bar header {
 	width:100%;
 	text-align: center;
-	/*Necesario bck-color, haya gradiente o no, para los navegadores que no soportan gradiente*/
 	background-color: #DF0101;
-	/*background: -webkit-linear-gradient(#FF3636, #A61212);
-	background: -o-linear-gradient(#FF3636, #A61212);
-	background: -moz-linear-gradient(#FF3636, #A61212);
-	background: linear-gradient(#FF3636, #A61212);
-	Por si cambio de opinion y quiero volver al gradiente*/
 	position:fixed;
 	top: 0px;
 	z-index:9999;
