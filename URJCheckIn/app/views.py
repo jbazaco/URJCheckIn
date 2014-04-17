@@ -459,7 +459,6 @@ def method_not_allowed(request):
                               {'message': "M&eacutetodo " + request.method +
                                " no soportado en " + request.path},
                               context_instance=RequestContext(request))
-    #405 Method Not Allowed return HttpResponseNotAllowed(['GET'(, 'POST')]);
 
 @login_required
 def forum(request):
