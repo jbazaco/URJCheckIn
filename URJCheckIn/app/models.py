@@ -59,6 +59,8 @@ class Subject(models.Model):
             if (self.first_date > self.last_date):
                 raise ValidationError('La fecha de inicio no puede ser ' +
                                       'posterior a la de finalización')
+    def get_absolute_url(self):
+        return "/subjects/%i" % self.id
 
     def n_students(self):
         return self.userprofile_set.filter(is_student=True).count()
@@ -190,6 +192,9 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return u"Perfil de %s" % (self.user)
 
+    def get_absolute_url(self):
+        return "/profile/view/%i" % self.user.id
+
     def clean(self):
         super(UserProfile, self).clean()
         if self.description:
@@ -222,7 +227,10 @@ class Lesson(models.Model):
         return u"Clase de %s (%s)" % (self.subject, 
                 formats.date_format(timezone.localtime(self.start_time),
                                     "SHORT_DATETIME_FORMAT"))
-    
+
+    def get_absolute_url(self):
+        return "/lesson/%i" % self.id
+
     def clean(self):
         super(Lesson, self).clean()
         if self.start_time and self.end_time:
