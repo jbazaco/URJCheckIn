@@ -123,6 +123,9 @@ function objectEdited(data) {
 			alertBefore(data.errors[error], '#group_'+error, 'object_alert', 'danger', 'form.edit_form');
 	} else if (data.deleted) {
 		$.getJSON(data.redirect, loadAjaxPage);
+	} else {
+		alertBefore('Editado con &eacute;xito', 'form.edit_form button:first', 'object_alert',
+					'success', 'form.edit_form');
 	}
 	$('#loading_page').hide();
 	enableButtons(['button']);
