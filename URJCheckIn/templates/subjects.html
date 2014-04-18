@@ -25,8 +25,8 @@
 			</div>
 		</div>
 	</div>
-		<div class="col-sm-6">
-			<div id="seminars">
+	<div class="col-sm-6">
+		<div id="seminars">
 			<div class="panel panel-warning">
 				<div class="panel-heading">
 					<h3 class="panel-title">Mis seminarios</h3>
@@ -47,4 +47,51 @@
 				</ul>
 			</div>
 		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<div id="last_comments">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">&Uacute;ltimos mensajes en tus asignaturas</h3>
+				</div>
+				<ul id="comments_list" class="list-group">
+					{% for comment in comments %}
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-xs-2 col-md-1">
+									<img class="img-rounded img-responsive" alt="foto de perfil" 
+									{% if comment.user.userprofile.photo %}
+										src="{{comment.user.userprofile.photo.url}}"
+									{% else %}
+										src="/img/default_profile_img.png"
+									{% endif %}
+									/>
+								</div>
+								<div class="col-xs-10 col-md-11">
+									<a href="{% url 'process_lesson' comment.lesson.id %}" class="ajax">
+										{{comment.lesson}}
+									</a>
+									<div class="mic-info">
+								  		<span class="glyphicon glyphicon-calendar"></span>
+										{{comment.date}}
+									</div>
+									<div class="comment-text">
+										{{comment.comment}}
+									</div>
+								</div>
+							</div>
+						</li>
+					{% empty %}
+						<li class="list-group-item">
+							No hay mensajes
+						</li>
+					{% endfor %}
+					
+				</ul>
+			</div>
+		</div>
+	</div>
 </div>

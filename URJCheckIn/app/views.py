@@ -511,8 +511,12 @@ def subjects_page(request):
     except UserProfile.DoesNotExist:            
         return send_error_page(request, 'No tienes un perfil creado.')
     subjects = profile.subjects.all()
-    ctx = {'subjects':subjects.filter(is_seminar=False), 
-           'seminars':subjects.filter(is_seminar=True),
+    comments = LessonComment.objects.filter(
+                                        lesson__subject__in = subjects
+                                    ).order_by('-date')[0:15]
+    ctx = {'subjects': subjects.filter(is_seminar=False),
+           'seminars': subjects.filter(is_seminar=True),
+           'comments': comments,
            'htmlname': 'subjects.html'}
     return response_ajax_or_not(request, ctx)
     
