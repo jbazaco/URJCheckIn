@@ -104,17 +104,30 @@ def home(request):
         week = int(request.GET.get('page'))
     except (TypeError, ValueError):
         week = 0
-
     today = datetime.date.today()
     monday = today + datetime.timedelta(days= -today.weekday() + 7*week)
+    ctx = {'events': get_week_lessons(monday, profile.subjects.all()),
+           'firstday':monday, 'lastday':monday + datetime.timedelta(days=6),
+           'previous':week-1, 'next': week+1, 'tasks': tasks,
+           'htmlname': 'home.html'}
+    return response_ajax_or_not(request, ctx)
+
+def get_week_lessons(monday, subjects):
+    """
+    Devuelve las clases de las asignaturas 'subjects' desde el lunes
+    'monday' hasta el sabado de esa misma semana
+    El formato devuelto es un array de longitud 6 y en cada posicion un
+    diccionario con clave 'day' igual al string del dia de la semana y
+    'events' con las clases de ese dia
+    """
     events = []
-    all_lessons = Lesson.objects.filter(subject__in=profile.subjects.all())
+    all_lessons = Lesson.objects.filter(subject__in=subjects)
     current_tz = str(timezone.get_current_timezone())
     for day in WEEK_DAYS_BUT_SUNDAY:
-        date = monday + datetime.timedelta(\
+        date = monday + datetime.timedelta(
                                     days=WEEK_DAYS_BUT_SUNDAY.index(day))
-        init_date = pytz.timezone(current_tz).localize(datetime.datetime(\
-                date.year, date.month, date.day), is_dst=None)
+        init_date = pytz.timezone(current_tz).localize(datetime.datetime(
+                            date.year, date.month, date.day), is_dst=None)
         end_date = init_date + datetime.timedelta(days=1)
         events.append({
                         'day': day,
@@ -123,12 +136,7 @@ def home(request):
                                 start_time__lt = end_date 
                             ).order_by('start_time')
                     })
-    ctx = {'events': events, 'firstday':monday,
-            'lastday':monday + datetime.timedelta(days=6),
-            'previous':week-1, 'next': week+1, 'tasks': tasks,
-            'htmlname': 'home.html'}
-    return response_ajax_or_not(request, ctx)
-
+    return events
 
 def process_checkin(request):
     """
