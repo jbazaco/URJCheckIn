@@ -256,38 +256,38 @@ def profile_page(request, iduser):
     try:
         profile = UserProfile.objects.get(user=iduser)
     except UserProfile.DoesNotExist:
-        #mostrara el formulario para cambiar la password
+        #mostrara el formulario para cambiar la password y el email
         if str(request.user.id) == iduser:
-            return response_ajax_or_not(request, {
+            resp = response_ajax_or_not(request, {
                     'htmlname': 'profile.html', 
                     'email_form': ChangeEmailForm(instance=request.user)})
-        return send_error_page(request, 'El usuario con id ' + iduser + 
+        else:
+            resp = send_error_page(request, 'El usuario con id ' + iduser + 
                                ' no tiene perfil')
+        return resp
 
     if request.method == "POST":
-        if iduser == str(request.user.id):
-            pform = ProfileEditionForm(request.POST, instance=profile)
-            if not pform.is_valid():
-                if request.is_ajax():
-                    return HttpResponse(json.dumps({'errors': pform.errors}), 
-                                        content_type="application/json")
-                else:
-                    #si no lo obtengo de nuevo cuando renderice con
-                    # profile puede aparecer mal la edad
-                    profile = UserProfile.objects.get(user=iduser)
-            else:
-                pform.save()
-                if request.is_ajax():
-                    resp = {'user': {'age': profile.age,
-                                     'description': profile.description, 
-                                     'email': profile.user.email, 
-                                     'show_email': profile.show_email}}
-                    return HttpResponse(json.dumps(resp),
-                                        content_type="application/json")
-        else:
+        if iduser != str(request.user.id):
             return send_error_page(request, 'Est&aacute;s intentando cambiar' +
                                    ' un perfil distinto del tuyo')
-    if request.method != "POST": # si es un POST coge el form que ha recibido
+        pform = ProfileEditionForm(request.POST, instance=profile)
+        if not pform.is_valid():
+            if request.is_ajax():
+                return HttpResponse(json.dumps({'errors': pform.errors}), 
+                                    content_type="application/json")
+            #si no lo obtengo de nuevo cuando renderice con
+            # profile puede aparecer mal la edad
+            profile = UserProfile.objects.get(user=iduser)
+        else:
+            pform.save()
+            if request.is_ajax():
+                resp = {'user': {'age': profile.age,
+                                 'description': profile.description, 
+                                 'email': profile.user.email, 
+                                 'show_email': profile.show_email}}
+                return HttpResponse(json.dumps(resp),
+                                    content_type="application/json")    
+    else: # si es un POST coge el form que ha recibido
         pform = ProfileEditionForm(instance=profile)
     ctx = {'profile': profile, 'form': pform, 'htmlname': 'profile.html',
            'form_img': ProfileImageForm(),
