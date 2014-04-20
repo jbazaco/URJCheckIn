@@ -859,18 +859,16 @@ def edit_lesson(request, idlesson):
         if request.POST.get("action", default='edit') == 'delete':
             return delete_lesson(request, lesson)
 
-        lform = ExtraLessonForm(request.POST, instance=lesson)
-        if not lform.is_valid():
-            if request.is_ajax():
-                return HttpResponse(json.dumps({'errors': lform.errors}), 
-                                    content_type="application/json")
-        else:
+        lform = ExtraLessonForm(request.POST, instance=lesson)           
+        if lform.is_valid():
             lform.save()
             if request.is_ajax():
                 return HttpResponse(json.dumps({'ok': True}),
                                     content_type="application/json")
-    
-    if request.method != 'POST':
+        elif request.is_ajax():
+            return HttpResponse(json.dumps({'errors': lform.errors}), 
+                                content_type="application/json")
+    else:
         lform = ExtraLessonForm(instance=lesson)
     ctx = {'lesson': lesson, 'form': lform, 'room_form': FreeRoomForm(),
            'htmlname': 'lesson_edit.html'}
