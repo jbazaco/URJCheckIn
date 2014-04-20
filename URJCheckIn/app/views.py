@@ -1063,6 +1063,7 @@ def codes_order(form, lessons):
         order = '-' + order
     return lessons.order_by(order)
 
+
 def codes_filter(form):
     """
     Filtra las clases por dia, aula, edificio y tipo de Subject segun el
@@ -1130,6 +1131,47 @@ def email_change(request):
 ########################################################
 # Funciones para solicitar mas elementos de algun tipo #
 ########################################################
+def get_lesson_comments(request, idlesson):
+    """
+    Devuelve todos los comentarios de la clase con id idlesson si el
+    usuario tiene permiso para verlos (esta relacionado con la
+    asignatura o con permiso can_see_statistics)
+    En caso de error devuelve False
+    """
+    try:
+        lesson = Lesson.objects.get(id=idlesson)
+        profile = request.user.userprofile
+        if not lesson.subject in profile.subjects.all():
+            return False
+    except Lesson.DoesNotExist:
+        return False
+    except UserProfile.DoesNotExist:
+        if not request.user.has_perm('app.can_see_statistics'):
+            return False
+    return LessonComment.objects.filter(lesson=lesson)
+
+
+def get_more_comments_threshold(is_lesson, idcurrent):
+    """
+    Devuelve el momento de publicacion del comentario idcurrent
+    Si is_lesson es True lo busca en LessonComment y en caso contrario
+    en ForumComment
+    Si no existe el comentario devuelve False, y si idcurrent es menor
+    que 0 devuelve el dia anterior a la hora actual
+    """
+    if idcurrent > 0:
+        try:
+            if is_lesson:
+                comment = LessonComment.objects.get(id=idcurrent)
+            else:
+                comment = ForumComment.objects.get(id=idcurrent)
+        except (ForumComment.DoesNotExist, LessonComment.DoesNotExist):
+            return False
+        current_date = comment.date
+    else: #Para el caso en el que no hubiese ningun mensaje en la pagina
+        current_date = timezone.now() - datetime.timedelta(days=1)
+    return current_date
+
 
 @login_required
 @ajax_required
@@ -1146,39 +1188,18 @@ def more_comments(request, current, idlesson, newer):
     current = int(current)
     idlesson = int(idlesson)
     newer = (newer == 'true')
-    if current > 0:
-        try:
-            if idlesson > 0:
-                comment = LessonComment.objects.get(id=current)
-            else:
-                comment = ForumComment.objects.get(id=current)
-        except (ForumComment.DoesNotExist, LessonComment.DoesNotExist):
-            resp = {'comments': [], 'idcomment': 0, 'newer': True}
-            return HttpResponse(json.dumps(resp),
-                                content_type="application/json")
-        current_date = comment.date
-    else: #Para el caso en el que no hubiese ningun mensaje en la pagina
-        current_date = timezone.now() - datetime.timedelta(days=1)
+    current_date = get_more_comments_threshold(idlesson > 0, current)
+    if not current_date:
+        resp = {'comments': [], 'idcomment': 0, 'newer': True}
+        return HttpResponse(json.dumps(resp),
+                            content_type="application/json")
         
-
     if idlesson > 0:
-        try:
-            lesson = Lesson.objects.get(id=idlesson)
-            profile = request.user.userprofile
-            if not lesson.subject in profile.subjects.all():
-                resp = {'comments': [], 'idcomment': 0, 'newer': True}
-                return HttpResponse(json.dumps(resp),
-                                    content_type="application/json")
-        except (ForumComment.DoesNotExist, Lesson.DoesNotExist):
+        all_comments = get_lesson_comments(request, idlesson)
+        if not all_comments:
             resp = {'comments': [], 'idcomment': 0, 'newer': True}
             return HttpResponse(json.dumps(resp),
-                                content_type="application/json")
-        except UserProfile.DoesNotExist:
-            if not request.user.has_perm('app.can_see_statistics'):
-                resp = {'comments': [], 'idcomment': 0, 'newer': True}
-                return HttpResponse(json.dumps(resp),
                                     content_type="application/json")
-        all_comments = LessonComment.objects.filter(lesson=lesson)
     else:
         all_comments = ForumComment.objects.all()
 
