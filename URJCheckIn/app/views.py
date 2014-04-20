@@ -749,26 +749,28 @@ def subject_edit(request, idsubj):
                                ' no existe.')
 
     if request.method == 'POST':
+        resp = False
         if request.POST.get("action", default='edit') == 'delete':
             subject.delete()
             if request.is_ajax():
-                return HttpResponse(json.dumps({'deleted': True,
+                resp = HttpResponse(json.dumps({'deleted': True,
                                                 'redirect': '/subjects'}),
                                     content_type="application/json")
-            return HttpResponseRedirect('/subjects')
-
-        sform = SubjectForm(request.POST, instance=subject)
-        if not sform.is_valid():
-            if request.is_ajax():
-                return HttpResponse(json.dumps({'errors': sform.errors}), 
-                                    content_type="application/json")
+            else:
+                resp = HttpResponseRedirect('/subjects')
         else:
-            sform.save()
-            if request.is_ajax():
-                return HttpResponse(json.dumps({'ok': True}),
+            sform = SubjectForm(request.POST, instance=subject)
+            if sform.is_valid():
+                sform.save()
+                if request.is_ajax():
+                    resp = HttpResponse(json.dumps({'ok': True}),
+                                        content_type="application/json")
+            elif request.is_ajax():
+                resp = HttpResponse(json.dumps({'errors': sform.errors}), 
                                     content_type="application/json")
-    
-    if request.method != 'POST':
+        if resp:
+            return resp
+    else:
         sform = SubjectForm(instance=subject)
     ctx = {'subject': subject, 'form': sform, 'htmlname': 'subject_edit.html'}
     return response_ajax_or_not(request, ctx)
@@ -795,24 +797,40 @@ def create_lesson(request, idsubj):
     if request.method == 'POST':
         lesson = Lesson(is_extra=True, subject=subject)
         lform = ExtraLessonForm(request.POST, instance=lesson)
-        if not lform.is_valid():
-            if request.is_ajax():
-                return HttpResponse(json.dumps({'errors': lform.errors}), 
-                                    content_type="application/json")
-        else:
+        resp = False
+        if lform.is_valid():
             lesson = lform.save()
             if request.is_ajax():
-                return HttpResponse(json.dumps({'ok': True,
+                resp = HttpResponse(json.dumps({'ok': True,
                                     'redirect': '/lesson/' + str(lesson.id)}), 
                                     content_type="application/json")
-            return HttpResponseRedirect('/lesson/' + str(lesson.id))
-    
-    if request.method != 'POST':
+            else:
+                resp = HttpResponseRedirect('/lesson/' + str(lesson.id))
+        elif request.is_ajax():
+            resp = HttpResponse(json.dumps({'errors': lform.errors}), 
+                                content_type="application/json")
+        if resp:
+            return resp
+    else:
         lform = ExtraLessonForm()
     ctx = {'subject': subject, 'form': lform, 'room_form': FreeRoomForm(),
            'htmlname': 'new_lesson.html'}
     return response_ajax_or_not(request, ctx)
 
+
+def delete_lesson(request, lesson):
+    """Borra una clase si es extra y redirecciona a la asignatura"""
+    if lesson.is_extra:
+        url_redirect = '/subjects/' + str(lesson.subject.id)
+        lesson.delete()
+        if request.is_ajax():
+            return HttpResponse(json.dumps({'deleted': True,
+                                            'redirect': url_redirect}),
+                                content_type="application/json")
+        return HttpResponseRedirect(url_redirect)
+    else:
+        return send_error_page(request,
+                               'Solo se pueden eliminar clases extras')
 
 def edit_lesson(request, idlesson):
     """Devuelve la pagina para editar o eliminar una clase"""
@@ -839,17 +857,7 @@ def edit_lesson(request, idlesson):
 
     if request.method == 'POST':
         if request.POST.get("action", default='edit') == 'delete':
-            if lesson.is_extra:
-                url_redirect = '/subjects/' + str(lesson.subject.id)
-                lesson.delete()
-                if request.is_ajax():
-                    return HttpResponse(json.dumps({'deleted': True,
-                                                    'redirect': url_redirect}),
-                                        content_type="application/json")
-                return HttpResponseRedirect(url_redirect)
-            else:
-                return send_error_page(request,
-                                       'Solo se pueden eliminar clases extras')
+            return delete_lesson(request, lesson)
 
         lform = ExtraLessonForm(request.POST, instance=lesson)
         if not lform.is_valid():
