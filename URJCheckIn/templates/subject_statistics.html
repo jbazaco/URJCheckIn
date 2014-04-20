@@ -27,9 +27,12 @@
 </div>
 <div id="attendance_chart"></div>
 <div id="marks_chart"></div>
+<div id="attendance_pie"></div>
+<div id="lessons_done_pie"></div>
 
 <script type="text/javascript">
-	$('#cant_show_charts').hide();
+	$('#cant_show_charts').hide();//Esconde la tabla que esta para navegadores sin javascript
+	//Grafica con la asistencia de los alumnos a cada clase
 	$('#attendance_chart').highcharts({
 		chart: {
 			type: 'column',
@@ -40,7 +43,7 @@
 		},
 		xAxis: {
 			categories: [
-				{% for lesson in lessons %}
+				{% for lesson in lessons_done %}
 					"{{lesson.start_time|date:'Y-m-d'}}",
 				{% endfor %}
 			],
@@ -68,7 +71,7 @@
 		series: [{
 			name: 'Asistencia',
 			data: [
-					{% for lesson in lessons %}
+					{% for lesson in lessons_done %}
 						{{lesson.checkin_percent|stringformat:'f'}},
 					{% endfor %}
 				],
@@ -87,7 +90,7 @@
 			}
 		}]
 	});
-
+	//Grafica con la puntuacion media de cada clase
 	$('#marks_chart').highcharts({
 		chart: {
 			type: 'column',
@@ -98,7 +101,7 @@
 		},
 		xAxis: {
 			categories: [
-				{% for lesson in lessons %}
+				{% for lesson in lessons_done %}
 					"{{lesson.start_time|date:'Y-m-d'}}",
 				{% endfor %}
 			],
@@ -126,7 +129,7 @@
 		series: [{
 			name: 'Puntuacion',
 			data: [
-					{% for lesson in lessons %}
+					{% for lesson in lessons_done %}
 						{{lesson.avg_mark|stringformat:'f'}},
 					{% endfor %}
 				],
@@ -145,4 +148,80 @@
 			}
 		}]
 	});
+	//Grafica con la asistencia media de los alumnos
+	$('#attendance_pie').highcharts({
+		chart: {
+			plotBackgroundColor: null,
+			plotBorderWidth: null,
+			plotShadow: false
+		},
+		title: {
+			text: 'Asistencia media de los alumnos'
+		},
+		tooltip: {
+			pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+		},
+		plotOptions: {
+			pie: {
+				allowPointSelect: true,
+				cursor: 'pointer',
+				dataLabels: {
+					enabled: false
+				},
+				showInLegend: true
+			}
+		},
+		series: [{
+			type: 'pie',
+			name: 'Asistencia de alumnos',
+			data: [
+				['No asisten', 100-{{subject.percent_stud_attend|stringformat:'f'}}],
+				{
+					name: 'Asisten',
+					y: {{subject.percent_stud_attend|stringformat:'f'}},
+					sliced: true,
+					selected: true
+				},
+			]
+		}]
+	});
+	//Grafica con la asistencia de los profesores
+	$('#lessons_done_pie').highcharts({
+		chart: {
+			plotBackgroundColor: null,
+			plotBorderWidth: null,
+			plotShadow: false
+		},
+		title: {
+			text: 'Asistencia de los profesores'
+		},
+		tooltip: {
+			pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+		},
+		plotOptions: {
+			pie: {
+				allowPointSelect: true,
+				cursor: 'pointer',
+				dataLabels: {
+					enabled: false
+				},
+				showInLegend: true
+			}
+		},
+		series: [{
+			type: 'pie',
+			name: 'Clases impartidas',
+			data: [
+				['No impartidas', 100.0*({{n_lessons_past}}-{{lessons_done|length}})/{{subject.lesson_set.count}}],
+				{
+					name: 'Impartidas',
+					y: 100.0*{{lessons_done|length}}/{{subject.lesson_set.count}},
+					sliced: true,
+					selected: true
+				},
+				['Futuras', 100.0*({{subject.lesson_set.count}}-{{n_lessons_past}})/{{subject.lesson_set.count}}]
+			]
+		}]
+	});
 </script>
+

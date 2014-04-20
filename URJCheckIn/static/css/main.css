@@ -259,5 +259,11 @@ footer {
 	height: 400px;
 	margin: 0 auto;
 }
+
+#attendance_pie, #lessons_done_pie{
+	min-width: 310px;
+	height: 400px;
+	margin: 0 auto;
+}
 /*end SUBJECT_STETISTICS*/
 

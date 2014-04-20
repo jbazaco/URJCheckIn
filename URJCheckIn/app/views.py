@@ -704,8 +704,10 @@ def subject_statistics(request, idsubj):
             return send_error_page(request, 'No tienes acceso a esta ' +
                                    'informaci&oacute;n.')
     ctx = {'subject': subject, 'htmlname': 'subject_statistics.html',
-           'lessons': subject.lesson_set.filter(done=True).order_by(
-                                            'start_time')
+           'lessons_done': subject.lesson_set.filter(
+                                done=True).order_by('start_time'),
+           'n_lessons_past': subject.lesson_set.filter(
+                                end_time__lte=timezone.now()).count()
           }
     return response_ajax_or_not(request, ctx)
 
