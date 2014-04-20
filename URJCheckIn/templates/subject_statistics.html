@@ -1,10 +1,31 @@
 
 <h2 id="maintitle">Estad&iacute;sticas de la asignatura {{subject}}</h2>
 
+<div id="cant_show_charts">
+	<div class="row">
+		<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 text-center">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h3 class="panel-title">Porcentaje de asistencia</h3>
+				</div>
+				<ul class="list-group lessons_list">
+					{% for lesson in lessons %}
+						<li class="list-group-item">
+							{{lesson.start_time|date:'Y-m-d'}}:
+							asistencia {{lesson.checkin_percent}}%,
+							puntuaci&oacute;n {{lesson.avg_mark}}
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
 <div id="attendance_chart"></div>
 <div id="marks_chart"></div>
 
 <script type="text/javascript">
+	$('#cant_show_charts').hide();
 	$('#attendance_chart').highcharts({
 		chart: {
 			type: 'column',
