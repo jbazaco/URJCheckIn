@@ -687,6 +687,30 @@ def sign_in_seminar(request, subject, profile):
 
 
 @login_required
+def subject_statistics(request, idsubj):
+    """
+    Devuelve una pagina con las estadisticas de la asignatuda con id
+    idsubj
+    """
+    try:
+        subject = Subject.objects.get(id=idsubj)
+        profile = subject.userprofile_set.get(user=request.user)
+    except Subject.DoesNotExist:
+        return send_error_page(request, '#404 La asignatura a la que ' +
+                               'intentas acceder no existe.')
+    except UserProfile.DoesNotExist:
+        #Si controla las estadisticas tiene acceso
+        if not request.user.has_perm('app.can_see_statistics'):
+            return send_error_page(request, 'No tienes acceso a esta ' +
+                                   'informaci&oacute;n.')
+    ctx = {'subject': subject, 'htmlname': 'subject_statistics.html',
+           'lessons': subject.lesson_set.filter(done=True).order_by(
+                                            'start_time')
+          }
+    return response_ajax_or_not(request, ctx)
+
+
+@login_required
 def subject_attendance(request, idsubj):
     """
     Devuelve la pagina con la informacion de la asistencia de los

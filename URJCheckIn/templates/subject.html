@@ -151,6 +151,11 @@
 				</a>
 			</div>
 		{% endif %}
+		<div class="col-xs-12 col-md-6" id="statistics_subject">
+			<a href="{% url 'subject_statistics' subject.id %}" class="btn btn-info btn-block ajax">
+				<span class="glyphicon glyphicon-stats"></span> Ver estad&iacute;sticas
+			</a>
+		</div>
 	</div>
 {% elif perms.app %}
 	{% if perms.app.can_see_statistics %}
@@ -158,6 +163,11 @@
 			<div class="col-xs-12" id="check_attendance">
 				<a href="{% url 'subject_attendance' subject.id %}" class="btn btn-info btn-block ajax">
 					<span class="glyphicon glyphicon-user"></span> Comprobar asistencia
+				</a>
+			</div>
+			<div class="col-xs-12 col-md-6" id="statistics_subject">
+				<a href="{% url 'subject_statistics' subject.id %}" class="btn btn-info btn-block ajax">
+					<span class="glyphicon glyphicon-stats"></span> Ver estad&iacute;sticas
 				</a>
 			</div>
 		</div>

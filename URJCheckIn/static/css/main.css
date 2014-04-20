@@ -253,3 +253,11 @@ footer {
 }
 /*end HELP*/
 
+/*start SUBJECT_STETISTICS*/
+#attendance_chart, #marks_chart {
+	min-width: 310px;
+	height: 400px;
+	margin: 0 auto;
+}
+/*end SUBJECT_STETISTICS*/
+
