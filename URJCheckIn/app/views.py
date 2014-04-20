@@ -52,6 +52,7 @@ def my_paginator(request, collection, n_elem):
         results = paginator.page(paginator.num_pages)
     return results
 
+
 def response_ajax_or_not(request, ctx):
     """
     Devuelve un HttpResponse con un objeto JSON con '#mainbody' el
@@ -67,21 +68,25 @@ def response_ajax_or_not(request, ctx):
     return render_to_response('main.html', ctx,
                               context_instance=RequestContext(request))
 
+
 def not_found(request):
     """
     Devuelve una pagina que indica que la pagina solicitada no existe
     """
     return response_ajax_or_not(request, {'htmlname': '404.html'})
 
+
 def send_error_page(request, error):
     """Devuelve una pagina de error"""
     return response_ajax_or_not(request, {'htmlname': 'error.html',
                                           'message': error})
 
+
 @login_required
 def help_page(request):
     """Devuelve una pagina de ayuda"""
     return response_ajax_or_not(request, {'htmlname': 'help.html'})
+
 
 @login_required
 def home(request):
@@ -112,6 +117,7 @@ def home(request):
            'htmlname': 'home.html'}
     return response_ajax_or_not(request, ctx)
 
+
 def get_week_lessons(monday, subjects):
     """
     Devuelve las clases de las asignaturas 'subjects' desde el lunes
@@ -138,41 +144,16 @@ def get_week_lessons(monday, subjects):
                     })
     return events
 
-def process_checkin(request):
+
+def save_checkin(form, profile, lesson):
     """
-    Procesa un formulario para hacer checkin y devuelve un diccionario
-    con 'ok' = True si se realiza con exito o 'ok': False en caso
-    contrario. Devuelve a veces un 'msg' informativo de lo ocurrido y
-    devuelve siempre 'form' = al checkinform
+    Guarda el CheckIn del usuario con perfil profile en la clase lesson
+    con la informacion del formulario form. En caso de ser un profesor
+    actualizara ademas los alumnos que ha contado este en la clase
+    Devuelve un diccionario que cumple la descripcion de retorno del
+    metodo process_checkin
     """
-    form = request.POST
-    try:
-        idsubj = form.__getitem__("subject")
-    except (ValueError, MultiValueDictKeyError):
-        return {'msg': 'Informacion de la asignatura incorrecta.',
-                'form': CheckInForm(form)}
-    resp = False
-    try:
-        profile = UserProfile.objects.get(user=request.user)
-        subject = profile.subjects.get(id=idsubj)
-        lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
-                                        end_time__gte=timezone.now())
-    except UserProfile.DoesNotExist:
-        resp = {'msg': 'No tienes un perfil creado.', 
-                'form': CheckInForm(form), 'ok': False}
-    except Subject.DoesNotExist:
-        resp = {'msg': 'No estas matriculado en esa asignatura.',
-                'form': CheckInForm(form), 'ok': False}
-    except Lesson.DoesNotExist:
-        resp = {'msg': 'Ahora no hay ninguna clase de la asignatura '
-                + str(subject), 'form': CheckInForm(form), 'ok': False}
-    except Lesson.MultipleObjectsReturned:
-        resp = {'msg': 'Actualmente hay dos clases de ' + str(subject) + 
-                ', por favor, contacte con un administrador',
-                'form': CheckInForm(form), 'ok': False}
-    if resp:
-        return resp
-    checkin = CheckIn(user=request.user, lesson=lesson)
+    checkin = CheckIn(user=profile.user, lesson=lesson)
     cform = CheckInForm(form, instance=checkin)
     if cform.is_valid():
         try:
@@ -191,6 +172,40 @@ def process_checkin(request):
                 'msg': 'Checkin realizado con &eacute;xito'}
     else:
         return {'ok': False, 'form': cform}
+
+
+def process_checkin(request):
+    """
+    Procesa un formulario para hacer checkin y devuelve un diccionario
+    con 'ok' = True si se realiza con exito o 'ok': False en caso
+    contrario. Devuelve a veces un 'msg' informativo de lo ocurrido y
+    devuelve siempre 'form' = al checkinform
+    """
+    form = request.POST
+    try:
+        idsubj = form.__getitem__("subject")
+    except (ValueError, MultiValueDictKeyError):
+        return {'msg': 'Informacion de la asignatura incorrecta.',
+                'form': CheckInForm(form)}
+    try:
+        profile = UserProfile.objects.get(user=request.user)
+        subject = profile.subjects.get(id=idsubj)
+        lesson = subject.lesson_set.get(start_time__lte=timezone.now(),
+                                        end_time__gte=timezone.now())
+    except UserProfile.DoesNotExist:
+        return {'msg': 'No tienes un perfil creado.', 
+                'form': CheckInForm(form), 'ok': False}
+    except Subject.DoesNotExist:
+        return {'msg': 'No estas matriculado en esa asignatura.',
+                'form': CheckInForm(form), 'ok': False}
+    except Lesson.DoesNotExist:
+        return {'msg': 'Ahora no hay ninguna clase de la asignatura '
+                + str(subject), 'form': CheckInForm(form), 'ok': False}
+    except Lesson.MultipleObjectsReturned:
+        return {'msg': 'Actualmente hay dos clases de ' + str(subject) + 
+                ', por favor, contacte con un administrador',
+                'form': CheckInForm(form), 'ok': False}
+    return save_checkin(form, profile, lesson)
 
 
 @login_required
