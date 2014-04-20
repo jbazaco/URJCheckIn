@@ -6,7 +6,7 @@
 		<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 text-center">
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<h3 class="panel-title">Porcentaje de asistencia</h3>
+					<h3 class="panel-title">Estad&iacute;sticas de las clases</h3>
 				</div>
 				<ul class="list-group lessons_list">
 					{% for lesson in lessons %}
@@ -14,6 +14,10 @@
 							{{lesson.start_time|date:'Y-m-d'}}:
 							asistencia {{lesson.checkin_percent}}%,
 							puntuaci&oacute;n {{lesson.avg_mark}}
+						</li>
+					{% empty %}
+						<li class="list-group-item">
+							No se han realizado clases de {{subject}}
 						</li>
 					{% endfor %}
 				</ul>
