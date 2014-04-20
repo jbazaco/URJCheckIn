@@ -390,7 +390,6 @@ def process_lesson(request, idlesson):
                             lesson.lessoncomment_set.all().order_by('-date'),
                             10)
     profesors = lesson.subject.userprofile_set.filter(is_student=False)
-    
     ctx = {'lesson':lesson, 'comments':comments, 'profile':profile,
            'lesson_state':lesson_state, 'profesors':profesors,
            'subject': lesson.subject, 'htmlname': 'lesson.html'}
@@ -456,7 +455,6 @@ def save_lesson_comment(request, lesson):
         return {'ok': True}
     
 
-
 def lesson_str_state(lesson, user):
     """
     Devuelve un string indicando el estado de la clase o si asististe o
@@ -473,6 +471,7 @@ def lesson_str_state(lesson, user):
     else:
         return 'imperti&eacute;ndose en este momento'
 
+
 def method_not_allowed(request):
     """Devuelve una pagina indicando que el metodo no esta permitido"""
     if request.is_ajax():
@@ -482,6 +481,7 @@ def method_not_allowed(request):
                               {'message': "M&eacutetodo " + request.method +
                                " no soportado en " + request.path},
                               context_instance=RequestContext(request))
+
 
 @login_required
 def forum(request):
@@ -570,9 +570,11 @@ def seminars(request):
             new_subj = csform.save()
             profile.subjects.add(new_subj)
             if request.is_ajax():
-                return HttpResponse(json.dumps({'idsubj': new_subj.id}),
+                resp = HttpResponse(json.dumps({'idsubj': new_subj.id}),
                                     content_type="application/json")
-            return HttpResponseRedirect('/subjects/' + str(new_subj.id))
+            else:
+                resp = HttpResponseRedirect('/subjects/' + str(new_subj.id))
+            return resp
 
     future_seminars = Subject.objects.filter(
                         is_seminar=True        
