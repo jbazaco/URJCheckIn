@@ -621,20 +621,15 @@ def subject_page(request, idsubj):
         elif 'error' in resp:
             error = resp['error']
 
+    signed = False
     if profile:
         if subject in profile.subjects.all():
             signed = True
-        else:
-            signed = False
-            #Solo pueden ver las asignaturas en las que estan matriculados
-            if not subject.is_seminar:
-                return send_error_page(request, 'No est&aacutes matriculado ' +
-                                       'en ' + str(subject))
-    else:#caso en el que tiene permisos can_see_statistics pero sin perfil
-        signed = False
+        elif not subject.is_seminar:
+            return send_error_page(request, 'No est&aacutes matriculado en ' +
+                                   str(subject))
         
     lessons = subject.lesson_set.all()
-    profesors = subject.userprofile_set.filter(is_student=False)
     now = timezone.now()
     today = datetime.date(now.year, now.month, now.day)
     started = subject.first_date < today#Si ha empezado True
@@ -647,12 +642,11 @@ def subject_page(request, idsubj):
     ctx = {'lessons_f': lessons_f, 'lessons_p': lessons_p,
            'lessons_n': lessons.filter(end_time__gt=timezone.now(), 
                                        start_time__lt=timezone.now()),
-           'profesors': profesors, 'subject': subject, 'profile':profile,
+           'profesors': subject.userprofile_set.filter(is_student=False),
+           'subject': subject, 'profile':profile, 'error': error,
            'signed': signed, 'started': started,
            'timetables': subject.timetable_set.all(),
            'htmlname': 'subject.html'}
-    if error:
-        ctx['error'] = error
     return response_ajax_or_not(request, ctx)
 
 
