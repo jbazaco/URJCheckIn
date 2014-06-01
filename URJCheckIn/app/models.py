@@ -211,7 +211,7 @@ class Lesson(models.Model):
     start_time =  models.DateTimeField(verbose_name='hora de inicio')
     end_time = models.DateTimeField(verbose_name='hora de finalización')
     subject = models.ForeignKey(Subject, verbose_name='asignatura')
-    room =    models.ForeignKey(Room, verbose_name='aula')
+    room = models.ForeignKey(Room, verbose_name='aula')
     is_extra = models.BooleanField(default=False,
                                    verbose_name='es clase extra')
     done = models.BooleanField(verbose_name='realizada', default=False)
@@ -388,7 +388,7 @@ class ForumComment(models.Model):
 class Timetable(models.Model):
     subject = models.ForeignKey(Subject, verbose_name='asignatura')
     day = models.CharField(max_length=3, choices=WEEK_DAYS)
-    start_time =  models.TimeField(verbose_name='hora de inicio')
+    start_time = models.TimeField(verbose_name='hora de inicio')
     end_time = models.TimeField(verbose_name='hora de finalización')
     room = models.ForeignKey(Room, verbose_name='aula')
     
