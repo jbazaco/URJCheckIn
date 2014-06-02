@@ -66,12 +66,19 @@ class Subject(models.Model):
         return self.userprofile_set.filter(is_student=True).count()
 
     def percent_prof_attend(self):
+        """
+        Devuelve el porcentaje de asistencia de los profesores a la 
+        asignatura, dividiendo el total de clases realizadas entre 
+        las clases antiguas que no son extraoficiales, por tanto 
+        el porcentaje puede ser mayor que 100
+        """
         n_lesson_done = self.lesson_set.filter(done=True).count()
         n_lesson_past = self.lesson_set.filter(
-                                            end_time__lt = timezone.now()
+                                            end_time__lt = timezone.now(),
+                                            is_extra = False
                                         ).count()
         if n_lesson_past < 1:
-            return 0
+            return 100
         return round(100.0*n_lesson_done/n_lesson_past, 2)
 
     def percent_stud_attend(self):
@@ -87,7 +94,7 @@ class Subject(models.Model):
                                           lesson__subject=self,
                                           lesson__done=True).count()
         if n_div < 1:
-            return 0
+            return 100
         return round(100.0*n_checks/n_div, 2)
 
     def avg_mark(self):
