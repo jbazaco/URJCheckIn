@@ -1,0 +1,23 @@
+{
+    "name": "URJCheckIn",
+    "description": "Es una aplicación para controlar la asistencia a clase en un entorno universitario",
+    "launch_path": "/",
+    "version": "1.0",
+    "icons":  {
+        "30": "/firefoxos/firefox-os-icon-30.png",
+        "60": "/firefoxos/firefox-os-icon-60.png",
+        "128": "/firefoxos/firefox-os-icon-128.png"
+    },
+    "developer": {
+        "name": "Jorge Bazaco Caloto"
+    },
+    "default_locale": "es",
+    "permissions": {
+        "geolocation": {
+            "description": "Para realizar el check in en una clase"
+        },
+        "camera": {
+            "description": "Para escanear los códigos QR de las clases"
+        }
+    }
+}
