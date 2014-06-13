@@ -25,7 +25,7 @@ INSTALACÓN Y USO
 
 Para el empleo de la presente herramienta, no es necesaria su 
 instalación, más allá de tener instalado Python y Django, e instalar el 
-módulo dePython pytz (en Linux se puede instalar mediante el comando 
+módulo de Python pytz (en Linux se puede instalar mediante el comando 
 "sudo pip install pytz").
 
 Para probar la aplicación se debe iniciar el servidor ejecutando en un 
