@@ -1,0 +1,72 @@
+
+SOBRE LA APLICACIÓN
+
+La presente aplicación web desarrolla un sistema para entornos 
+universitarios, que permite registrar y comprobar la asitencia de los 
+profesores y alumnos a clase. Esta aplicación permite, además, realizar 
+una gestión de las asignaturas, obteniendo estádisticas de las mismas, 
+no solo de la asistencia, sino también de la valoración de los alumnos, 
+permitiendo realizar una retroalimentación para que los profesores 
+puedan mejorar y permitiendo detectar anomalías en el desarrollo de 
+alguna asignatura.
+
+La aplicación también permite a los profesores crear nuevas clases, 
+organizar seminarios (a los cuales pueden apuntarse los alumnos) y 
+utilizarla como una vía de comunicación con los alumnos.
+
+Además, la página web presenta un foro donde todos los miembros de la 
+universidad pueden comunicarse de forma pública para facilitar su 
+colaboración y mejorar el entorno universitario.
+
+========================================================================
+========================================================================
+
+INSTALACÓN Y USO
+
+Para el empleo de la presente herramienta, no es necesaria su 
+instalación, más allá de tener instalado Python y Django, e instalar el 
+módulo dePython pytz (en Linux se puede instalar mediante el comando 
+"sudo pip install pytz").
+
+Para probar la aplicación se debe iniciar el servidor ejecutando en un 
+terminal, desde la carpeta URJCheckIn, el comando python "manage.py 
+runserver IP:Puerto", indicando la dirección IP y el puerto, o mediante 
+"python manage.py runserver Puerto". Al ejecutar el comando se iniciará 
+el servidor y la terminal indica la URL a través de la cual es 
+accesible, como se muestra a continuación:
+
+------------------------------------------------------------------------
+jorge@ubuntu:~/Proyecto/URJCheckIn$ python manage.py runserver 1025
+Validating models...
+
+0 errors found
+May 28, 2014 - 12:17:24
+Django version 1.5.4, using settings 'URJCheckIn.settings'
+Development server is running at http://127.0.0.1:1025/
+Quit the server with CONTROL-C.
+------------------------------------------------------------------------
+
+
+Por tanto será suficiente con introducir la URL en cualquier navegador 
+(habiéndose probado con éxito en los principales navegadores y en 
+diferentes versiones de los mismos). 
+
+Sin embargo, es necesario otro paso para evitar errores al resetear la 
+contraseña de un usuario o al crear usuarios mediante un CSV, ya que 
+necesita un servidor capaz de enviar correos electrónicos. Para la 
+simulación, es suficiente con ejecutar en un terminal el comando "python 
+-m smtpd -n -c DebuggingServer localhost:1026". En caso de no estar 
+disponible el puerto 1026, sería necesario abrir el fichero 
+URJCheckIn/URJCheckIn/settings.py y modificar el campo EMAIL_PORT 
+escribiendo el puerto que se va a utilizar.
+
+Se debe tener en cuenta que el presente programa es una versión de 
+desarrollo, para su despliegue se deberían realizar ciertos cambios y 
+el resultado sería ligeramente diferente (sin afectar de cara al 
+usuario final).
+
+Para crear la base de datos se debe ejecutar desde el directorio 
+URJCheckIn el comando "python manage.py syncdb" (para el caso de Django 
+1.5.4 que es la versión que se ha utilizado durante el desarrollo, ya 
+que este comando puede variar según la versión).
+
