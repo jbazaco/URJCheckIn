@@ -65,8 +65,10 @@ desarrollo, para su despliegue se deberían realizar ciertos cambios y
 el resultado sería ligeramente diferente (sin afectar de cara al 
 usuario final).
 
-Para crear la base de datos se debe ejecutar desde el directorio 
-URJCheckIn el comando "python manage.py syncdb" (para el caso de Django 
-1.5.4 que es la versión que se ha utilizado durante el desarrollo, ya 
-que este comando puede variar según la versión).
+El presente programa presenta una base de datos de prueba, para poder 
+probarlo en menos tiempo. Si se desea crear una base de datos desde 
+cero, se debe borrar el fichero URJCheckIn/db.sqlite y ejecutar desde 
+el directorio URJCheckIn el comando "python manage.py syncdb" (para el 
+caso de Django 1.5.4 que es la versión que se ha utilizado durante el 
+desarrollo, ya que este comando puede variar según la versión).
 
